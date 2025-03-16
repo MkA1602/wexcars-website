@@ -1,189 +1,109 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
-import { Clock, DollarSign, Users, X } from 'lucide-react'
+import Link from 'next/link'
+import { Clock, Users, ArrowUp, Heart } from 'lucide-react'
 
-interface Auction {
-  id: number
-  title: string
-  currentBid: number
-  totalBids: number
-  timeLeft: string
-  image: string
-}
-
-const AuctionsPage = () => {
-  const [selectedAuction, setSelectedAuction] = useState<Auction | null>(null)
-  const [bidAmount, setBidAmount] = useState('')
-  const [error, setError] = useState('')
-
+export default function Auctions() {
   const auctions = [
     {
       id: 1,
-      title: '2023 Porsche 911 GT3',
-      currentBid: 185000,
-      totalBids: 12,
-      timeLeft: '2 days',
-      image: 'https://picsum.photos/id/115/800/500',
+      name: 'Porsche 911 GT3',
+      image: '/images/freepik__a-pristine-white-porsche-carrera-gt3-2025-elegantl__76345.png',
+      currentBid: 165000,
+      timeLeft: '2h 45m',
+      watchers: 234,
+      totalBids: 23,
+      endTime: '2024-03-20T18:00:00Z'
     },
-    {
-      id: 2,
-      title: '2022 Ferrari F8 Tributo',
-      currentBid: 275000,
-      totalBids: 18,
-      timeLeft: '1 day',
-      image: 'https://picsum.photos/id/116/800/500',
-    },
-    {
-      id: 3,
-      title: '2023 Lamborghini Huracán',
-      currentBid: 245000,
-      totalBids: 15,
-      timeLeft: '3 days',
-      image: 'https://picsum.photos/id/117/800/500',
-    },
-    {
-      id: 4,
-      title: '2022 McLaren 720S',
-      currentBid: 265000,
-      totalBids: 20,
-      timeLeft: '12 hours',
-      image: 'https://picsum.photos/id/118/800/500',
-    },
+    // Add more auctions here
   ]
 
-  const handlePlaceBid = (auction: Auction) => {
-    setError('')
-    setSelectedAuction(auction)
-    setBidAmount((auction.currentBid + 1000).toString())
-  }
-
-  const handleSubmitBid = () => {
-    if (!selectedAuction) return
-    
-    const bid = parseFloat(bidAmount)
-    if (isNaN(bid)) {
-      setError('Please enter a valid amount')
-      return
-    }
-    if (bid <= selectedAuction.currentBid) {
-      setError(`Bid must be higher than current bid: $${selectedAuction.currentBid.toLocaleString()}`)
-      return
-    }
-    // Here you would typically make an API call to submit the bid
-    alert('Bid placed successfully!')
-    setSelectedAuction(null)
-    setBidAmount('')
-  }
-
   return (
-    <div className="p-6">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Live Auctions</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {auctions.map((auction) => (
-            <div key={auction.id} className="card group">
-              <div className="aspect-w-16 aspect-h-9 mb-4 overflow-hidden rounded-lg">
-                <Image
-                  src={auction.image}
-                  alt={auction.title}
-                  width={800}
-                  height={500}
-                  className="object-cover group-hover:scale-105 transition-transform duration-200"
-                />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">{auction.title}</h3>
-              
-              <div className="flex items-center mb-3">
-                <DollarSign className="w-5 h-5 text-primary mr-2" />
-                <span className="text-xl font-bold text-primary">
-                  Current Bid: ${auction.currentBid.toLocaleString()}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-1" />
-                  {auction.totalBids} bids
-                </div>
-                <div className="flex items-center">
-                  <Clock className="w-4 h-4 mr-1" />
-                  {auction.timeLeft} left
-                </div>
-              </div>
-
-              <button 
-                className="btn-primary w-full"
-                onClick={() => handlePlaceBid(auction)}
-              >
-                Place Bid
-              </button>
-            </div>
-          ))}
+    <main className="min-h-screen bg-gray-50 pt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Live Auctions</h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Bid on exclusive luxury and exotic vehicles. New auctions added daily.
+          </p>
         </div>
 
-        {/* Bid Modal */}
-        {selectedAuction && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Place a Bid</h2>
-                <button 
-                  onClick={() => setSelectedAuction(null)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+        {/* Auction Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="bg-white rounded-2xl p-6 text-center">
+            <p className="text-4xl font-bold text-primary mb-2">24</p>
+            <p className="text-gray-600">Active Auctions</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 text-center">
+            <p className="text-4xl font-bold text-primary mb-2">1,234</p>
+            <p className="text-gray-600">Registered Bidders</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 text-center">
+            <p className="text-4xl font-bold text-primary mb-2">$12.5M</p>
+            <p className="text-gray-600">Total Value</p>
+          </div>
+        </div>
+
+        {/* Auctions Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {auctions.map((auction) => (
+            <Link
+              href={`/auctions/${auction.id}`}
+              key={auction.id}
+              className="bg-white rounded-2xl shadow-sm overflow-hidden group hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1"
+            >
+              <div className="relative h-48">
+                <Image
+                  src={auction.image}
+                  alt={auction.name}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute top-4 right-4 flex space-x-2">
+                  <span className="px-3 py-1 rounded-full bg-red-500 text-white text-sm font-medium animate-pulse">
+                    Live
+                  </span>
+                  <button className="p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors">
+                    <Heart className="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors" />
+                  </button>
+                </div>
               </div>
               
-              <div className="mb-4">
-                <p className="text-gray-600 dark:text-gray-400 mb-2">
-                  {selectedAuction.title}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">
-                  Current Bid: ${selectedAuction.currentBid.toLocaleString()}
-                </p>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{auction.name}</h3>
                 
-                <label className="block text-sm font-medium mb-2">
-                  Your Bid Amount
-                </label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="number"
-                    className="input w-full pl-10"
-                    value={bidAmount}
-                    onChange={(e) => setBidAmount(e.target.value)}
-                    placeholder="Enter bid amount"
-                  />
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Current Bid</p>
+                    <p className="text-xl font-bold text-primary">${auction.currentBid.toLocaleString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Time Left</p>
+                    <p className="text-xl font-bold text-gray-900 flex items-center">
+                      <Clock className="w-5 h-5 mr-1 text-primary" />
+                      {auction.timeLeft}
+                    </p>
+                  </div>
                 </div>
-                {error && (
-                  <p className="text-red-500 text-sm mt-2">{error}</p>
-                )}
-              </div>
 
-              <div className="flex gap-3">
-                <button
-                  className="btn-primary flex-1"
-                  onClick={handleSubmitBid}
-                >
-                  Confirm Bid
-                </button>
-                <button
-                  className="btn-secondary"
-                  onClick={() => setSelectedAuction(null)}
-                >
-                  Cancel
-                </button>
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex items-center">
+                    <Users className="w-4 h-4 mr-1" />
+                    {auction.watchers} watching
+                  </div>
+                  <div className="flex items-center">
+                    <ArrowUp className="w-4 h-4 mr-1" />
+                    {auction.totalBids} bids
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+    </main>
   )
-}
-
-export default AuctionsPage 
+} 

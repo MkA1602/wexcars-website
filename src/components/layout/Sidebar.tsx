@@ -19,9 +19,9 @@ const Sidebar = () => {
   return (
     <aside className="bg-white w-64 min-h-screen shadow-sm">
       <div className="py-6">
-        <div className="px-4 mb-6">
+        <div className="px-6 mb-8">
           <Link href="/" className="flex items-center">
-            <span className="text-xl font-bold text-[#6B4BFF]">AutoEx</span>
+            <span className="text-2xl font-bold text-[#6B4BFF] hover:scale-105 transition-transform">WexCars</span>
           </Link>
         </div>
         <nav className="space-y-1">

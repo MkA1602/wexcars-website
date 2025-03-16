@@ -10,7 +10,7 @@ import ThemeProvider from '../components/ThemeProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AutoEx - Vehicle Marketplace',
+  title: 'WexCars - Vehicle Marketplace',
   description: 'Modern vehicle marketplace platform with search and auction features',
 }
 

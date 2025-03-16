@@ -1,9 +1,38 @@
-import React from 'react'
+'use client'
+
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search, ChevronRight, MapPin } from 'lucide-react'
+import { Search, ChevronRight, MapPin, ChevronDown, Filter } from 'lucide-react'
+
+interface SearchFilters {
+  make: string
+  model: string
+  minYear: string
+  maxYear: string
+  minPrice: string
+  maxPrice: string
+  bodyStyle: string
+  transmission: string
+  fuelType: string
+  location: string
+}
 
 export default function Home() {
+  const [isAdvancedSearch, setIsAdvancedSearch] = useState(false)
+  const [filters, setFilters] = useState<SearchFilters>({
+    make: '',
+    model: '',
+    minYear: '',
+    maxYear: '',
+    minPrice: '',
+    maxPrice: '',
+    bodyStyle: '',
+    transmission: '',
+    fuelType: '',
+    location: '',
+  })
+
   const featuredVehicles = [
     {
       id: 1,
@@ -35,62 +64,90 @@ export default function Home() {
     },
   ]
 
-  const filters = {
-    make: ['All Makes', 'BMW', 'Mercedes-Benz', 'Porsche', 'Audi', 'Ferrari'],
-    priceRange: ['Any Price', 'Under $50k', '$50k-$100k', '$100k-$200k', '$200k+'],
-    bodyStyle: ['All Styles', 'Sedan', 'Coupe', 'SUV', 'Convertible'],
-    location: ['Any Location', 'Los Angeles', 'New York', 'Miami', 'San Francisco'],
+  const makes = ['All Makes', 'Audi', 'BMW', 'Ferrari', 'Lamborghini', 'Mercedes-Benz', 'Porsche']
+  const bodyStyles = ['All Styles', 'Coupe', 'Convertible', 'Sedan', 'SUV', 'Wagon']
+  const transmissions = ['All Types', 'Automatic', 'Manual', 'PDK', 'DCT']
+  const fuelTypes = ['All Types', 'Petrol', 'Diesel', 'Hybrid', 'Electric']
+  const years = Array.from({ length: 2024 - 1990 + 1 }, (_, i) => (2024 - i).toString())
+
+  const handleFilterChange = (key: keyof SearchFilters, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('Search filters:', filters)
+    // Implement search functionality
   }
 
   return (
-    <div className="min-h-screen">
+    <main className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-[#6B4BFF] to-[#8970FF] py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-              Find Your Perfect Vehicle
-            </h1>
-            <p className="mt-3 max-w-md mx-auto text-base text-gray-100 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Search through thousands of vehicles or participate in live auctions to find your dream car.
-            </p>
-          </div>
+      <div className="relative h-screen">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/freepik__a-pristine-white-porsche-carrera-gt3-2025-elegantl__76345.png"
+            alt="Luxury Porsche in snow"
+            fill
+            className="object-cover"
+            priority
+            quality={100}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50" />
+        </div>
 
-          {/* Search Bar */}
-          <div className="mt-10 max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                <select className="input">
-                  {filters.make.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
-                <select className="input">
-                  {filters.priceRange.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
-                <select className="input">
-                  {filters.bodyStyle.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
-                <select className="input">
-                  {filters.location.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
+        <div className="relative h-full flex items-center">
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div className="text-center mb-12">
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in">
+                Find Your Dream Car
+              </h1>
+              <p className="text-xl text-white/90 max-w-3xl mx-auto mb-8 animate-fade-in-delay">
+                Discover the finest collection of luxury and exotic vehicles
+              </p>
+              <div className="flex justify-center space-x-4 animate-fade-in-delay-2">
+                <Link 
+                  href="/explore-cars"
+                  className="px-8 py-3 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all duration-200 hover:shadow-lg hover:scale-105"
+                >
+                  Explore Cars
+                </Link>
+                <Link
+                  href="/auctions"
+                  className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-full font-medium hover:bg-white/10 transition-all duration-200"
+                >
+                  Join Auction
+                </Link>
               </div>
-              <div className="flex gap-4">
-                <div className="relative flex-grow">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    className="input w-full pl-10"
-                    placeholder="Search by make, model, or keyword"
-                  />
-                </div>
-                <button className="btn-primary px-8">Search</button>
+            </div>
+
+            {/* Search Section */}
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 transform hover:scale-[1.02] transition-all duration-300">
+                <form className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <select className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-gray-900 placeholder-gray-500">
+                      <option value="">Select Brand</option>
+                      <option value="porsche">Porsche</option>
+                      <option value="ferrari">Ferrari</option>
+                      <option value="lamborghini">Lamborghini</option>
+                      <option value="mclaren">McLaren</option>
+                    </select>
+                    <select className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-gray-900 placeholder-gray-500">
+                      <option value="">Price Range</option>
+                      <option value="0-50000">$0 - $50,000</option>
+                      <option value="50000-100000">$50,000 - $100,000</option>
+                      <option value="100000-200000">$100,000 - $200,000</option>
+                      <option value="200000+">$200,000+</option>
+                    </select>
+                    <button 
+                      type="submit"
+                      className="w-full px-8 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-all duration-200 hover:shadow-lg"
+                    >
+                      Search Now
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
@@ -135,6 +192,27 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </div>
+
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .animate-fade-in-delay {
+          animation: fadeIn 0.8s ease-out 0.2s forwards;
+          opacity: 0;
+        }
+        
+        .animate-fade-in-delay-2 {
+          animation: fadeIn 0.8s ease-out 0.4s forwards;
+          opacity: 0;
+        }
+      `}</style>
+    </main>
   )
 } 
