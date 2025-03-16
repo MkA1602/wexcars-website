@@ -5,62 +5,62 @@ import { ChevronDown } from 'lucide-react'
 
 const faqs = [
   {
-    category: `General`,
+    category: "General",
     questions: [
       {
-        id: `general-1`,
-        question: `What is WexCars?`,
-        answer: `WexCars is a premium automotive marketplace that connects buyers and sellers of luxury and exotic vehicles. We provide a secure platform for transactions, vehicle history verification, and expert support throughout the buying and selling process.`
+        id: "general-1",
+        question: "What is WexCars?",
+        answer: "WexCars is a premium automotive marketplace that connects buyers and sellers of luxury and exotic vehicles. We provide a secure platform for transactions, vehicle history verification, and expert support throughout the buying and selling process."
       },
       {
-        id: `general-2`,
-        question: `How do I create an account?`,
-        answer: `Creating an account is easy! Click the Sign Up button in the top right corner, fill in your details, verify your email address, and you are ready to start using WexCars.`
+        id: "general-2",
+        question: "How do I create an account?",
+        answer: "Creating an account is easy! Click the Sign Up button in the top right corner, fill in your details, verify your email address, and you are ready to start using WexCars."
       }
     ]
   },
   {
-    category: `Buying`,
+    category: "Buying",
     questions: [
       {
-        id: `buying-1`,
-        question: `How do I place a bid?`,
-        answer: `To place a bid, you must first create an account and verify your identity. Once verified, navigate to the listing you are interested in and click the Place Bid button. Enter your bid amount and confirm. You will be notified if you are outbid or if you win the auction.`
+        id: "buying-1",
+        question: "How do I place a bid?",
+        answer: "To place a bid, you must first create an account and verify your identity. Once verified, navigate to the listing you are interested in and click the Place Bid button. Enter your bid amount and confirm. You will be notified if you are outbid or if you win the auction."
       },
       {
-        id: `buying-2`,
-        question: `What payment methods are accepted?`,
-        answer: `We accept major credit cards, bank transfers, and verified escrow services. All transactions are secured and monitored for your protection.`
+        id: "buying-2",
+        question: "What payment methods are accepted?",
+        answer: "We accept major credit cards, bank transfers, and verified escrow services. All transactions are secured and monitored for your protection."
       }
     ]
   },
   {
-    category: `Selling`,
+    category: "Selling",
     questions: [
       {
-        id: `selling-1`,
-        question: `How do I list my car?`,
-        answer: `Click the Add Listing button, fill in your vehicles details, upload high-quality photos, set your price or reserve for auction, and submit for review. Our team will verify your listing within 24 hours.`
+        id: "selling-1",
+        question: "How do I list my car?",
+        answer: "Click the Add Listing button, fill in your vehicle details, upload high-quality photos, set your price or reserve for auction, and submit for review. Our team will verify your listing within 24 hours."
       },
       {
-        id: `selling-2`,
-        question: `What are the seller fees?`,
-        answer: `Listing is free. We charge a 3% sellers fee only when your vehicle sells. Premium listing features are available for an additional fee.`
+        id: "selling-2",
+        question: "What are the seller fees?",
+        answer: "Listing is free. We charge a 3% seller fee only when your vehicle sells. Premium listing features are available for an additional fee."
       }
     ]
   },
   {
-    category: `Account & Security`,
+    category: "Account & Security",
     questions: [
       {
-        id: `security-1`,
-        question: `How is my information protected?`,
-        answer: `We use industry-standard encryption and security measures to protect your personal and financial information. Our platform is regularly audited for security compliance.`
+        id: "security-1",
+        question: "How is my information protected?",
+        answer: "We use industry-standard encryption and security measures to protect your personal and financial information. Our platform is regularly audited for security compliance."
       },
       {
-        id: `security-2`,
-        question: `What if I forget my password?`,
-        answer: `Click the Forgot Password link on the login page. We will send you a secure link to reset your password to your registered email address.`
+        id: "security-2",
+        question: "What if I forget my password?",
+        answer: "Click the Forgot Password link on the login page. We will send you a secure link to reset your password to your registered email address."
       }
     ]
   }
