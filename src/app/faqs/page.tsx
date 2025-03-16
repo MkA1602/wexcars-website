@@ -15,7 +15,7 @@ const faqs = [
       {
         id: "general-2",
         question: "How do I create an account?",
-        answer: "Creating an account is easy! Click the Sign Up button in the top right corner, fill in your details, verify your email address, and you are ready to start using WexCars."
+        answer: "Creating an account is easy! Click the Sign Up button in the top right corner, fill in your details, verify your email address, and you will be ready to start using WexCars."
       }
     ]
   },
@@ -95,9 +95,8 @@ export default function FAQsPage() {
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-semibold text-gray-900">{category.category}</h2>
                   <ChevronDown
-                    className={`w-5 h-5 text-gray-500 transform transition-transform ${
-                      openCategory === category.category ? "rotate-180" : ""
-                    }`}
+                    className={"w-5 h-5 text-gray-500 transform transition-transform " +
+                      (openCategory === category.category ? "rotate-180" : "")}
                   />
                 </div>
               </button>
@@ -114,9 +113,8 @@ export default function FAQsPage() {
                           <div className="flex items-center justify-between">
                             <h3 className="text-lg font-medium text-gray-900">{faq.question}</h3>
                             <ChevronDown
-                              className={`w-4 h-4 text-gray-500 transform transition-transform ${
-                                openQuestion === faq.id ? "rotate-180" : ""
-                              }`}
+                              className={"w-4 h-4 text-gray-500 transform transition-transform " +
+                                (openQuestion === faq.id ? "rotate-180" : "")}
                             />
                           </div>
                         </button>
