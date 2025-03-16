@@ -5,37 +5,32 @@ import { ChevronDown } from 'lucide-react'
 
 const faqs = [
   {
-    category: 'General',
+    category: "General",
     questions: [
       {
-        id: 'general-1',
-        question: 'What is WexCars?',
-        answer: "WexCars is a premium automotive marketplace that connects buyers and sellers of luxury and exotic vehicles. We provide a secure platform for transactions, vehicle history verification, and expert support throughout the buying and selling process."
+        id: "general-1",
+        question: "What is WexCars?",
+        answer: `WexCars is a premium automotive marketplace that connects buyers and sellers of luxury and exotic vehicles. We provide a secure platform for transactions, vehicle history verification, and expert support throughout the buying and selling process.`
       },
       {
-        id: 'general-2',
-        question: 'How do I create an account?',
-        answer: "Creating an account is easy! Click the 'Sign Up' button in the top right corner, fill in your details, verify your email address, and you're ready to start using WexCars."
+        id: "general-2",
+        question: "How do I create an account?",
+        answer: `Creating an account is easy! Click the Sign Up button in the top right corner, fill in your details, verify your email address, and you are ready to start using WexCars.`
       }
     ]
   },
   {
-    category: 'Buying',
+    category: "Buying",
     questions: [
       {
-        id: 'buying-1',
-        question: 'How do I place a bid?',
-        answer: "To place a bid, you must first create an account and verify your identity. Once verified, navigate to the listing you're interested in and click the 'Place Bid' button. Enter your bid amount and confirm. You'll be notified if you're outbid or if you win the auction."
+        id: "buying-1",
+        question: "How do I place a bid?",
+        answer: `To place a bid, you must first create an account and verify your identity. Once verified, navigate to the listing you are interested in and click the Place Bid button. Enter your bid amount and confirm. You will be notified if you are outbid or if you win the auction.`
       },
       {
-        id: 'buying-2',
-        question: 'What payment methods are accepted?',
-        answer: "We accept major credit cards, bank transfers, and verified escrow services. All transactions are secured and monitored for your protection."
-      },
-      {
-        id: 'buying-3',
-        question: "Is there a buyer's premium?",
-        answer: "Yes, there is a 5% buyer's premium on all successful purchases. This fee helps us maintain the platform and provide secure transaction services."
+        id: "buying-2",
+        question: "What payment methods are accepted?",
+        answer: `We accept major credit cards, bank transfers, and verified escrow services. All transactions are secured and monitored for your protection.`
       }
     ]
   },
@@ -72,7 +67,7 @@ const faqs = [
 ]
 
 export default function FAQsPage() {
-  const [openCategory, setOpenCategory] = useState<string | null>('General')
+  const [openCategory, setOpenCategory] = useState<string | null>("General")
   const [openQuestion, setOpenQuestion] = useState<string | null>(null)
 
   return (
@@ -101,7 +96,7 @@ export default function FAQsPage() {
                   <h2 className="text-xl font-semibold text-gray-900">{category.category}</h2>
                   <ChevronDown
                     className={`w-5 h-5 text-gray-500 transform transition-transform ${
-                      openCategory === category.category ? 'rotate-180' : ''
+                      openCategory === category.category ? "rotate-180" : ""
                     }`}
                   />
                 </div>
@@ -120,7 +115,7 @@ export default function FAQsPage() {
                             <h3 className="text-lg font-medium text-gray-900">{faq.question}</h3>
                             <ChevronDown
                               className={`w-4 h-4 text-gray-500 transform transition-transform ${
-                                openQuestion === faq.id ? 'rotate-180' : ''
+                                openQuestion === faq.id ? "rotate-180" : ""
                               }`}
                             />
                           </div>
