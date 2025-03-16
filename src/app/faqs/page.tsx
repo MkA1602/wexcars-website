@@ -10,7 +10,7 @@ const faqs = [
       {
         id: 'general-1',
         question: 'What is WexCars?',
-        answer: 'WexCars is a premium automotive marketplace that connects buyers and sellers of luxury and exotic vehicles. We provide a secure platform for transactions, vehicle history verification, and expert support throughout the buying and selling process.'
+        answer: "WexCars is a premium automotive marketplace that connects buyers and sellers of luxury and exotic vehicles. We provide a secure platform for transactions, vehicle history verification, and expert support throughout the buying and selling process."
       },
       {
         id: 'general-2',
@@ -25,17 +25,17 @@ const faqs = [
       {
         id: 'buying-1',
         question: 'How do I place a bid?',
-        answer: 'To place a bid, you must first create an account and verify your identity. Once verified, navigate to the listing you're interested in and click the "Place Bid" button. Enter your bid amount and confirm. You'll be notified if you're outbid or if you win the auction.'
+        answer: "To place a bid, you must first create an account and verify your identity. Once verified, navigate to the listing you're interested in and click the 'Place Bid' button. Enter your bid amount and confirm. You'll be notified if you're outbid or if you win the auction."
       },
       {
         id: 'buying-2',
         question: 'What payment methods are accepted?',
-        answer: 'We accept major credit cards, bank transfers, and verified escrow services. All transactions are secured and monitored for your protection.'
+        answer: "We accept major credit cards, bank transfers, and verified escrow services. All transactions are secured and monitored for your protection."
       },
       {
         id: 'buying-3',
-        question: 'Is there a buyer's premium?',
-        answer: 'Yes, there is a 5% buyer's premium on all successful purchases. This fee helps us maintain the platform and provide secure transaction services.'
+        question: "Is there a buyer's premium?",
+        answer: "Yes, there is a 5% buyer's premium on all successful purchases. This fee helps us maintain the platform and provide secure transaction services."
       }
     ]
   },
@@ -45,12 +45,12 @@ const faqs = [
       {
         id: 'selling-1',
         question: 'How do I list my car?',
-        answer: 'Click the "Add Listing" button, fill in your vehicle's details, upload high-quality photos, set your price or reserve for auction, and submit for review. Our team will verify your listing within 24 hours.'
+        answer: "Click the 'Add Listing' button, fill in your vehicle's details, upload high-quality photos, set your price or reserve for auction, and submit for review. Our team will verify your listing within 24 hours."
       },
       {
         id: 'selling-2',
         question: 'What are the seller fees?',
-        answer: 'Listing is free. We charge a 3% seller's fee only when your vehicle sells. Premium listing features are available for an additional fee.'
+        answer: "Listing is free. We charge a 3% seller's fee only when your vehicle sells. Premium listing features are available for an additional fee."
       }
     ]
   },
@@ -60,12 +60,12 @@ const faqs = [
       {
         id: 'security-1',
         question: 'How is my information protected?',
-        answer: 'We use industry-standard encryption and security measures to protect your personal and financial information. Our platform is regularly audited for security compliance.'
+        answer: "We use industry-standard encryption and security measures to protect your personal and financial information. Our platform is regularly audited for security compliance."
       },
       {
         id: 'security-2',
         question: 'What if I forget my password?',
-        answer: 'Click the "Forgot Password" link on the login page. We'll send you a secure link to reset your password to your registered email address.'
+        answer: "Click the 'Forgot Password' link on the login page. We'll send you a secure link to reset your password to your registered email address."
       }
     ]
   }
@@ -82,7 +82,7 @@ export default function FAQsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl font-bold mb-4">Frequently Asked Questions</h1>
           <p className="text-xl max-w-2xl mx-auto">
-            Find answers to common questions about using WexCars. Can't find what you're looking for? 
+            Find answers to common questions about using WexCars. Cannot find what you are looking for? 
             Contact our support team.
           </p>
         </div>
