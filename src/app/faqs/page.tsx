@@ -15,7 +15,7 @@ const faqs = [
       {
         id: 'general-2',
         question: 'How do I create an account?',
-        answer: 'Creating an account is easy! Click the "Sign Up" button in the top right corner, fill in your details, verify your email address, and you're ready to start using WexCars.'
+        answer: "Creating an account is easy! Click the 'Sign Up' button in the top right corner, fill in your details, verify your email address, and you're ready to start using WexCars."
       }
     ]
   },
