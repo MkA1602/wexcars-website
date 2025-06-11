@@ -1,0 +1,260 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Critical CSS - will be inlined by optimizeCss */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Optimize font loading */
+  html {
+    font-display: swap;
+  }
+}
+
+/* Critical above-the-fold styles */
+@layer components {
+  .hero-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Car Hero specific animations */
+  .car-hero-content {
+    animation: heroSlideIn 1s ease-out;
+  }
+
+  .car-hero-image {
+    animation: heroImageFloat 2s ease-in-out infinite alternate;
+  }
+
+  .car-spec-card {
+    animation: specCardSlideUp 0.6s ease-out;
+    animation-fill-mode: both;
+  }
+
+  .car-spec-card:nth-child(1) { animation-delay: 0.1s; }
+  .car-spec-card:nth-child(2) { animation-delay: 0.2s; }
+  .car-spec-card:nth-child(3) { animation-delay: 0.3s; }
+
+  /* VFX Button fallback animations */
+  .vfx-button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vfx-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  .vfx-button:hover::before {
+    left: 100%;
+  }
+
+  /* Glitch effect fallback */
+  .vfx-button:hover {
+    animation: glitchFallback 0.3s ease-in-out;
+  }
+
+  @keyframes glitchFallback {
+    0%, 100% { 
+      transform: translate(0);
+      filter: hue-rotate(0deg);
+    }
+    10% { 
+      transform: translate(-2px, 1px);
+      filter: hue-rotate(90deg);
+    }
+    20% { 
+      transform: translate(2px, -1px);
+      filter: hue-rotate(180deg);
+    }
+    30% { 
+      transform: translate(-1px, 2px);
+      filter: hue-rotate(270deg);
+    }
+    40% { 
+      transform: translate(1px, -2px);
+      filter: hue-rotate(360deg);
+    }
+    50% { 
+      transform: translate(-2px, -1px);
+      filter: hue-rotate(90deg);
+    }
+    60% { 
+      transform: translate(2px, 1px);
+      filter: hue-rotate(180deg);
+    }
+    70% { 
+      transform: translate(-1px, -2px);
+      filter: hue-rotate(270deg);
+    }
+    80% { 
+      transform: translate(1px, 2px);
+      filter: hue-rotate(360deg);
+    }
+    90% { 
+      transform: translate(-2px, 1px);
+      filter: hue-rotate(90deg);
+    }
+  }
+
+  /* Optimize animations for better performance */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes heroSlideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes heroImageFloat {
+    from {
+      transform: translateY(0px);
+    }
+    to {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes specCardSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Glass morphism effect for car hero cards */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+
+  /* Premium gradient overlay for car images */
+  .luxury-overlay {
+    background: linear-gradient(
+      135deg,
+      rgba(178, 34, 34, 0.8) 0%,
+      rgba(139, 0, 0, 0.6) 50%,
+      rgba(102, 0, 0, 0.4) 100%
+    );
+  }
+}
+
+/* Non-critical styles that can be loaded later */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Car hero specific utilities */
+  .hero-text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .luxury-shadow {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
