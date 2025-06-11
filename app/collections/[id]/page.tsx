@@ -9,6 +9,12 @@ interface CarDetailPageProps {
   }
 }
 
+export async function generateStaticParams() {
+  return cars.map((car) => ({
+    id: car.id,
+  }))
+}
+
 export async function generateMetadata({ params }: CarDetailPageProps): Promise<Metadata> {
   const car = cars.find((car) => car.id === params.id)
 

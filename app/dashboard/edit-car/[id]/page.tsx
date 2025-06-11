@@ -1,6 +1,13 @@
 import type { Metadata } from "next"
 import ClientWrapper from "@/components/client-wrapper"
 import { DynamicEditCarForm } from "@/components/dashboard/dynamic-dashboard-components"
+import { cars } from "@/lib/car-data"
+
+export async function generateStaticParams() {
+  return cars.map((car) => ({
+    id: car.id,
+  }))
+}
 
 export const metadata: Metadata = {
   title: "Edit Car | WexCars Dashboard",

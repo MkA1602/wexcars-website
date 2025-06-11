@@ -14,6 +14,7 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    unoptimized: true,
   },
   poweredByHeader: false,
   compress: true,
@@ -28,6 +29,8 @@ const nextConfig = {
     // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  output: 'export',
+  trailingSlash: true,
 }
 
 export default nextConfig
