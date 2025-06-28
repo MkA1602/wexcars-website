@@ -1,5 +1,5 @@
 [build]
-  command = "rm -rf node_modules package-lock.json && npm install && npm run build"
+  command = "npm run build:clean"
   publish = ".next"
   
 [build.environment]
@@ -14,8 +14,6 @@
 
 [context.deploy-preview.environment]
   NODE_ENV = "development"
-
-# Use modern Next.js deployment without the problematic plugin
 
 # Security headers
 [[headers]]
