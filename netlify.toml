@@ -7,7 +7,6 @@
   NPM_FLAGS = "--legacy-peer-deps"
   # Force clean install to avoid platform-specific dependencies
   NPM_CONFIG_CACHE = "/tmp/.npm"
-  NPM_CONFIG_OPTIONAL = "false"
 
 [context.production.environment]
   NODE_ENV = "production"
