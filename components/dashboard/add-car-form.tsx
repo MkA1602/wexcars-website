@@ -12,8 +12,19 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus } from "lucide-react"
+import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus, Check } from "lucide-react"
 import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
+
+// Common car features for selection
+const CAR_FEATURES = [
+  "GPS Navigation", "Bluetooth", "Heated Seats", "Sunroof", "Leather Seats", 
+  "Parking Sensors", "Backup Camera", "Apple CarPlay", "Android Auto", "Cruise Control",
+  "Lane Assist", "Adaptive Cruise Control", "Blind Spot Monitoring", "360° Camera",
+  "Wireless Charging", "Premium Sound System", "Ventilated Seats", "Memory Seats",
+  "Keyless Entry", "Push Button Start", "Heads-Up Display", "Night Vision",
+  "Massage Seats", "Rear Entertainment", "Panoramic Roof", "Air Suspension"
+]
 
 export default function AddCarForm() {
   const [formData, setFormData] = useState({
@@ -22,9 +33,18 @@ export default function AddCarForm() {
     category: "",
     year: new Date().getFullYear(),
     price: "",
-    currency: "USD", // Default to USD
+    priceExclVat: "",
+    vatRate: "5", // Default VAT rate for UAE
+    currency: "AED", // Default to AED
     image: "",
     description: "",
+    features: [] as string[],
+    // Additional car details
+    transmission: "",
+    color: "",
+    availability: "Available",
+    fuel_type: "",
+    seats: "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -37,6 +57,22 @@ export default function AddCarForm() {
 
   const { user } = useAuth()
   const router = useRouter()
+
+  // Calculate prices based on VAT
+  const calculatePrices = (priceExclVat: string, vatRate: string) => {
+    const priceNum = parseFloat(priceExclVat)
+    const vatNum = parseFloat(vatRate)
+    
+    if (isNaN(priceNum) || isNaN(vatNum)) return { priceWithVat: "", vatAmount: "" }
+    
+    const vatAmount = (priceNum * vatNum) / 100
+    const priceWithVat = priceNum + vatAmount
+    
+    return {
+      priceWithVat: priceWithVat.toFixed(2),
+      vatAmount: vatAmount.toFixed(2)
+    }
+  }
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -64,11 +100,18 @@ export default function AddCarForm() {
       newErrors.year = `Year must be between 1900 and ${currentYear + 1}`
     }
 
-    // Validate price
-    if (!formData.price) {
-      newErrors.price = "Price is required"
-    } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
-      newErrors.price = "Price must be a positive number"
+    // Validate price (excluding VAT)
+    if (!formData.priceExclVat) {
+      newErrors.priceExclVat = "Price (excl. VAT) is required"
+    } else if (isNaN(Number(formData.priceExclVat)) || Number(formData.priceExclVat) <= 0) {
+      newErrors.priceExclVat = "Price must be a positive number"
+    }
+
+    // Validate VAT rate
+    if (!formData.vatRate) {
+      newErrors.vatRate = "VAT rate is required"
+    } else if (isNaN(Number(formData.vatRate)) || Number(formData.vatRate) < 0) {
+      newErrors.vatRate = "VAT rate must be a valid percentage"
     }
 
     // Validate image(s)
@@ -91,12 +134,16 @@ export default function AddCarForm() {
       newErrors.description = "Description must be at least 20 characters"
     }
 
-    return newErrors
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -106,64 +153,72 @@ export default function AddCarForm() {
         return newErrors
       })
     }
+
+    // Auto-calculate price with VAT when price excluding VAT or VAT rate changes
+    if (name === 'priceExclVat' || name === 'vatRate') {
+      const priceExclVat = name === 'priceExclVat' ? value : formData.priceExclVat
+      const vatRate = name === 'vatRate' ? value : formData.vatRate
+      
+      const { priceWithVat } = calculatePrices(priceExclVat, vatRate)
+      if (priceWithVat) {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+          price: priceWithVat
+        }))
+      }
+    }
+  }
+
+  const toggleFeature = (feature: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      features: prev.features.includes(feature)
+        ? prev.features.filter(f => f !== feature)
+        : [...prev.features, feature]
+    }))
   }
 
   const handleFilesSelect = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
-    const validFiles: File[] = []
-    const newPreviewUrls: string[] = []
-
-    // Validate each file
-    for (const file of fileArray) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setErrors((prev) => ({ ...prev, image: `${file.name} is not a valid image file` }))
-        continue
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({ ...prev, image: `${file.name} is too large (max 5MB)` }))
-        continue
-      }
-
-      validFiles.push(file)
-    }
-
-    // Check total files limit (max 10 images)
-    const totalFiles = selectedFiles.length + validFiles.length
-    if (totalFiles > 10) {
-      setErrors((prev) => ({ ...prev, image: 'Maximum 10 images allowed' }))
-      return
-    }
-
-    // Create preview URLs for valid files
-    validFiles.forEach(file => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const url = e.target?.result as string
-        setPreviewUrls(prev => [...prev, url])
-      }
-      reader.readAsDataURL(file)
+    const validFiles = fileArray.filter(file => {
+      const isValidType = file.type.startsWith('image/')
+      const isValidSize = file.size <= 10 * 1024 * 1024 // 10MB limit
+      return isValidType && isValidSize
     })
 
-    // Add valid files to selected files
-    setSelectedFiles(prev => [...prev, ...validFiles])
+    if (validFiles.length !== fileArray.length) {
+      setServerError("Some files were skipped. Please ensure all files are images under 10MB")
+    } else {
+      setServerError(null)
+    }
 
-    // Clear any existing errors if files are valid
     if (validFiles.length > 0) {
-      setErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors.image
-        return newErrors
+      setSelectedFiles(prev => [...prev, ...validFiles])
+      
+      // Create preview URLs
+      validFiles.forEach(file => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          setPreviewUrls(prev => [...prev, e.target?.result as string])
+        }
+        reader.readAsDataURL(file)
       })
+
+      // Clear errors if files are selected
+      if (errors.image) {
+        setErrors(prev => {
+          const newErrors = { ...prev }
+          delete newErrors.image
+          return newErrors
+        })
+      }
     }
   }
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && files.length > 0) {
-      handleFilesSelect(files)
+    if (e.target.files && e.target.files.length > 0) {
+      handleFilesSelect(e.target.files)
     }
   }
 
@@ -181,9 +236,8 @@ export default function AddCarForm() {
     e.preventDefault()
     setIsDragging(false)
     
-    const files = e.dataTransfer.files
-    if (files && files.length > 0) {
-      handleFilesSelect(files)
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFilesSelect(e.dataTransfer.files)
     }
   }
 
@@ -196,20 +250,23 @@ export default function AddCarForm() {
     setSelectedFiles([])
     setPreviewUrls([])
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""
+      fileInputRef.current.value = ''
     }
   }
 
   const uploadImagesToCloudinary = async (files: File[]): Promise<string[]> => {
     // In a real app, you'd upload to a service like Cloudinary, AWS S3, etc.
-    // For demo purposes, we'll convert to base64 and create mock URLs
-    const uploadPromises = files.map((file, index) => {
-      return new Promise<string>((resolve) => {
+    // For demo purposes, we'll create data URLs and simulate upload
+    const uploadPromises = files.map((file) => {
+      return new Promise<string>((resolve, reject) => {
         const reader = new FileReader()
         reader.onload = () => {
-          // In demo mode, we'll use the preview URL as the image URL
-          resolve(previewUrls[index] || '')
+          // Simulate upload delay
+          setTimeout(() => {
+            resolve(reader.result as string)
+          }, 500)
         }
+        reader.onerror = reject
         reader.readAsDataURL(file)
       })
     })
@@ -219,65 +276,102 @@ export default function AddCarForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!validateForm()) {
+      console.log('Form validation failed:', errors)
+      return
+    }
 
-    // Reset error
-    setServerError(null)
-
-    // Validate form
-    const formErrors = validateForm()
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors)
+    if (!user?.id) {
+      console.error('No user ID found')
+      setServerError("Please sign in to add a car")
       return
     }
 
     setIsSubmitting(true)
+    setServerError("")
 
     try {
-      let imageUrls: string[] = []
+      console.log('Starting car submission process...')
+      console.log('User ID:', user.id)
+      console.log('Form data:', formData)
 
-      // If using file upload method, upload the files
-      if (uploadMethod === 'file' && selectedFiles.length > 0) {
-        try {
-          imageUrls = await uploadImagesToCloudinary(selectedFiles)
-        } catch (uploadError) {
-          throw new Error('Failed to upload images. Please try again.')
-        }
-      } else {
-        // Use single URL for URL method
+      // Upload images first if any files are selected
+      let imageUrls: string[] = []
+      if (selectedFiles.length > 0) {
+        console.log('Uploading images...', selectedFiles.length, 'files')
+        imageUrls = await uploadImagesToCloudinary(selectedFiles)
+        console.log('Images uploaded successfully:', imageUrls)
+      } else if (formData.image) {
+        console.log('Using single image URL:', formData.image)
         imageUrls = [formData.image]
       }
 
-      // Add car to database with primary image and additional images
+      // Calculate final prices
+      const { priceWithVat, vatAmount } = calculatePrices(formData.priceExclVat, formData.vatRate)
+      console.log('Calculated prices:', { priceWithVat, vatAmount })
+
+      // Add car to database with all the new fields
       const carData = {
         name: formData.name,
         brand: formData.brand,
         category: formData.category,
         year: Number(formData.year),
-        price: Number(formData.price),
+        price: Number(priceWithVat),
+        price_excl_vat: Number(formData.priceExclVat),
+        vat_rate: Number(formData.vatRate),
+        vat_amount: Number(vatAmount),
         currency: formData.currency,
         image: imageUrls[0] || formData.image, // Primary image
         images: imageUrls.length > 1 ? JSON.stringify(imageUrls) : null, // Additional images as JSON
         description: formData.description,
+        features: formData.features.length > 0 ? JSON.stringify(formData.features) : null,
         user_id: user?.id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        transmission: formData.transmission,
+        color: formData.color,
+        // TODO: Add these fields after updating database schema
+        // availability: formData.availability,
+        // fuel_type: formData.fuel_type,
+        // seats: formData.seats,
       }
+
+      console.log('Inserting car data:', carData)
 
       const { error } = await supabaseClient.from("cars").insert(carData)
 
       if (error) {
+        console.error('Supabase insert error:', error)
         throw error
       }
 
-      // Redirect to dashboard
-      router.push("/dashboard")
-      router.refresh()
+      console.log('Car added successfully!')
+
+      // Success message
+      setServerError("Car added successfully! Redirecting to dashboard...")
+      
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        router.push("/dashboard")
+        router.refresh()
+      }, 1500)
     } catch (error: any) {
+      console.error('Car submission error:', error)
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      })
       setServerError(error.message || "Failed to add car")
     } finally {
       setIsSubmitting(false)
     }
   }
+
+  // Calculate display values
+  const { priceWithVat, vatAmount } = calculatePrices(formData.priceExclVat, formData.vatRate)
 
   return (
     <Card>
@@ -293,13 +387,14 @@ export default function AddCarForm() {
       </CardHeader>
       <CardContent>
         {serverError && (
-          <Alert variant="destructive" className="mb-6">
+          <Alert variant={serverError.includes('successfully') ? "default" : "destructive"} className="mb-6">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{serverError}</AlertDescription>
           </Alert>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="name">Car Name</Label>
@@ -328,7 +423,8 @@ export default function AddCarForm() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Category and Year */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <select
@@ -348,6 +444,7 @@ export default function AddCarForm() {
                 <option value="Sports Car">Sports Car</option>
                 <option value="Luxury">Luxury</option>
                 <option value="Supercar">Supercar</option>
+                <option value="Hypercar">Hypercar</option>
               </select>
               {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
             </div>
@@ -365,40 +462,123 @@ export default function AddCarForm() {
               />
               {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
-              <div className="flex gap-2">
-                <select
-                  id="currency"
-                  name="currency"
-                  value={formData.currency}
-                  onChange={handleChange}
-                  className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="USD">$ USD</option>
-                  <option value="EUR">€ EUR</option>
-                  <option value="GBP">£ GBP</option>
-                  <option value="JPY">¥ JPY</option>
-                  <option value="AED">د.إ AED</option>
-                </select>
-                <Input
-                  id="price"
-                  name="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={handleChange}
-                  placeholder="e.g. 100000"
-                  className={`flex-1 ${errors.price ? "border-red-500" : ""}`}
-                />
+          {/* Pricing Section */}
+          <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+            <h3 className="font-semibold text-lg">Pricing Information</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="priceExclVat">Price (excl. VAT)</Label>
+                <div className="flex gap-2">
+                  <select
+                    id="currency"
+                    name="currency"
+                    value={formData.currency}
+                    onChange={handleChange}
+                    className="w-20 px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  >
+                    <option value="AED">AED</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                  </select>
+                  <Input
+                    id="priceExclVat"
+                    name="priceExclVat"
+                    type="number"
+                    step="0.01"
+                    value={formData.priceExclVat}
+                    onChange={handleChange}
+                    placeholder="e.g. 100000"
+                    className={`flex-1 ${errors.priceExclVat ? "border-red-500" : ""}`}
+                  />
+                </div>
+                {errors.priceExclVat && <p className="text-red-500 text-sm">{errors.priceExclVat}</p>}
               </div>
-              {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
+
+              <div className="space-y-2">
+                <Label htmlFor="vatRate">VAT Rate (%)</Label>
+                <Input
+                  id="vatRate"
+                  name="vatRate"
+                  type="number"
+                  step="0.01"
+                  value={formData.vatRate}
+                  onChange={handleChange}
+                  placeholder="e.g. 5"
+                  className={errors.vatRate ? "border-red-500" : ""}
+                />
+                {errors.vatRate && <p className="text-red-500 text-sm">{errors.vatRate}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Price Summary</Label>
+                <div className="bg-white p-3 border rounded-md space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span>Price (excl. VAT):</span>
+                    <span>{formData.priceExclVat ? `${formData.currency} ${formData.priceExclVat}` : '-'}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>VAT ({formData.vatRate}%):</span>
+                    <span>{vatAmount ? `${formData.currency} ${vatAmount}` : '-'}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold border-t pt-1">
+                    <span>Total (incl. VAT):</span>
+                    <span>{priceWithVat ? `${formData.currency} ${priceWithVat}` : '-'}</span>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Car Features Section */}
+          <div className="space-y-4">
+            <Label>Car Features</Label>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {CAR_FEATURES.map((feature) => (
+                <div key={feature} className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleFeature(feature)}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
+                      formData.features.includes(feature)
+                        ? 'bg-primary-light text-white border-primary-light'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-primary-light'
+                    }`}
+                  >
+                    {formData.features.includes(feature) && <Check size={14} />}
+                    <span>{feature}</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            {formData.features.length > 0 && (
+              <div className="mt-3">
+                <p className="text-sm text-gray-600 mb-2">Selected Features ({formData.features.length}):</p>
+                <div className="flex flex-wrap gap-2">
+                  {formData.features.map((feature) => (
+                    <Badge key={feature} variant="default" className="bg-primary-light">
+                      {feature}
+                      <button
+                        type="button"
+                        onClick={() => toggleFeature(feature)}
+                        className="ml-1 hover:bg-primary-dark rounded-full p-0.5"
+                      >
+                        <X size={12} />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Image Upload Section */}
           <div className="space-y-4">
-            <Label>Car Image</Label>
+            <Label>Car Images</Label>
             
             {/* Upload Method Toggle */}
             <div className="flex gap-2 mb-4">
@@ -439,6 +619,15 @@ export default function AddCarForm() {
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                 >
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="h-8 w-8 text-gray-400" />
+                    <div className="text-sm text-gray-600">
+                      <span className="font-medium">Click to upload</span> or drag and drop
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      PNG, JPG, GIF up to 10MB
+                    </div>
+                  </div>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -447,108 +636,86 @@ export default function AddCarForm() {
                     onChange={handleFileInputChange}
                     className="hidden"
                   />
-                  
-                  {previewUrls.length > 0 ? (
-                    <div className="space-y-4">
-                      {/* Image Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {previewUrls.map((url, index) => (
-                          <div key={index} className="relative group">
-                            <img
-                              src={url}
-                              alt={`Preview ${index + 1}`}
-                              className="w-full h-32 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-shadow"
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              className="absolute -top-2 -right-2 rounded-full p-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() => removeFile(index)}
-                            >
-                              <X size={12} />
-                            </Button>
-                            {index === 0 && (
-                              <div className="absolute bottom-1 left-1 bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                                Primary
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      
-                      {/* Controls */}
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-green-600 font-medium">
-                          ✓ {selectedFiles.length} image{selectedFiles.length !== 1 ? 's' : ''} selected
-                        </p>
-                        <div className="flex gap-2">
-                          <Button
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-4"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Camera className="h-4 w-4 mr-2" />
+                    Choose Files
+                  </Button>
+                </div>
+
+                {/* File Preview */}
+                {previewUrls.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Selected Images ({previewUrls.length})</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={clearAllFiles}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Clear All
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {previewUrls.map((url, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={url}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border"
+                          />
+                          <button
                             type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-1"
-                          >
-                            <Plus size={14} />
-                            Add More
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={clearAllFiles}
-                            className="flex items-center gap-1 text-red-600 hover:text-red-700"
+                            onClick={() => removeFile(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <X size={14} />
-                            Clear All
-                          </Button>
+                          </button>
+                          {index === 0 && (
+                            <div className="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                              Primary
+                            </div>
+                          )}
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <Camera size={48} className="mx-auto text-gray-400" />
-                      <div>
-                        <p className="text-lg font-medium">
-                          Drag and drop images here, or{' '}
-                          <Button
-                            type="button"
-                            variant="link"
-                            className="p-0 h-auto text-primary underline"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            browse files
-                          </Button>
-                        </p>
-                        <p className="text-sm text-gray-500 mt-2">
-                          Supports: JPG, PNG, GIF, WebP (max 5MB each, 10 images max)
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-2">
                 <Input
                   id="image"
                   name="image"
+                  type="url"
                   value={formData.image}
                   onChange={handleChange}
                   placeholder="https://example.com/car-image.jpg"
                   className={errors.image ? "border-red-500" : ""}
                 />
-                {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
-                <p className="text-xs text-gray-500">
-                  Enter a URL for the car image. You can use image hosting services like Imgur or Cloudinary.
-                </p>
+                {formData.image && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.image}
+                      alt="Preview"
+                      className="w-32 h-24 object-cover rounded-lg border"
+                      onError={() => setErrors(prev => ({ ...prev, image: "Invalid image URL" }))}
+                    />
+                  </div>
+                )}
               </div>
             )}
+            {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -563,13 +730,95 @@ export default function AddCarForm() {
             {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
           </div>
 
+          {/* Additional Details */}
+          <div className="space-y-4">
+            <Label>Additional Details</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="transmission">Transmission</Label>
+                <Input
+                  id="transmission"
+                  name="transmission"
+                  value={formData.transmission}
+                  onChange={handleChange}
+                  placeholder="e.g. Automatic"
+                  className={errors.transmission ? "border-red-500" : ""}
+                />
+                {errors.transmission && <p className="text-red-500 text-sm">{errors.transmission}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="color">Color</Label>
+                <Input
+                  id="color"
+                  name="color"
+                  value={formData.color}
+                  onChange={handleChange}
+                  placeholder="e.g. Black"
+                  className={errors.color ? "border-red-500" : ""}
+                />
+                {errors.color && <p className="text-red-500 text-sm">{errors.color}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="availability">Availability</Label>
+                <select
+                  id="availability"
+                  name="availability"
+                  value={formData.availability}
+                  onChange={handleChange}
+                  className={`w-full px-3 py-2 border rounded-md ${
+                    errors.availability ? "border-red-500" : "border-gray-300"
+                  }`}
+                >
+                  <option value="Available">Available</option>
+                  <option value="Sold">Sold</option>
+                  <option value="Reserved">Reserved</option>
+                </select>
+                {errors.availability && <p className="text-red-500 text-sm">{errors.availability}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="fuel_type">Fuel Type</Label>
+                <Input
+                  id="fuel_type"
+                  name="fuel_type"
+                  value={formData.fuel_type}
+                  onChange={handleChange}
+                  placeholder="e.g. Gasoline"
+                  className={errors.fuel_type ? "border-red-500" : ""}
+                />
+                {errors.fuel_type && <p className="text-red-500 text-sm">{errors.fuel_type}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="seats">Seats</Label>
+                <Input
+                  id="seats"
+                  name="seats"
+                  type="number"
+                  value={formData.seats}
+                  onChange={handleChange}
+                  placeholder="e.g. 4"
+                  className={errors.seats ? "border-red-500" : ""}
+                />
+                {errors.seats && <p className="text-red-500 text-sm">{errors.seats}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Buttons */}
           <div className="flex justify-end gap-4">
             <Link href="/dashboard">
               <Button variant="outline" type="button">
                 Cancel
               </Button>
             </Link>
-            <Button type="submit" className="bg-primary-light hover:bg-primary-dark text-white" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              className="bg-primary-light hover:bg-primary-dark text-white" 
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Adding Car..." : "Add Car"}
             </Button>
           </div>

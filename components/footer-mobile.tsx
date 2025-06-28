@@ -35,7 +35,6 @@ const FooterMobile = () => {
         { href: "/collections", label: "Car Collections" },
         { href: "/collections?category=luxury", label: "Luxury Cars" },
         { href: "/collections?category=sports", label: "Sports Cars" },
-        { href: "/collections?category=classic", label: "Classic Cars" },
       ],
     },
     {
@@ -44,7 +43,6 @@ const FooterMobile = () => {
         { href: "/help", label: "Help Center" },
         { href: "/faq", label: "FAQ" },
         { href: "/shipping", label: "Shipping Info" },
-        { href: "/returns", label: "Returns" },
       ],
     },
   ]

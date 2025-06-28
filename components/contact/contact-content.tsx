@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Check, MapPin, Phone, Mail, Clock } from "lucide-react"
+import GoogleMap from "@/components/google-map"
 
 export default function ContactContent() {
   const [formState, setFormState] = useState({
@@ -251,10 +252,27 @@ export default function ContactContent() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-12 text-center">Our Location</h2>
-          <div className="rounded-xl overflow-hidden shadow-md h-96 bg-gray-200">
-            {/* In a real implementation, this would be an actual map */}
-            <div className="w-full h-full flex items-center justify-center bg-gray-200">
-              <p className="text-gray-500">Interactive Map Would Be Displayed Here</p>
+          <div className="max-w-6xl mx-auto">
+            <GoogleMap height="500px" className="shadow-lg" />
+            <div className="mt-8 text-center">
+              <div className="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+                <div className="flex items-center justify-center mb-4">
+                  <MapPin className="w-6 h-6 text-primary-light mr-2" />
+                  <h3 className="text-lg font-semibold">Visit Our Showroom</h3>
+                </div>
+                <p className="text-gray-600 mb-2">Docentgatan 2E</p>
+                <p className="text-gray-600 mb-2">21552 Malmö, Sweden</p>
+                <div className="flex items-center justify-center space-x-4 mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Phone className="w-4 h-4 mr-1" />
+                    <span>+46 737 200588</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Mail className="w-4 h-4 mr-1" />
+                    <span>info@wexcars.com</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

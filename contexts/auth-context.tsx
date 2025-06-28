@@ -86,6 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           router.refresh()
         }
         if (event === "SIGNED_OUT") {
+          // Clear user context from Sentry when user logs out
+          clearUserContext()
           // Only redirect to login page if user explicitly signs out
           router.push("/auth/login")
           router.refresh()
@@ -103,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       // Sign up the user
-      const { error } = await supabaseClient.auth.signUp({
+      const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
         options: {
@@ -118,17 +120,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error, success: false }
       }
 
-      // Create user profile in the users table
-      const { error: profileError } = await supabaseClient.from("users").insert({
-        id: (await supabaseClient.auth.getUser()).data.user?.id,
-        email,
-        full_name: fullName,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      // If user was created successfully
+      if (data.user) {
+        // Determine the role based on email
+        const role = email === 'mohammedlk27@gmail.com' ? 'admin' : 'user'
+        
+        // Create user profile in the users table
+        const { error: profileError } = await supabaseClient.from("users").insert({
+          id: data.user.id,
+          email,
+          full_name: fullName,
+          role: role,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
 
-      if (profileError) {
-        return { error: profileError, success: false }
+        if (profileError) {
+          console.error('Error creating user profile:', profileError)
+          return { error: profileError, success: false }
+        }
+
+        // If this is the admin user, they don't need email verification
+        if (role === 'admin') {
+          return { 
+            error: null, 
+            success: true, 
+            message: 'Admin account created successfully. You can now log in.' 
+          }
+        }
       }
 
       return { error: null, success: true }
@@ -159,6 +178,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: data.user.email,
           username: data.user.user_metadata?.username || undefined,
         })
+
+        // Check if user is admin and redirect accordingly
+        try {
+          const { data: userProfile } = await supabaseClient
+            .from('users')
+            .select('role')
+            .eq('id', data.user.id)
+            .single()
+
+          if (userProfile?.role === 'admin' || userProfile?.role === 'super_admin') {
+            // Admin users go to admin dashboard
+            setTimeout(() => router.push('/admin/dashboard'), 100)
+          } else {
+            // Regular users go to regular dashboard
+            setTimeout(() => router.push('/dashboard'), 100)
+          }
+        } catch (err) {
+          console.error('Error checking user role:', err)
+          // Default to regular dashboard if there's an error
+          setTimeout(() => router.push('/dashboard'), 100)
+        }
       }
 
       return { error: null, success: true }
@@ -172,10 +212,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     setIsLoading(true)
     try {
-      await supabaseClient.auth.signOut()
-
-      // Clear user context from Sentry when user logs out
+      // Clear user context from Sentry
       clearUserContext()
+      
+      const { error } = await supabaseClient.auth.signOut()
+      if (error) {
+        console.error("Error signing out:", error)
+      }
     } catch (error) {
       console.error("Error signing out:", error)
     } finally {
@@ -184,8 +227,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const resetPassword = async (email: string) => {
-    setIsLoading(true)
-
     try {
       const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
@@ -198,8 +239,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: null, success: true }
     } catch (error) {
       return { error, success: false }
-    } finally {
-      setIsLoading(false)
     }
   }
 

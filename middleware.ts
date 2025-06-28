@@ -25,6 +25,7 @@ export async function middleware(req: NextRequest) {
   const isAuthenticated = !!session
   const isAuthRoute = req.nextUrl.pathname.startsWith("/auth")
   const isApiRoute = req.nextUrl.pathname.startsWith("/api")
+  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin")
 
   // Define public routes that don't require authentication
   const publicRoutes = ["/", "/about", "/contact", "/pricing", "/collections", "/terms", "/privacy", "/cookies"]
@@ -33,6 +34,27 @@ export async function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.some(
     (route) => req.nextUrl.pathname === route || req.nextUrl.pathname.startsWith(`${route}/`),
   )
+
+  // Handle admin routes - require authentication and admin role
+  if (isAdminRoute && isAuthenticated) {
+    try {
+      // Get user profile to check role
+      const { data: userProfile, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', session.user.id)
+        .single()
+
+      if (error || !userProfile || (userProfile.role !== 'admin' && userProfile.role !== 'super_admin')) {
+        // User is not admin, redirect to dashboard
+        return NextResponse.redirect(new URL("/dashboard", req.url))
+      }
+    } catch (error) {
+      console.error('Error checking admin role:', error)
+      // If there's an error checking role, redirect to dashboard for safety
+      return NextResponse.redirect(new URL("/dashboard", req.url))
+    }
+  }
 
   // Redirect unauthenticated users to login page ONLY if they try to access protected routes
   if (!isAuthenticated && !isAuthRoute && !isApiRoute && !isPublicRoute) {
@@ -56,8 +78,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public (public files)
      */
-    "/((?!_next/static|_next/image|favicon.ico|public).*)",
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }

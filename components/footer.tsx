@@ -118,10 +118,10 @@ const Footer = () => {
 
   return (
     <footer className="relative bg-gradient-to-br from-black-lighter via-black-light to-black text-white overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+      {/* Background Pattern removed */}
+      {/* <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0 bg-[url('/geometric-pattern.png')] bg-repeat opacity-20"></div>
-      </div>
+      </div> */}
 
       {/* Main Footer Content */}
       <div className="relative z-10">
@@ -130,7 +130,7 @@ const Footer = () => {
           <div className="container mx-auto px-4 py-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               {/* Brand Section */}
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <div className="flex items-center space-x-3">
                   <div className="relative w-48 h-48">
                     <Image 
@@ -211,7 +211,6 @@ const Footer = () => {
                   { href: "/collections", label: "Car Collections" },
                   { href: "/collections?category=luxury", label: "Luxury Cars" },
                   { href: "/collections?category=sports", label: "Sports Cars" },
-                  { href: "/collections?category=classic", label: "Classic Cars" },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
@@ -233,7 +232,6 @@ const Footer = () => {
                   { href: "/help", label: "Help Center" },
                   { href: "/faq", label: "FAQ" },
                   { href: "/shipping", label: "Shipping Info" },
-                  { href: "/returns", label: "Returns" },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link

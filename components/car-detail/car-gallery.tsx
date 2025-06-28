@@ -13,22 +13,29 @@ export default function CarGallery({ car }: CarGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [showLightbox, setShowLightbox] = useState(false)
 
-  // For a real implementation, we would have multiple images per car
-  // Here we're simulating it with the main image and some placeholders
-  const images = [
-    "/white-sports-car-front.jpeg", // Use the provided image as the main image
-    "/cars/porsche-911.png",
-    "/cars/mercedes-s-class.png",
-    "/luxury-car-interior.png",
-    "/luxury-car-rear-view.png",
-  ]
+  // Parse additional images from JSON string if available
+  const parseImages = (imagesString: string | null | undefined): string[] => {
+    if (!imagesString) return []
+    try {
+      return JSON.parse(imagesString)
+    } catch {
+      return []
+    }
+  }
+
+  // Build images array from car data
+  const additionalImages = parseImages(car.images)
+  const images = car.image ? [car.image, ...additionalImages] : additionalImages
+  
+  // Fallback to placeholder if no images
+  const displayImages = images.length > 0 ? images : ["/placeholder.svg?height=400&width=600&query=luxury+car"]
 
   const nextImage = () => {
-    setActiveIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+    setActiveIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1))
   }
 
   const prevImage = () => {
-    setActiveIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+    setActiveIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1))
   }
 
   const openLightbox = () => {
@@ -46,7 +53,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
           {/* Main image */}
           <div className="relative h-[300px] md:h-[500px] bg-primary-light">
             <img
-              src={images[activeIndex] || "/placeholder.svg"}
+              src={displayImages[activeIndex] || "/placeholder.svg"}
               alt={`${car.brand} ${car.name}`}
               className="w-full h-full object-contain"
             />
@@ -81,7 +88,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
 
         {/* Thumbnails */}
         <div className="flex p-2 overflow-x-auto bg-white">
-          {images.map((image, index) => (
+          {displayImages.map((image, index) => (
             <div
               key={index}
               className={`relative flex-shrink-0 w-24 h-16 mx-1 cursor-pointer ${
@@ -100,7 +107,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center" onClick={closeLightbox}>
           <div className="relative max-w-4xl max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
             <img
-              src={images[activeIndex] || "/placeholder.svg"}
+              src={displayImages[activeIndex] || "/placeholder.svg"}
               alt={`${car.brand} ${car.name}`}
               className="max-w-full max-h-[90vh] object-contain"
             />

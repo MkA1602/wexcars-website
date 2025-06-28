@@ -3,11 +3,13 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/contexts/auth-context"
-import Header from "@/components/header"
+import AuthHeader from "@/components/auth-header"
 import ErrorBoundary from "@/components/error-boundary"
 import { Suspense } from "react"
 import { PerformanceMonitor } from "@/components/performance-monitor"
 import ResponsiveFooter from "@/components/responsive-footer"
+import { Toaster } from "@/components/ui/toaster"
+import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -24,17 +26,44 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Clean up any duplicate Google Maps scripts */}
+        <Script
+          id="cleanup-google-maps"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // Remove duplicate Google Maps scripts
+                const scripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
+                if (scripts.length > 1) {
+                  console.log('Removing duplicate Google Maps scripts:', scripts.length);
+                  for (let i = 1; i < scripts.length; i++) {
+                    scripts[i].remove();
+                  }
+                }
+                
+                // Reset global loading state
+                if (window.googleMapsLoading) {
+                  window.googleMapsLoading = false;
+                }
+              })();
+            `
+          }}
+        />
+      </head>
       <body className={inter.className}>
         <AuthProvider>
           <ErrorBoundary>
             <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-100">
               <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin"></div>
             </div>}>
-              <Header />
+              <AuthHeader />
               <main className="min-h-screen">{children}</main>
               <ResponsiveFooter />
             </Suspense>
           </ErrorBoundary>
+          <Toaster />
         </AuthProvider>
         <PerformanceMonitor />
       </body>

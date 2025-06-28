@@ -5,14 +5,27 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/contexts/auth-context"
+import { useAuthRole } from "@/hooks/use-auth-role"
 import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
+import { Menu, X, User, LogOut, Settings, Shield } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 
-export default function Header() {
+export default function AuthHeader() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [logoError, setLogoError] = useState(false)
   const router = useRouter()
+  const { user, signOut } = useAuth()
+  const { profile, isAdmin, isLoading } = useAuthRole()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,6 +37,19 @@ export default function Header() {
   const handleLogoError = () => {
     console.error("Logo failed to load, trying fallback")
     setLogoError(true)
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.push("/")
+  }
+
+  const handleDashboard = () => {
+    if (isAdmin) {
+      router.push("/admin/dashboard")
+    } else {
+      router.push("/dashboard")
+    }
   }
 
   return (
@@ -104,14 +130,64 @@ export default function Header() {
             Search
           </Button>
         </form>
-        <Link href="/sign-in">
-          <Button variant="outline" className="border-primary-light text-primary-light hover:bg-primary-light/10">
-            Sign In
-          </Button>
-        </Link>
-        <Link href="/sign-up">
-          <Button className="bg-primary-light hover:bg-primary-dark text-white">Sign Up</Button>
-        </Link>
+
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2 border-primary-light text-primary-light hover:bg-primary-light/10">
+                <User size={16} />
+                <span className="hidden lg:inline">{profile?.full_name || user.email}</span>
+                {isAdmin && (
+                  <Badge variant="default" className="ml-1 bg-primary-light text-white">
+                    <Shield size={10} className="mr-1" />
+                    Admin
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium">{profile?.full_name || 'User'}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                  {isAdmin && (
+                    <Badge variant="outline" className="self-start">
+                      <Shield size={10} className="mr-1" />
+                      Administrator
+                    </Badge>
+                  )}
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleDashboard}>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>{isAdmin ? 'Admin Dashboard' : 'Dashboard'}</span>
+              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>User Dashboard</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Sign Out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <>
+            <Link href="/auth/login">
+              <Button variant="outline" className="border-primary-light text-primary-light hover:bg-primary-light/10">
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/auth/register">
+              <Button className="bg-primary-light hover:bg-primary-dark text-white">Sign Up</Button>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Mobile menu button */}
@@ -192,17 +268,55 @@ export default function Header() {
           </nav>
 
           <div className="px-6 pb-8 flex flex-col space-y-4">
-            <Link href="/sign-in" onClick={() => setIsMobileMenuOpen(false)}>
-              <Button variant="outline" className="w-full border-primary-light text-primary-light hover:bg-primary-light/10">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/sign-up" onClick={() => setIsMobileMenuOpen(false)}>
-              <Button className="w-full bg-primary-light hover:bg-primary-dark text-white">Sign Up</Button>
-            </Link>
+            {user ? (
+              <>
+                <div className="text-center mb-4">
+                  <p className="font-medium">{profile?.full_name || 'User'}</p>
+                  <p className="text-sm text-gray-600">{user.email}</p>
+                  {isAdmin && (
+                    <Badge variant="outline" className="mt-2">
+                      <Shield size={10} className="mr-1" />
+                      Administrator
+                    </Badge>
+                  )}
+                </div>
+                <Button 
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    handleDashboard()
+                  }}
+                  className="w-full bg-primary-light hover:bg-primary-dark text-white"
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  {isAdmin ? 'Admin Dashboard' : 'Dashboard'}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsMobileMenuOpen(false)
+                    handleSignOut()
+                  }}
+                  className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full border-primary-light text-primary-light hover:bg-primary-light/10">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/auth/register" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button className="w-full bg-primary-light hover:bg-primary-dark text-white">Sign Up</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
     </header>
   )
-}
+} 

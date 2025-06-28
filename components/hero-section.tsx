@@ -10,6 +10,7 @@ import Image from "next/image"
 export default function HeroSection() {
   const [ripples, setRipples] = useState<{ x: number; y: number; id: number }[]>([])
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const router = useRouter()
@@ -23,6 +24,12 @@ export default function HeroSection() {
     
     return () => clearTimeout(timer);
   }, []);
+
+  const handleImageError = () => {
+    console.error("Hero image failed to load")
+    setImageError(true)
+    setImageLoaded(true) // Set as loaded to remove loading state
+  }
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!buttonRef.current) return
@@ -64,16 +71,27 @@ export default function HeroSection() {
           imageLoaded ? 'opacity-100' : 'opacity-0'
         }`}
       >
-        <Image
-          src="/white-sports-car-hero.jpeg"
-          alt="Luxury Sports Car"
-          fill
-          priority
-          className="object-cover object-center"
-          onLoad={() => {
-            setImageLoaded(true);
-          }}
-        />
+        {!imageError ? (
+          <Image
+            src="/white-sports-car-hero.jpeg"
+            alt="Luxury Sports Car"
+            fill
+            priority
+            className="object-cover object-center"
+            onLoad={() => {
+              setImageLoaded(true);
+            }}
+            onError={handleImageError}
+            style={{ objectFit: 'cover' }}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-400 flex items-center justify-center">
+            <div className="text-gray-600 text-center">
+              <p className="text-lg font-medium">Hero Image</p>
+              <p className="text-sm">Loading...</p>
+            </div>
+          </div>
+        )}
       </div>
       <div className="container mx-auto px-4 md:px-8 relative z-10">
         <div className="max-w-2xl">

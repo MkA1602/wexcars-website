@@ -1,41 +1,124 @@
-import type { Metadata } from "next"
+"use client"
+
+import { useEffect, useState } from "react"
 import { notFound } from "next/navigation"
+import { supabaseClient } from "@/lib/supabase/client"
 import CarDetailPage from "@/components/car-detail/car-detail-page"
-import { cars } from "@/lib/car-data"
+import { Loader2 } from "lucide-react"
+import type { Car } from "@/lib/types"
 
-interface CarDetailPageProps {
-  params: {
-    id: string
-  }
+interface CarDetailProps {
+  params: { id: string }
 }
 
-export async function generateStaticParams() {
-  return cars.map((car) => ({
-    id: car.id,
-  }))
-}
+export default function CarDetail({ params }: CarDetailProps) {
+  const [car, setCar] = useState<Car | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-export async function generateMetadata({ params }: CarDetailPageProps): Promise<Metadata> {
-  const car = cars.find((car) => car.id === params.id)
+  useEffect(() => {
+    const fetchCar = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
 
-  if (!car) {
-    return {
-      title: "Car Not Found | WexCars",
-      description: "The requested vehicle could not be found.",
+        const { data: carData, error: carError } = await supabaseClient
+          .from('cars')
+          .select('*')
+          .eq('id', params.id)
+          .single()
+
+        if (carError) {
+          if (carError.code === 'PGRST116') {
+            // No rows returned
+            notFound()
+            return
+          }
+          throw carError
+        }
+
+        if (!carData) {
+          notFound()
+          return
+        }
+
+        // Transform database data to match Car interface
+        const transformedCar: Car = {
+          id: carData.id,
+          name: carData.name,
+          brand: carData.brand,
+          category: carData.category,
+          year: carData.year,
+          price: carData.price,
+          price_excl_vat: carData.price_excl_vat,
+          vat_rate: carData.vat_rate,
+          vat_amount: carData.vat_amount,
+          currency: carData.currency || 'AED',
+          priceWithVat: carData.price, // price already includes VAT
+          image: carData.image,
+          images: carData.images,
+          rating: 4.5, // Default rating since not in DB
+          transmission: carData.transmission || 'Automatic',
+          color: carData.color || 'Black',
+          featured: false, // Default featured status
+          description: carData.description,
+          features: carData.features,
+          specifications: carData.specifications || {
+            engine: 'Not specified',
+            power: 'Not specified',
+            acceleration: 'Not specified',
+            topSpeed: 'Not specified',
+            transmission: carData.transmission || 'Automatic',
+            drivetrain: 'Not specified',
+            fuelEconomy: 'Not specified',
+            seating: 'Not specified'
+          },
+          user_id: carData.user_id,
+          created_at: carData.created_at,
+          updated_at: carData.updated_at
+        }
+
+        setCar(transformedCar)
+      } catch (err: any) {
+        console.error('Error fetching car:', err)
+        setError('Failed to load car details')
+      } finally {
+        setIsLoading(false)
+      }
     }
+
+    if (params.id) {
+      fetchCar()
+    }
+  }, [params.id])
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600">Loading car details...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  return {
-    title: `${car.brand} ${car.name} | WexCars`,
-    description: `Explore the ${car.year} ${car.brand} ${car.name}. View specifications, gallery, and inquire about this luxury vehicle.`,
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-12">
+          <h3 className="text-xl font-medium text-red-600 mb-2">Error Loading Car</h3>
+          <p className="text-gray-500">{error}</p>
+        </div>
+      </div>
+    )
   }
-}
-
-export default function CarDetail({ params }: CarDetailPageProps) {
-  const car = cars.find((car) => car.id === params.id)
 
   if (!car) {
     notFound()
+    return null
   }
 
   return <CarDetailPage car={car} />

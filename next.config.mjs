@@ -29,8 +29,7 @@ const nextConfig = {
     // Remove console.log in production
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  output: 'export',
-  trailingSlash: true,
+  // Configured for Netlify hosting with server-side features
 }
 
 export default nextConfig

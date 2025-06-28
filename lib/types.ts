@@ -13,7 +13,10 @@ export interface Car {
   category: string
   year: number
   price: number
-  currency?: string // Currency code (USD, EUR, etc.)
+  price_excl_vat?: number // Price excluding VAT
+  vat_rate?: number // VAT rate percentage (e.g., 5.00 for 5%)
+  vat_amount?: number // Calculated VAT amount
+  currency?: string // Currency code (USD, EUR, AED, etc.)
   priceWithVat: number
   discountPrice?: number
   discountPriceWithVat?: number
@@ -24,6 +27,7 @@ export interface Car {
   color: string
   featured: boolean
   description: string
+  features?: string // JSON string of car features array
   specifications: {
     engine: string
     power: string
@@ -34,6 +38,10 @@ export interface Car {
     fuelEconomy: string
     seating: string
   }
+  // Database fields for Supabase integration
+  user_id?: string
+  created_at?: string
+  updated_at?: string
 }
 
 export interface FilterOptions {
