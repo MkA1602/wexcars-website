@@ -7,6 +7,9 @@ import { ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
 export default function HeroSection() {
   const [ripples, setRipples] = useState<{ x: number; y: number; id: number }[]>([])
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -28,7 +31,7 @@ export default function HeroSection() {
   const handleImageError = () => {
     console.error("Hero image failed to load")
     setImageError(true)
-    setImageLoaded(true) // Set as loaded to remove loading state
+    setIsLoading(false)
   }
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -73,13 +76,14 @@ export default function HeroSection() {
       >
         {!imageError ? (
           <Image
-            src="/white-sports-car-hero.jpeg"
+            src={`${GITHUB_RAW_BASE}/white-sports-car-hero.jpeg`}
             alt="Luxury Sports Car"
             fill
             priority
             className="object-cover object-center"
             onLoad={() => {
               setImageLoaded(true);
+              setIsLoading(false);
             }}
             onError={handleImageError}
             style={{ objectFit: 'cover' }}

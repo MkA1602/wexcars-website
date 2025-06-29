@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Check } from "lucide-react"
+import { CheckCircle, Star, Crown, Zap } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
 
 const pricingPlans = [
   {
@@ -59,7 +64,7 @@ export default function PricingContent() {
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 z-0 hero-bg-animate">
           <img
-            src="/lycan-hypersport-concept.png"
+            src={`${GITHUB_RAW_BASE}/lycan-hypersport-concept.png`}
             alt="Luxury Hypercar"
             className="w-full h-full object-cover object-center opacity-14"
           />

@@ -9,6 +9,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Check, MapPin, Phone, Mail, Clock } from "lucide-react"
 import GoogleMap from "@/components/google-map"
 
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
 export default function ContactContent() {
   const [formState, setFormState] = useState({
     name: "",
@@ -38,7 +41,7 @@ export default function ContactContent() {
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 z-0 hero-bg-animate">
           <img
-            src="/lycan-hypersport-concept.png"
+            src={`${GITHUB_RAW_BASE}/lycan-hypersport-concept.png`}
             alt="Luxury Hypercar"
             className="w-full h-full object-cover object-center opacity-14"
           />

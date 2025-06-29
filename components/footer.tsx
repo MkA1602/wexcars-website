@@ -19,6 +19,9 @@ declare global {
   }
 }
 
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
 const Footer = () => {
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
@@ -134,7 +137,7 @@ const Footer = () => {
                 <div className="flex items-center space-x-3">
                   <div className="relative w-48 h-48">
                     <Image 
-                      src="/wexcars-logo-new.png" 
+                      src={`${GITHUB_RAW_BASE}/wexcars-logo-new.png`}
                       alt="WexCars White Logo" 
                       fill 
                       className="object-contain filter brightness-0 invert" 
@@ -320,7 +323,7 @@ const Footer = () => {
                 <div className="flex items-center space-x-2">
                   <div className="relative w-16 h-16">
                     <Image 
-                      src="/wexcars-logo-new.png" 
+                      src={`${GITHUB_RAW_BASE}/wexcars-logo-new.png`}
                       alt="WexCars Logo" 
                       fill 
                       className="object-contain filter brightness-0 invert" 

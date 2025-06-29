@@ -5,6 +5,9 @@ import Image from "next/image"
 import { useState } from "react"
 import { ChevronDown, ChevronUp, Mail, Phone } from "lucide-react"
 
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
 interface FooterSection {
   title: string
   links: { href: string; label: string }[]
@@ -55,7 +58,7 @@ const FooterMobile = () => {
           <div className="flex items-center justify-center space-x-3 mb-4">
             <div className="relative w-32 h-32">
               <Image 
-                src="/wexcars-logo-new.png" 
+                src={`${GITHUB_RAW_BASE}/wexcars-logo-new.png`}
                 alt="WexCars White Logo" 
                 fill 
                 className="object-contain filter brightness-0 invert" 
@@ -136,15 +139,13 @@ const FooterMobile = () => {
         {/* Copyright */}
         <div className="text-center pt-6 border-t border-gray-dark/30">
           <div className="flex flex-col items-center space-y-2">
-            <div className="flex items-center space-x-2">
-              <div className="relative w-14 h-14">
-                <Image 
-                  src="/wexcars-logo-new.png" 
-                  alt="WexCars Logo" 
-                  fill 
-                  className="object-contain filter brightness-0 invert" 
-                />
-              </div>
+            <div className="relative w-14 h-14">
+              <Image 
+                src={`${GITHUB_RAW_BASE}/wexcars-logo-new.png`}
+                alt="WexCars Logo" 
+                fill 
+                className="object-contain filter brightness-0 invert" 
+              />
             </div>
             <p className="text-gray-medium text-xs">&copy; {new Date().getFullYear()} All rights reserved.</p>
           </div>

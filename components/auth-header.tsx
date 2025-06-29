@@ -19,6 +19,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
 export default function AuthHeader() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -59,7 +62,7 @@ export default function AuthHeader() {
           <div className="relative h-10 w-40 md:h-12 md:w-52 flex-shrink-0">
             {!logoError ? (
               <Image
-                src="/wexcars-logo-new.png"
+                src={`${GITHUB_RAW_BASE}/wexcars-logo-new.png`}
                 alt="WexCars Logo"
                 width={180}
                 height={44}
@@ -207,7 +210,7 @@ export default function AuthHeader() {
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="mb-2">
               {!logoError ? (
                 <Image
-                  src="/wexcars-logo-new.png"
+                  src={`${GITHUB_RAW_BASE}/wexcars-logo-new.png`}
                   alt="WexCars Logo"
                   width={150}
                   height={36}

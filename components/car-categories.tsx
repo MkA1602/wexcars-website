@@ -7,32 +7,35 @@ import { cars } from "@/lib/car-data"
 import { X } from "lucide-react"
 import { useRouter } from "next/navigation"
 
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
 const categories = [
   {
     id: 1,
     name: "SUV",
-    image: "/category-images/suv-land-rover-01.png",
+    image: `${GITHUB_RAW_BASE}/category-images/suv-land-rover-01.png`,
     description: "Spacious luxury with commanding presence",
     count: 24,
   },
   {
     id: 2,
     name: "Sedan",
-    image: "/category-images/sedan-330e-01.png",
+    image: `${GITHUB_RAW_BASE}/category-images/sedan-330e-01.png`,
     description: "Refined elegance with superior comfort",
     count: 18,
   },
   {
     id: 3,
     name: "Coupe",
-    image: "/category-images/coupe-mercedes-01.png",
+    image: `${GITHUB_RAW_BASE}/category-images/coupe-mercedes-01.png`,
     description: "Sleek styling with athletic performance",
     count: 12,
   },
   {
     id: 4,
     name: "Convertible",
-    image: "/category-images/convert-mercedes-01.png",
+    image: `${GITHUB_RAW_BASE}/category-images/convert-mercedes-01.png`,
     description: "Open-air luxury driving experience",
     count: 8,
   },

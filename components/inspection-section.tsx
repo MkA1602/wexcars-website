@@ -7,6 +7,9 @@ import { motion } from "framer-motion"
 import { Check, ChevronRight, Shield, PenToolIcon as Tool, FileCheck, Video } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
 interface InspectionFeature {
   icon: React.ReactNode
   title: string
@@ -59,7 +62,11 @@ export default function InspectionSection() {
           {/* Image Section with Animation */}
           <div className="lg:w-1/2 relative">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img src="/inspections-01.png" alt="Vehicle Inspection Process" className="w-full h-auto" />
+              <img 
+                src={`${GITHUB_RAW_BASE}/inspections-01.png`}
+                alt="Vehicle Inspection Process" 
+                className="w-full h-auto" 
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
             </div>
 
