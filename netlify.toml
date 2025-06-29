@@ -1,12 +1,6 @@
 [build]
   command = "npm run build && cp -r public/* .next/ 2>/dev/null || xcopy public .next\\ /E /H /Y /Q 2>nul || true"
   publish = ".next"
-
-# Disable the problematic Next.js plugin
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-  [plugins.inputs]
-    disable = true
   
 [build.environment]
   NODE_VERSION = "18"
