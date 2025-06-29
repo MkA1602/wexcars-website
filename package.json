@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:clean": "npm install && npm run build",
+    "build:netlify": "next build && node scripts/copy-public-assets.js",
     "start": "next start",
     "lint": "next lint",
     "setup-admin": "node scripts/setup-admin.js",
