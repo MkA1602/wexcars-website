@@ -164,7 +164,7 @@ export default function AdminDashboard() {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            غير مصرح لك بالوصول إلى لوحة الإدارة / You don't have permission to access the admin dashboard.
+            You don't have permission to access the admin dashboard.
           </AlertDescription>
         </Alert>
       </div>
@@ -198,10 +198,9 @@ export default function AdminDashboard() {
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <Shield className="h-6 w-6 text-primary-light" />
-          <h1 className="text-3xl font-bold">لوحة تحكم الإدارة / Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         </div>
         <p className="text-gray-600">
-          مرحباً {profile?.full_name} - إدارة السيارات والمستخدمين / 
           Welcome {profile?.full_name} - Manage cars and users
         </p>
       </div>
@@ -210,19 +209,19 @@ export default function AdminDashboard() {
         <TabsList className="grid grid-cols-4 w-full max-w-2xl">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Settings size={16} />
-            نظرة عامة / Overview
+            Overview
           </TabsTrigger>
           <TabsTrigger value="cars" className="flex items-center gap-2">
             <Car size={16} />
-            السيارات / Cars ({stats.totalCars})
+            Cars ({stats.totalCars})
           </TabsTrigger>
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users size={16} />
-            المستخدمين / Users ({stats.totalUsers})
+            Users ({stats.totalUsers})
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings size={16} />
-            الإعدادات / Settings
+            Settings
           </TabsTrigger>
         </TabsList>
 
@@ -230,44 +229,44 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">إجمالي السيارات / Total Cars</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Cars</CardTitle>
                 <Car className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalCars}</div>
                 <p className="text-xs text-muted-foreground">
-                  {stats.recentCars} جديدة هذا الأسبوع / new this week
+                  {stats.recentCars} new this week
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">إجمالي المستخدمين / Total Users</CardTitle>
+                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalUsers}</div>
                 <p className="text-xs text-muted-foreground">
-                  {stats.adminUsers} مدراء / admins
+                  {stats.adminUsers} admins
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">السيارات الحديثة / Recent Cars</CardTitle>
+                <CardTitle className="text-sm font-medium">Recent Cars</CardTitle>
                 <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.recentCars}</div>
-                <p className="text-xs text-muted-foreground">آخر 7 أيام / Last 7 days</p>
+                <p className="text-xs text-muted-foreground">Last 7 days</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">متوسط السعر / Avg Price</CardTitle>
+                <CardTitle className="text-sm font-medium">Avg Price</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -277,7 +276,7 @@ export default function AdminDashboard() {
                     : '$0'
                   }
                 </div>
-                <p className="text-xs text-muted-foreground">جميع السيارات / All cars</p>
+                <p className="text-xs text-muted-foreground">All cars</p>
               </CardContent>
             </Card>
           </div>
@@ -285,7 +284,7 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>السيارات الحديثة / Recent Cars</CardTitle>
+                <CardTitle>Recent Cars</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoadingData ? (
@@ -305,14 +304,14 @@ export default function AdminDashboard() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-center py-4 text-gray-500">لا توجد سيارات / No cars found</p>
+                  <p className="text-center py-4 text-gray-500">No cars found</p>
                 )}
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>المستخدمين الجدد / New Users</CardTitle>
+                <CardTitle>New Users</CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoadingData ? (
@@ -334,7 +333,7 @@ export default function AdminDashboard() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-center py-4 text-gray-500">لا يوجد مستخدمين / No users found</p>
+                  <p className="text-center py-4 text-gray-500">No users found</p>
                 )}
               </CardContent>
             </Card>
@@ -346,14 +345,14 @@ export default function AdminDashboard() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>إدارة السيارات / Car Management</CardTitle>
+                  <CardTitle>Car Management</CardTitle>
                   <CardDescription>
-                    إدارة جميع السيارات المدرجة في النظام / Manage all cars listed in the system
+                    Manage all cars listed in the system
                   </CardDescription>
                 </div>
                 <Button className="bg-primary-light hover:bg-primary-dark text-white">
                   <Plus size={16} className="mr-2" />
-                  إضافة سيارة / Add Car
+                  Add Car
                 </Button>
               </div>
             </CardHeader>
@@ -362,7 +361,7 @@ export default function AdminDashboard() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="البحث في السيارات... / Search cars..."
+                    placeholder="Search cars..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
@@ -395,7 +394,7 @@ export default function AdminDashboard() {
                         <div className="flex gap-2">
                           <Button size="sm" variant="outline" className="flex-1">
                             <Edit size={14} className="mr-1" />
-                            تعديل / Edit
+                            Edit
                           </Button>
                           <Button 
                             size="sm" 
@@ -404,7 +403,7 @@ export default function AdminDashboard() {
                             className="flex-1"
                           >
                             <Trash2 size={14} className="mr-1" />
-                            حذف / Delete
+                            Delete
                           </Button>
                         </div>
                       </CardContent>
@@ -414,7 +413,7 @@ export default function AdminDashboard() {
               ) : (
                 <div className="text-center py-8">
                   <Car className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">لا توجد سيارات / No cars found</p>
+                  <p className="text-gray-500">No cars found</p>
                 </div>
               )}
             </CardContent>
@@ -424,9 +423,9 @@ export default function AdminDashboard() {
         <TabsContent value="users">
           <Card>
             <CardHeader>
-              <CardTitle>إدارة المستخدمين / User Management</CardTitle>
+              <CardTitle>User Management</CardTitle>
               <CardDescription>
-                إدارة المستخدمين والأدوار / Manage users and roles
+                Manage users and roles
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -434,7 +433,7 @@ export default function AdminDashboard() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="البحث في المستخدمين... / Search users..."
+                    placeholder="Search users..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
@@ -458,7 +457,7 @@ export default function AdminDashboard() {
                           <h3 className="font-semibold">{user.full_name}</h3>
                           <p className="text-sm text-gray-500">{user.email}</p>
                           <p className="text-xs text-gray-400">
-                            انضم في / Joined: {new Date(user.created_at).toLocaleDateString()}
+                            Joined: {new Date(user.created_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
@@ -475,7 +474,7 @@ export default function AdminDashboard() {
                             variant="outline"
                             onClick={() => updateUserRole(user.id, 'admin')}
                           >
-                            جعل مدير / Make Admin
+                            Make Admin
                           </Button>
                         )}
                         {user.role === 'admin' && profile?.role === 'super_admin' && user.id !== profile.id && (
@@ -484,7 +483,7 @@ export default function AdminDashboard() {
                             variant="outline"
                             onClick={() => updateUserRole(user.id, 'user')}
                           >
-                            إزالة الإدارة / Remove Admin
+                            Remove Admin
                           </Button>
                         )}
                       </div>
@@ -494,7 +493,7 @@ export default function AdminDashboard() {
               ) : (
                 <div className="text-center py-8">
                   <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">لا يوجد مستخدمين / No users found</p>
+                  <p className="text-gray-500">No users found</p>
                 </div>
               )}
             </CardContent>
@@ -504,43 +503,43 @@ export default function AdminDashboard() {
         <TabsContent value="settings">
           <Card>
             <CardHeader>
-              <CardTitle>إعدادات النظام / System Settings</CardTitle>
+              <CardTitle>System Settings</CardTitle>
               <CardDescription>
-                إعدادات عامة للنظام / General system settings
+                General system settings
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold mb-2">معلومات النظام / System Information</h3>
+                  <h3 className="font-semibold mb-2">System Information</h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-500">إجمالي السيارات / Total Cars:</p>
+                      <p className="text-gray-500">Total Cars:</p>
                       <p className="font-semibold">{stats.totalCars}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">إجمالي المستخدمين / Total Users:</p>
+                      <p className="text-gray-500">Total Users:</p>
                       <p className="font-semibold">{stats.totalUsers}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">المدراء / Admins:</p>
+                      <p className="text-gray-500">Admins:</p>
                       <p className="font-semibold">{stats.adminUsers}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">آخر تحديث / Last Updated:</p>
+                      <p className="text-gray-500">Last Updated:</p>
                       <p className="font-semibold">{new Date().toLocaleDateString()}</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold mb-2">إجراءات النظام / System Actions</h3>
+                  <h3 className="font-semibold mb-2">System Actions</h3>
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={fetchAdminData}>
-                      تحديث البيانات / Refresh Data
+                      Refresh Data
                     </Button>
                     <Button variant="outline">
-                      تصدير البيانات / Export Data
+                      Export Data
                     </Button>
                   </div>
                 </div>

@@ -1,17 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { notFound } from "next/navigation"
+import React from "react"
+import { notFound, useParams } from "next/navigation"
 import { supabaseClient } from "@/lib/supabase/client"
 import CarDetailPage from "@/components/car-detail/car-detail-page"
 import { Loader2 } from "lucide-react"
 import type { Car } from "@/lib/types"
 
-interface CarDetailProps {
-  params: { id: string }
-}
-
-export default function CarDetail({ params }: CarDetailProps) {
+export default function CarDetail() {
+  const params = useParams();
+  const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : '';
   const [car, setCar] = useState<Car | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -25,7 +24,7 @@ export default function CarDetail({ params }: CarDetailProps) {
         const { data: carData, error: carError } = await supabaseClient
           .from('cars')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', id)
           .single()
 
         if (carError) {
@@ -87,10 +86,10 @@ export default function CarDetail({ params }: CarDetailProps) {
       }
     }
 
-    if (params.id) {
+    if (id) {
       fetchCar()
     }
-  }, [params.id])
+  }, [id])
 
   if (isLoading) {
     return (

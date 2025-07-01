@@ -76,7 +76,7 @@ export default function HeroSection() {
       >
         {!imageError ? (
           <Image
-            src={`${GITHUB_RAW_BASE}/white-sports-car-hero.jpeg`}
+            src={"https://imgur.com/67e2udd.png"}
             alt="Luxury Sports Car"
             fill
             priority
