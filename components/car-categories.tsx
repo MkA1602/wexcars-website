@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { cars } from "@/lib/car-data"
+import { supabaseClient } from "@/lib/supabase/client"
 import { X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import type { Car } from "@/lib/types"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -16,28 +17,28 @@ const categories = [
     name: "SUV",
     image: `${GITHUB_RAW_BASE}/category-images/suv-land-rover-01.png`,
     description: "Spacious luxury with commanding presence",
-    count: 24,
+    count: 0,
   },
   {
     id: 2,
     name: "Sedan",
     image: `${GITHUB_RAW_BASE}/category-images/sedan-330e-01.png`,
     description: "Refined elegance with superior comfort",
-    count: 18,
+    count: 0,
   },
   {
     id: 3,
     name: "Coupe",
     image: `${GITHUB_RAW_BASE}/category-images/coupe-mercedes-01.png`,
     description: "Sleek styling with athletic performance",
-    count: 12,
+    count: 0,
   },
   {
     id: 4,
     name: "Convertible",
     image: `${GITHUB_RAW_BASE}/category-images/convert-mercedes-01.png`,
     description: "Open-air luxury driving experience",
-    count: 8,
+    count: 0,
   },
 ]
 
@@ -46,20 +47,70 @@ export default function CarCategories() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isSearching, setIsSearching] = useState(false)
   const [filteredCategories, setFilteredCategories] = useState(categories)
+  const [allCars, setAllCars] = useState<Car[]>([])
   const [categoryStats, setCategoryStats] = useState({
-    totalVehicles: 62,
-    brands: 12,
+    totalVehicles: 0,
+    brands: 0,
     satisfaction: "100%",
   })
   const [activeFilters, setActiveFilters] = useState({
     makeModel: false,
     search: false,
   })
+  const [isLoading, setIsLoading] = useState(true)
 
   const router = useRouter()
 
+  // Fetch cars from database
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setIsLoading(true)
+        const { data: carsData, error } = await supabaseClient
+          .from('cars')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          console.error('Error fetching cars:', error)
+          return
+        }
+
+        setAllCars(carsData || [])
+        
+        // Calculate real category counts
+        const categoryCounts: Record<string, number> = {}
+        carsData.forEach((car: any) => {
+          if (!categoryCounts[car.category]) {
+            categoryCounts[car.category] = 0
+          }
+          categoryCounts[car.category]++
+        })
+
+        // Update categories with real counts
+        const updatedCategories = categories.map((category) => ({
+          ...category,
+          count: categoryCounts[category.name] || 0,
+        }))
+
+        setFilteredCategories(updatedCategories)
+        setCategoryStats({
+          totalVehicles: carsData.length,
+          brands: [...new Set((carsData as Car[]).map((car: Car) => car.brand))].length,
+          satisfaction: "100%",
+        })
+      } catch (error) {
+        console.error('Error fetching cars:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchCars()
+  }, [])
+
   // Handle make & model selection
-  const handleMakeModelChange = (e) => {
+  const handleMakeModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value
     setSelectedMakeModel(value)
     setActiveFilters((prev) => ({ ...prev, makeModel: value !== "" }))
@@ -71,7 +122,7 @@ export default function CarCategories() {
   }
 
   // Handle search form submission
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSearching(true)
     setActiveFilters((prev) => ({ ...prev, search: searchQuery.trim() !== "" }))
@@ -94,19 +145,34 @@ export default function CarCategories() {
 
   // Filter categories based on selection and search
   useEffect(() => {
-    // If no filters are active, show all categories
-    if (!activeFilters.makeModel && !activeFilters.search) {
-      setFilteredCategories(categories)
+    if (!allCars.length) return
+
+          // If no filters are active, show all categories with real counts
+      if (!activeFilters.makeModel && !activeFilters.search) {
+        const categoryCounts: Record<string, number> = {}
+        allCars.forEach((car: Car) => {
+          if (!categoryCounts[car.category]) {
+            categoryCounts[car.category] = 0
+          }
+          categoryCounts[car.category]++
+        })
+
+      const updatedCategories = categories.map((category) => ({
+        ...category,
+        count: categoryCounts[category.name] || 0,
+      }))
+
+      setFilteredCategories(updatedCategories)
       setCategoryStats({
-        totalVehicles: 62,
-        brands: 12,
+        totalVehicles: allCars.length,
+        brands: [...new Set(allCars.map((car) => car.brand))].length,
         satisfaction: "100%",
       })
       return
     }
 
     // Filter cars based on active filters
-    let filteredCars = [...cars]
+    let filteredCars = [...allCars]
 
     // Apply make/model filter if active
     if (activeFilters.makeModel && selectedMakeModel) {
@@ -140,8 +206,8 @@ export default function CarCategories() {
     }
 
     // Count cars in each category after filtering
-    const categoryCounts = {}
-    filteredCars.forEach((car) => {
+    const categoryCounts: Record<string, number> = {}
+    filteredCars.forEach((car: Car) => {
       if (!categoryCounts[car.category]) {
         categoryCounts[car.category] = 0
       }
@@ -162,7 +228,7 @@ export default function CarCategories() {
       brands: [...new Set(filteredCars.map((car) => car.brand))].length,
       satisfaction: "100%",
     })
-  }, [selectedMakeModel, isSearching, activeFilters])
+  }, [selectedMakeModel, isSearching, activeFilters, allCars])
 
   // Check if any filters are active
   const hasActiveFilters = activeFilters.makeModel || activeFilters.search
@@ -527,8 +593,17 @@ export default function CarCategories() {
           </div>
         )}
 
+        {/* Loading state */}
+        {isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-80 bg-gray-200 rounded-xl animate-pulse"></div>
+            ))}
+          </div>
+        )}
+
         {/* Redesigned category cards with full car view */}
-        {(categoryStats.totalVehicles > 0 || !hasActiveFilters) && (
+        {!isLoading && (categoryStats.totalVehicles > 0 || !hasActiveFilters) && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredCategories.map((category) => (
               <div
@@ -547,7 +622,7 @@ export default function CarCategories() {
                 </div>
 
                 {/* Content overlay at the bottom */}
-                <div className="bg-gradient-to-t from-black/80 via-black/50 to-transparent p-6">
+                <div className="bg-gradient-to-t from-black/90 via-black/70 to-black/30 p-6">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-white text-xl font-bold">{category.name}</h3>
                     <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">

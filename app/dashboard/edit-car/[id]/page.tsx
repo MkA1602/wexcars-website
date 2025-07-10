@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { supabaseClient } from "@/lib/supabase/client"
 import { useAuth } from "@/contexts/auth-context"
 import ClientWrapper from "@/components/client-wrapper"
@@ -8,10 +8,11 @@ import { DynamicEditCarForm } from "@/components/dashboard/dynamic-dashboard-com
 import { Loader2 } from "lucide-react"
 
 interface EditCarPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default function EditCarPage({ params }: EditCarPageProps) {
+  const resolvedParams = use(params)
   const [car, setCar] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,7 +27,7 @@ export default function EditCarPage({ params }: EditCarPageProps) {
         const { data: carData, error: carError } = await supabaseClient
           .from('cars')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', resolvedParams.id)
           .single()
 
         if (carError) {
@@ -51,10 +52,10 @@ export default function EditCarPage({ params }: EditCarPageProps) {
       }
     }
 
-    if (user && params.id) {
+    if (user && resolvedParams.id) {
       fetchCar()
     }
-  }, [user, params.id])
+  }, [user, resolvedParams.id])
 
   if (!user) {
     return (

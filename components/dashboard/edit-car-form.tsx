@@ -12,12 +12,23 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus } from "lucide-react"
+import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus, Check } from "lucide-react"
 import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
 
 interface EditCarFormProps {
   car: any
 }
+
+// Common car features for selection
+const CAR_FEATURES = [
+  "GPS Navigation", "Bluetooth", "Heated Seats", "Sunroof", "Leather Seats", 
+  "Parking Sensors", "Backup Camera", "Apple CarPlay", "Android Auto", "Cruise Control",
+  "Lane Assist", "Adaptive Cruise Control", "Blind Spot Monitoring", "360° Camera",
+  "Wireless Charging", "Premium Sound System", "Ventilated Seats", "Memory Seats",
+  "Keyless Entry", "Push Button Start", "Heads-Up Display", "Night Vision",
+  "Massage Seats", "Rear Entertainment", "Panoramic Roof", "Air Suspension"
+]
 
 export default function EditCarForm({ car }: EditCarFormProps) {
   const [formData, setFormData] = useState({
@@ -26,9 +37,21 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     category: car.category || "",
     year: car.year || new Date().getFullYear(),
     price: car.price || "",
-    currency: car.currency || "USD",
+    currency: car.currency || "AED",
     image: car.image || "",
     description: car.description || "",
+    // Additional car details
+    transmission: car.transmission || "",
+    color: car.color || "",
+    availability: car.availability || "Available",
+    fuel_type: car.fuel_type || "",
+    gearbox: car.gearbox || "",
+    mileage: car.mileage || "",
+    car_type: car.car_type || "",
+    horsepower: car.horsepower || "",
+    engine_size: car.engine_size || "",
+    drivetrain: car.drivetrain || "",
+    features: car.features ? JSON.parse(car.features) : [],
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -38,6 +61,7 @@ export default function EditCarForm({ car }: EditCarFormProps) {
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [existingImages, setExistingImages] = useState<string[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  const [customFeature, setCustomFeature] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { user } = useAuth()
@@ -268,6 +292,32 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     return Promise.all(uploadPromises)
   }
 
+  const toggleFeature = (feature: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      features: prev.features.includes(feature)
+        ? prev.features.filter((f: string) => f !== feature)
+        : [...prev.features, feature]
+    }))
+  }
+
+  const addCustomFeature = () => {
+    if (customFeature.trim() && !formData.features.includes(customFeature.trim())) {
+      setFormData((prev) => ({
+        ...prev,
+        features: [...prev.features, customFeature.trim()]
+      }))
+      setCustomFeature("")
+    }
+  }
+
+  const handleCustomFeatureKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addCustomFeature()
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -318,6 +368,17 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         image: allImageUrls[0] || formData.image, // Primary image
         images: allImageUrls.length > 1 ? JSON.stringify(allImageUrls) : null, // Additional images as JSON
         description: formData.description,
+        features: formData.features.length > 0 ? JSON.stringify(formData.features) : null,
+        transmission: formData.transmission,
+        color: formData.color,
+        availability: formData.availability,
+        fuel_type: formData.fuel_type,
+        gearbox: formData.gearbox,
+        mileage: formData.mileage ? Number(formData.mileage) : null,
+        car_type: formData.car_type,
+        horsepower: formData.horsepower ? Number(formData.horsepower) : null,
+        engine_size: formData.engine_size,
+        drivetrain: formData.drivetrain,
         updated_at: new Date().toISOString(),
       }
 
@@ -456,6 +517,242 @@ export default function EditCarForm({ car }: EditCarFormProps) {
               </div>
               {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
             </div>
+          </div>
+
+          {/* Car Details Section */}
+          <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+            <h3 className="font-semibold text-lg">Car Details</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Transmission */}
+              <div className="space-y-2">
+                <Label htmlFor="transmission">Transmission</Label>
+                <select
+                  id="transmission"
+                  name="transmission"
+                  value={formData.transmission}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Transmission</option>
+                  <option value="Automatic">Automatic</option>
+                  <option value="Manual">Manual</option>
+                  <option value="CVT">CVT</option>
+                  <option value="Semi-Automatic">Semi-Automatic</option>
+                </select>
+              </div>
+
+              {/* Gearbox */}
+              <div className="space-y-2">
+                <Label htmlFor="gearbox">Gearbox</Label>
+                <select
+                  id="gearbox"
+                  name="gearbox"
+                  value={formData.gearbox}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Gearbox</option>
+                  <option value="6-Speed Manual">6-Speed Manual</option>
+                  <option value="7-Speed Automatic">7-Speed Automatic</option>
+                  <option value="8-Speed Automatic">8-Speed Automatic</option>
+                  <option value="9-Speed Automatic">9-Speed Automatic</option>
+                  <option value="10-Speed Automatic">10-Speed Automatic</option>
+                  <option value="CVT">CVT</option>
+                  <option value="Dual-Clutch">Dual-Clutch</option>
+                </select>
+              </div>
+
+              {/* Color */}
+              <div className="space-y-2">
+                <Label htmlFor="color">Color</Label>
+                <Input
+                  id="color"
+                  name="color"
+                  value={formData.color}
+                  onChange={handleChange}
+                  placeholder="e.g. Black"
+                  className={errors.color ? "border-red-500" : ""}
+                />
+                {errors.color && <p className="text-red-500 text-sm">{errors.color}</p>}
+              </div>
+
+              {/* Fuel Type */}
+              <div className="space-y-2">
+                <Label htmlFor="fuel_type">Fuel Type</Label>
+                <select
+                  id="fuel_type"
+                  name="fuel_type"
+                  value={formData.fuel_type}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Fuel Type</option>
+                  <option value="Petrol">Petrol</option>
+                  <option value="Diesel">Diesel</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Electric">Electric</option>
+                  <option value="Plug-in Hybrid">Plug-in Hybrid</option>
+                </select>
+              </div>
+
+              {/* Mileage */}
+              <div className="space-y-2">
+                <Label htmlFor="mileage">Mileage (km)</Label>
+                <Input
+                  id="mileage"
+                  name="mileage"
+                  type="number"
+                  value={formData.mileage}
+                  onChange={handleChange}
+                  placeholder="e.g. 10000"
+                  className={errors.mileage ? "border-red-500" : ""}
+                />
+                {errors.mileage && <p className="text-red-500 text-sm">{errors.mileage}</p>}
+              </div>
+
+              {/* Car Type */}
+              <div className="space-y-2">
+                <Label htmlFor="car_type">Car Type</Label>
+                <select
+                  id="car_type"
+                  name="car_type"
+                  value={formData.car_type}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Car Type</option>
+                  <option value="Hatchback">Hatchback</option>
+                  <option value="Sedan">Sedan</option>
+                  <option value="SUV">SUV</option>
+                  <option value="Crossover">Crossover</option>
+                  <option value="Coupe">Coupe</option>
+                  <option value="Convertible">Convertible</option>
+                  <option value="Wagon">Wagon</option>
+                  <option value="Pickup">Pickup</option>
+                  <option value="Sports Car">Sports Car</option>
+                  <option value="Supercar">Supercar</option>
+                </select>
+              </div>
+
+              {/* Horsepower */}
+              <div className="space-y-2">
+                <Label htmlFor="horsepower">Horsepower (HP)</Label>
+                <Input
+                  id="horsepower"
+                  name="horsepower"
+                  type="number"
+                  value={formData.horsepower}
+                  onChange={handleChange}
+                  placeholder="e.g. 400"
+                  className={errors.horsepower ? "border-red-500" : ""}
+                />
+                {errors.horsepower && <p className="text-red-500 text-sm">{errors.horsepower}</p>}
+              </div>
+
+              {/* Engine Size */}
+              <div className="space-y-2">
+                <Label htmlFor="engine_size">Engine Size</Label>
+                <Input
+                  id="engine_size"
+                  name="engine_size"
+                  value={formData.engine_size}
+                  onChange={handleChange}
+                  placeholder="e.g. 3.8L V8"
+                  className={errors.engine_size ? "border-red-500" : ""}
+                />
+                {errors.engine_size && <p className="text-red-500 text-sm">{errors.engine_size}</p>}
+              </div>
+
+              {/* Drivetrain */}
+              <div className="space-y-2">
+                <Label htmlFor="drivetrain">Drivetrain</Label>
+                <select
+                  id="drivetrain"
+                  name="drivetrain"
+                  value={formData.drivetrain}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Drivetrain</option>
+                  <option value="Front-Wheel Drive">Front-Wheel Drive (FWD)</option>
+                  <option value="Rear-Wheel Drive">Rear-Wheel Drive (RWD)</option>
+                  <option value="All-Wheel Drive">All-Wheel Drive (AWD)</option>
+                  <option value="Four-Wheel Drive">Four-Wheel Drive (4WD)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Car Features Section */}
+          <div className="space-y-4">
+            <Label>Car Features</Label>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {CAR_FEATURES.map((feature) => (
+                <div key={feature} className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleFeature(feature)}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
+                      formData.features.includes(feature)
+                        ? 'bg-primary-light text-white border-primary-light'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-primary-light'
+                    }`}
+                  >
+                    {formData.features.includes(feature) && <Check size={14} />}
+                    <span>{feature}</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            {/* Custom Feature Input */}
+            <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+              <Label htmlFor="customFeature" className="text-sm font-medium">Add Custom Feature</Label>
+              <div className="flex gap-2 mt-2">
+                <Input
+                  id="customFeature"
+                  value={customFeature}
+                  onChange={(e) => setCustomFeature(e.target.value)}
+                  onKeyPress={handleCustomFeatureKeyPress}
+                  placeholder="e.g. Sport Exhaust, Carbon Fiber Interior..."
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  onClick={addCustomFeature}
+                  variant="outline"
+                  className="flex items-center gap-1"
+                  disabled={!customFeature.trim() || formData.features.includes(customFeature.trim())}
+                >
+                  <Plus size={16} />
+                  Add
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Add custom features that aren't in the list above
+              </p>
+            </div>
+            
+            {formData.features.length > 0 && (
+              <div className="mt-3">
+                <p className="text-sm text-gray-600 mb-2">Selected Features ({formData.features.length}):</p>
+                <div className="flex flex-wrap gap-2">
+                  {formData.features.map((feature: string) => (
+                    <Badge key={feature} variant="default" className="bg-primary-light">
+                      {feature}
+                      <button
+                        type="button"
+                        onClick={() => toggleFeature(feature)}
+                        className="ml-1 hover:bg-primary-dark rounded-full p-0.5"
+                      >
+                        <X size={12} />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Image Upload Section */}
@@ -641,6 +938,7 @@ export default function EditCarForm({ car }: EditCarFormProps) {
             {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
           </div>
 
+          {/* Submit Buttons */}
           <div className="flex justify-end gap-4">
             <Link href="/dashboard">
               <Button variant="outline" type="button">

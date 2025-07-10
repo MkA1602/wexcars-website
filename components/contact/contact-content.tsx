@@ -257,26 +257,7 @@ export default function ContactContent() {
           <h2 className="text-3xl font-bold mb-12 text-center">Our Location</h2>
           <div className="max-w-6xl mx-auto">
             <GoogleMap height="500px" className="shadow-lg" />
-            <div className="mt-8 text-center">
-              <div className="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
-                <div className="flex items-center justify-center mb-4">
-                  <MapPin className="w-6 h-6 text-primary-light mr-2" />
-                  <h3 className="text-lg font-semibold">Visit Our Showroom</h3>
-                </div>
-                <p className="text-gray-600 mb-2">Docentgatan 2E</p>
-                <p className="text-gray-600 mb-2">21552 Malmö, Sweden</p>
-                <div className="flex items-center justify-center space-x-4 mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Phone className="w-4 h-4 mr-1" />
-                    <span>+46 737 200588</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Mail className="w-4 h-4 mr-1" />
-                    <span>info@wexcars.com</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </section>

@@ -89,7 +89,7 @@ const CarDetailPage: React.FC<CarDetailPageProps> = ({ car }) => {
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold mb-4">Interested?</h2>
                 <p className="text-gray-600 mb-4">
-                  Contact our luxury car specialists to schedule a viewing or get more information about this vehicle.
+                  Contact our luxury car specialists to get more information about this vehicle.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link 
@@ -97,12 +97,6 @@ const CarDetailPage: React.FC<CarDetailPageProps> = ({ car }) => {
                     className="bg-primary-light hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-medium text-center transition-colors"
                   >
                     Contact Us
-                  </Link>
-                  <Link 
-                    href="/contact" 
-                    className="border border-primary-light text-primary-light hover:bg-primary-light hover:text-white px-6 py-3 rounded-lg font-medium text-center transition-colors"
-                  >
-                    Schedule Viewing
                   </Link>
                 </div>
               </div>

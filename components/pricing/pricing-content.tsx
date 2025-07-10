@@ -77,8 +77,8 @@ export default function PricingContent() {
             collection of premium vehicles.
           </p>
           <div className="mt-8 inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg text-white border border-white/20 hero-cta-animate">
-            <span className="font-bold">Limited Availability:</span> Currently at only 20% capacity - Secure your
-            membership today
+            <span className="font-bold"> Free Trial: Enjoy 3 Months on Us:</span>  – Absolutely Free! No credit card required. 
+            Unlimited access. Cancel anytime.
           </div>
         </div>
       </section>

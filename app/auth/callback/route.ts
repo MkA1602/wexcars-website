@@ -23,35 +23,9 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(new URL("/auth/login?error=auth_callback_error", request.url))
       }
 
-      if (data.user) {
-        // Check if user profile exists, create if not
-        const { data: existingProfile } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", data.user.id)
-          .single()
-
-        if (!existingProfile) {
-          // Create user profile
-          const { error: profileError } = await supabase
-            .from("users")
-            .insert({
-              id: data.user.id,
-              email: data.user.email || "",
-              full_name: data.user.user_metadata?.full_name || 
-                        data.user.user_metadata?.first_name + " " + data.user.user_metadata?.last_name ||
-                        data.user.email?.split("@")[0] || "User",
-              phone_number: data.user.user_metadata?.phone || null,
-              avatar_url: data.user.user_metadata?.avatar_url || null,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            })
-
-          if (profileError) {
-            console.error("Error creating user profile:", profileError)
-          }
-        }
-      }
+      // User profile will be created automatically by the database trigger
+      // No need to manually create it here anymore
+      
     } catch (error) {
       console.error("Unexpected error in auth callback:", error)
       return NextResponse.redirect(new URL("/auth/login?error=auth_callback_error", request.url))

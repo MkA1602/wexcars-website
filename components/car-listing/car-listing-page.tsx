@@ -19,7 +19,7 @@ export default function CarListingPage() {
   const [cars, setCars] = useState<Car[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
-  const [vatDisplay, setVatDisplay] = useState<"include" | "exclude" | "both">("include")
+  const [vatDisplay, setVatDisplay] = useState<"include" | "exclude" | "both">("both")
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(12)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
@@ -386,15 +386,15 @@ export default function CarListingPage() {
               <div className="flex items-center gap-4">
                 {/* VAT Display Options */}
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Price:</span>
+                  <label className="text-sm font-medium text-gray-700">Price Display:</label>
                   <select
                     value={vatDisplay}
                     onChange={(e) => handleVatDisplayChange(e.target.value as "include" | "exclude" | "both")}
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
+                    className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-transparent"
                   >
-                    <option value="include">Inc. VAT</option>
-                    <option value="exclude">Exc. VAT</option>
                     <option value="both">Show Both</option>
+                    <option value="include">Including VAT</option>
+                    <option value="exclude">Excluding VAT</option>
                   </select>
                 </div>
 

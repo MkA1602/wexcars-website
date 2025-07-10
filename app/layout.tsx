@@ -27,6 +27,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Critical resource preloading for performance */}
+        <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public/wexcars-logo-new.png" as="image" />
+        <link rel="preload" href="https://imgur.com/67e2udd.png" as="image" />
+        
+        {/* DNS prefetch for external domains */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//imgur.com" />
+        <link rel="dns-prefetch" href="//raw.githubusercontent.com" />
+        <link rel="dns-prefetch" href="//maps.googleapis.com" />
+        
+        {/* Preconnect to critical origins */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://imgur.com" />
+        
         {/* Clean up any duplicate Google Maps scripts */}
         <Script
           id="cleanup-google-maps"

@@ -120,33 +120,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error, success: false }
       }
 
-      // If user was created successfully
+      // User profile will be created automatically by the database trigger
+      // No need to manually create it here anymore
+      
       if (data.user) {
-        // Determine the role based on email
-        const role = email === 'mohammedlk27@gmail.com' ? 'admin' : 'user'
-        
-        // Create user profile in the users table
-        const { error: profileError } = await supabaseClient.from("users").insert({
-          id: data.user.id,
-          email,
-          full_name: fullName,
-          role: role,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-
-        if (profileError) {
-          console.error('Error creating user profile:', profileError)
-          return { error: profileError, success: false }
-        }
-
         // If this is the admin user, they don't need email verification
-        if (role === 'admin') {
+        if (email === 'mohammedlk27@gmail.com') {
           return { 
             error: null, 
             success: true, 
             message: 'Admin account created successfully. You can now log in.' 
           }
+        }
+        
+        return { 
+          error: null, 
+          success: true, 
+          message: 'Registration successful! Please check your email to verify your account before logging in.' 
         }
       }
 

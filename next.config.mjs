@@ -7,14 +7,18 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['placeholder.com', 'via.placeholder.com'],
+    domains: ['placeholder.com', 'via.placeholder.com', 'imgur.com'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**',
       },
     ],
-    unoptimized: true,
+    // Enable image optimization for much better performance
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000, // 1 year cache
   },
   poweredByHeader: false,
   compress: true,
@@ -25,6 +29,8 @@ const nextConfig = {
     // Re-enabled CSS optimization now that critters is installed
     optimizeCss: true,
     scrollRestoration: true,
+    // Enable advanced optimizations
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
   // Additional optimization settings
   compiler: {

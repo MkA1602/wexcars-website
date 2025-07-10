@@ -87,9 +87,10 @@ export default function AboutContent() {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2">
               <img
-                src={`${GITHUB_RAW_BASE}/about/wexcar-luxury-showroom.jpg`}
-                alt="WexCar Luxury Showroom"
-                className="rounded-xl shadow-lg w-full h-auto"
+                src="/about/luxury-showroom.jpg"
+                alt="WexCar Luxury Showroom Interior"
+                className="rounded-xl shadow-lg w-full h-auto object-cover"
+                loading="lazy"
               />
             </div>
             <div className="md:w-1/2">
@@ -200,11 +201,6 @@ export default function AboutContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {teamMembers.map((member, idx) => (
               <div key={member.name + '-' + member.position + '-' + idx} className="bg-white rounded-xl shadow-md overflow-hidden">
-                <img
-                  src={member.image || "/placeholder.svg"}
-                  alt={member.name}
-                  className="w-full h-64 object-cover object-center"
-                />
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-1">{member.name}</h3>
                   <p className="text-primary-light font-medium mb-3">{member.position}</p>
@@ -249,10 +245,16 @@ export default function AboutContent() {
             worldwide.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button className="bg-white hover:bg-gray-100 text-primary-light">Explore Our Collection</Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white/10">
-              Contact Us
-            </Button>
+            <Link href="/collections">
+              <Button className="bg-white hover:bg-gray-100 text-primary-light font-semibold px-8 py-3 transition-all duration-300">
+                Explore Our Collection
+              </Button>
+            </Link>
+            <Link href="/contact">
+              <Button className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary-light font-semibold px-8 py-3 transition-all duration-300">
+                Contact Us
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

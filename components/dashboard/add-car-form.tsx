@@ -44,7 +44,12 @@ export default function AddCarForm() {
     color: "",
     availability: "Available",
     fuel_type: "",
-    seats: "",
+    gearbox: "",
+    mileage: "",
+    car_type: "",
+    horsepower: "",
+    engine_size: "",
+    drivetrain: "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -53,6 +58,7 @@ export default function AddCarForm() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  const [customFeature, setCustomFeature] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { user } = useAuth()
@@ -177,6 +183,23 @@ export default function AddCarForm() {
         ? prev.features.filter(f => f !== feature)
         : [...prev.features, feature]
     }))
+  }
+
+  const addCustomFeature = () => {
+    if (customFeature.trim() && !formData.features.includes(customFeature.trim())) {
+      setFormData((prev) => ({
+        ...prev,
+        features: [...prev.features, customFeature.trim()]
+      }))
+      setCustomFeature("")
+    }
+  }
+
+  const handleCustomFeatureKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addCustomFeature()
+    }
   }
 
   const handleFilesSelect = (files: FileList | File[]) => {
@@ -331,10 +354,14 @@ export default function AddCarForm() {
         updated_at: new Date().toISOString(),
         transmission: formData.transmission,
         color: formData.color,
-        // TODO: Add these fields after updating database schema
-        // availability: formData.availability,
-        // fuel_type: formData.fuel_type,
-        // seats: formData.seats,
+        availability: formData.availability,
+        fuel_type: formData.fuel_type,
+        gearbox: formData.gearbox,
+        mileage: formData.mileage ? Number(formData.mileage) : null,
+        car_type: formData.car_type,
+        horsepower: formData.horsepower ? Number(formData.horsepower) : null,
+        engine_size: formData.engine_size,
+        drivetrain: formData.drivetrain,
       }
 
       console.log('Inserting car data:', carData)
@@ -464,6 +491,171 @@ export default function AddCarForm() {
             </div>
           </div>
 
+          {/* Car Details Section */}
+          <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+            <h3 className="font-semibold text-lg">Car Details</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Transmission */}
+              <div className="space-y-2">
+                <Label htmlFor="transmission">Transmission</Label>
+                <select
+                  id="transmission"
+                  name="transmission"
+                  value={formData.transmission}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Transmission</option>
+                  <option value="Automatic">Automatic</option>
+                  <option value="Manual">Manual</option>
+                  <option value="CVT">CVT</option>
+                  <option value="Semi-Automatic">Semi-Automatic</option>
+                </select>
+              </div>
+
+              {/* Gearbox */}
+              <div className="space-y-2">
+                <Label htmlFor="gearbox">Gearbox</Label>
+                <select
+                  id="gearbox"
+                  name="gearbox"
+                  value={formData.gearbox}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Gearbox</option>
+                  <option value="6-Speed Manual">6-Speed Manual</option>
+                  <option value="7-Speed Automatic">7-Speed Automatic</option>
+                  <option value="8-Speed Automatic">8-Speed Automatic</option>
+                  <option value="9-Speed Automatic">9-Speed Automatic</option>
+                  <option value="10-Speed Automatic">10-Speed Automatic</option>
+                  <option value="CVT">CVT</option>
+                  <option value="Dual-Clutch">Dual-Clutch</option>
+                </select>
+              </div>
+
+              {/* Color */}
+              <div className="space-y-2">
+                <Label htmlFor="color">Color</Label>
+                <Input
+                  id="color"
+                  name="color"
+                  value={formData.color}
+                  onChange={handleChange}
+                  placeholder="e.g. Black"
+                  className={errors.color ? "border-red-500" : ""}
+                />
+                {errors.color && <p className="text-red-500 text-sm">{errors.color}</p>}
+              </div>
+
+              {/* Fuel Type */}
+              <div className="space-y-2">
+                <Label htmlFor="fuel_type">Fuel Type</Label>
+                <select
+                  id="fuel_type"
+                  name="fuel_type"
+                  value={formData.fuel_type}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Fuel Type</option>
+                  <option value="Petrol">Petrol</option>
+                  <option value="Diesel">Diesel</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="Electric">Electric</option>
+                  <option value="Plug-in Hybrid">Plug-in Hybrid</option>
+                </select>
+              </div>
+
+              {/* Mileage */}
+              <div className="space-y-2">
+                <Label htmlFor="mileage">Mileage (km)</Label>
+                <Input
+                  id="mileage"
+                  name="mileage"
+                  type="number"
+                  value={formData.mileage}
+                  onChange={handleChange}
+                  placeholder="e.g. 10000"
+                  className={errors.mileage ? "border-red-500" : ""}
+                />
+                {errors.mileage && <p className="text-red-500 text-sm">{errors.mileage}</p>}
+              </div>
+
+              {/* Car Type */}
+              <div className="space-y-2">
+                <Label htmlFor="car_type">Car Type</Label>
+                <select
+                  id="car_type"
+                  name="car_type"
+                  value={formData.car_type}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Car Type</option>
+                  <option value="Hatchback">Hatchback</option>
+                  <option value="Sedan">Sedan</option>
+                  <option value="SUV">SUV</option>
+                  <option value="Crossover">Crossover</option>
+                  <option value="Coupe">Coupe</option>
+                  <option value="Convertible">Convertible</option>
+                  <option value="Wagon">Wagon</option>
+                  <option value="Pickup">Pickup</option>
+                  <option value="Sports Car">Sports Car</option>
+                  <option value="Supercar">Supercar</option>
+                </select>
+              </div>
+
+              {/* Horsepower */}
+              <div className="space-y-2">
+                <Label htmlFor="horsepower">Horsepower (HP)</Label>
+                <Input
+                  id="horsepower"
+                  name="horsepower"
+                  type="number"
+                  value={formData.horsepower}
+                  onChange={handleChange}
+                  placeholder="e.g. 400"
+                  className={errors.horsepower ? "border-red-500" : ""}
+                />
+                {errors.horsepower && <p className="text-red-500 text-sm">{errors.horsepower}</p>}
+              </div>
+
+              {/* Engine Size */}
+              <div className="space-y-2">
+                <Label htmlFor="engine_size">Engine Size</Label>
+                <Input
+                  id="engine_size"
+                  name="engine_size"
+                  value={formData.engine_size}
+                  onChange={handleChange}
+                  placeholder="e.g. 3.8L V8"
+                  className={errors.engine_size ? "border-red-500" : ""}
+                />
+                {errors.engine_size && <p className="text-red-500 text-sm">{errors.engine_size}</p>}
+              </div>
+
+              {/* Drivetrain */}
+              <div className="space-y-2">
+                <Label htmlFor="drivetrain">Drivetrain</Label>
+                <select
+                  id="drivetrain"
+                  name="drivetrain"
+                  value={formData.drivetrain}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Drivetrain</option>
+                  <option value="Front-Wheel Drive">Front-Wheel Drive (FWD)</option>
+                  <option value="Rear-Wheel Drive">Rear-Wheel Drive (RWD)</option>
+                  <option value="All-Wheel Drive">All-Wheel Drive (AWD)</option>
+                  <option value="Four-Wheel Drive">Four-Wheel Drive (4WD)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           {/* Pricing Section */}
           <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
             <h3 className="font-semibold text-lg">Pricing Information</h3>
@@ -553,6 +745,34 @@ export default function AddCarForm() {
                   </button>
                 </div>
               ))}
+            </div>
+            
+            {/* Custom Feature Input */}
+            <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+              <Label htmlFor="customFeature" className="text-sm font-medium">Add Custom Feature</Label>
+              <div className="flex gap-2 mt-2">
+                <Input
+                  id="customFeature"
+                  value={customFeature}
+                  onChange={(e) => setCustomFeature(e.target.value)}
+                  onKeyPress={handleCustomFeatureKeyPress}
+                  placeholder="e.g. Sport Exhaust, Carbon Fiber Interior..."
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  onClick={addCustomFeature}
+                  variant="outline"
+                  className="flex items-center gap-1"
+                  disabled={!customFeature.trim() || formData.features.includes(customFeature.trim())}
+                >
+                  <Plus size={16} />
+                  Add
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Add custom features that aren't in the list above
+              </p>
             </div>
             
             {formData.features.length > 0 && (
@@ -728,83 +948,6 @@ export default function AddCarForm() {
               className={errors.description ? "border-red-500" : ""}
             />
             {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
-          </div>
-
-          {/* Additional Details */}
-          <div className="space-y-4">
-            <Label>Additional Details</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="transmission">Transmission</Label>
-                <Input
-                  id="transmission"
-                  name="transmission"
-                  value={formData.transmission}
-                  onChange={handleChange}
-                  placeholder="e.g. Automatic"
-                  className={errors.transmission ? "border-red-500" : ""}
-                />
-                {errors.transmission && <p className="text-red-500 text-sm">{errors.transmission}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="color">Color</Label>
-                <Input
-                  id="color"
-                  name="color"
-                  value={formData.color}
-                  onChange={handleChange}
-                  placeholder="e.g. Black"
-                  className={errors.color ? "border-red-500" : ""}
-                />
-                {errors.color && <p className="text-red-500 text-sm">{errors.color}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="availability">Availability</Label>
-                <select
-                  id="availability"
-                  name="availability"
-                  value={formData.availability}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md ${
-                    errors.availability ? "border-red-500" : "border-gray-300"
-                  }`}
-                >
-                  <option value="Available">Available</option>
-                  <option value="Sold">Sold</option>
-                  <option value="Reserved">Reserved</option>
-                </select>
-                {errors.availability && <p className="text-red-500 text-sm">{errors.availability}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="fuel_type">Fuel Type</Label>
-                <Input
-                  id="fuel_type"
-                  name="fuel_type"
-                  value={formData.fuel_type}
-                  onChange={handleChange}
-                  placeholder="e.g. Gasoline"
-                  className={errors.fuel_type ? "border-red-500" : ""}
-                />
-                {errors.fuel_type && <p className="text-red-500 text-sm">{errors.fuel_type}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="seats">Seats</Label>
-                <Input
-                  id="seats"
-                  name="seats"
-                  type="number"
-                  value={formData.seats}
-                  onChange={handleChange}
-                  placeholder="e.g. 4"
-                  className={errors.seats ? "border-red-500" : ""}
-                />
-                {errors.seats && <p className="text-red-500 text-sm">{errors.seats}</p>}
-              </div>
-            </div>
           </div>
 
           {/* Submit Buttons */}
