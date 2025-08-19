@@ -110,8 +110,24 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
                 >
                   <Heart size={18} className={favorites[car.id] ? "fill-red-500 text-red-500" : "text-gray-600"} />
                 </Button>
+                {/* Location Badge */}
+                {car.location && (
+                  <Badge className="absolute top-2 left-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                    <span className="text-red-400">📍</span>
+                    {car.location}
+                  </Badge>
+                )}
+                
+                {/* Date Added Badge */}
+                <Badge className="absolute bottom-2 left-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md">
+                  {car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                  }) : 'New'}
+                </Badge>
+
                 {car.featured && (
-                  <Badge className="absolute top-2 left-2 bg-primary-light hover:bg-primary-dark">
+                  <Badge className="absolute top-2 right-12 bg-primary-light hover:bg-primary-dark">
                     Featured
                   </Badge>
                 )}

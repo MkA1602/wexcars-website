@@ -429,42 +429,55 @@ export default function FilterSidebar({
   }
 
   return (
-    <div className={`space-y-6 ${className}`}>
+    <div className={`bg-white rounded-lg shadow-sm border border-gray-100 p-6 space-y-6 ${className}`}>
+      {/* Filter Header */}
+      <div className="border-b border-gray-100 pb-4">
+        <h2 className="text-lg font-bold text-gray-900">Filters</h2>
+      </div>
+
       {/* Brand Filter */}
-      <div className="border-b pb-4">
+      <div className="border-b border-gray-50 pb-6">
         <button
-          className="flex justify-between items-center w-full mb-3"
+          className="flex justify-between items-center w-full mb-4 group"
           onClick={() => toggleSection("brands")}
           aria-expanded={expandedSections.brands}
           aria-controls="brand-filters"
         >
-          <h3 className="font-semibold">Brand</h3>
-          {expandedSections.brands ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          <h3 className="font-semibold text-gray-900 group-hover:text-primary-light transition-colors">Brand</h3>
+          {expandedSections.brands ? (
+            <ChevronUp size={18} className="text-gray-500 group-hover:text-primary-light transition-colors" />
+          ) : (
+            <ChevronDown size={18} className="text-gray-500 group-hover:text-primary-light transition-colors" />
+          )}
         </button>
         {expandedSections.brands && (
           <div id="brand-filters" className="space-y-2">
-            <div className="relative mb-2">
+            <div className="relative mb-4">
               <input
                 type="text"
                 value={searchTerms.brands}
                 onChange={(e) => setSearchTerms((prev) => ({ ...prev, brands: e.target.value || "" }))}
                 placeholder="Search brands..."
-                className="w-full p-2 text-sm border border-gray-300 rounded"
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-light focus:border-transparent transition-all duration-200 placeholder-gray-400"
               />
             </div>
-            <div className="max-h-48 overflow-y-auto pr-2 space-y-2">
+            <div className="max-h-48 overflow-y-auto pr-2 space-y-3">
               {filteredBrands.map((brand) => (
-                <div key={brand} className="mb-2">
-                  <div className="flex items-center">
+                <div key={brand} className="group">
+                  <div className="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                     <Checkbox
                       id={`brand-${brand}`}
                       checked={(filters.brands || []).includes(brand)}
                       onCheckedChange={(checked) => handleBrandChange(brand, checked === true)}
-                      className="mr-2"
+                      className="mr-3 h-4 w-4"
                     />
-                    <label htmlFor={`brand-${brand}`} className="text-sm font-medium cursor-pointer flex items-center">
-                      {brand}
-                      {brandCounts[brand] && <span className="ml-1 text-xs text-gray-500">({brandCounts[brand]})</span>}
+                    <label htmlFor={`brand-${brand}`} className="text-sm font-medium cursor-pointer flex items-center justify-between w-full group-hover:text-gray-900 transition-colors">
+                      <span>{brand}</span>
+                      {brandCounts[brand] && (
+                        <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+                          {brandCounts[brand]}
+                        </span>
+                      )}
                     </label>
                   </div>
 
@@ -500,42 +513,50 @@ export default function FilterSidebar({
       </div>
 
       {/* Category Filter */}
-      <div className="border-b pb-4">
+      <div className="border-b border-gray-50 pb-6">
         <button
-          className="flex justify-between items-center w-full mb-3"
+          className="flex justify-between items-center w-full mb-4 group"
           onClick={() => toggleSection("categories")}
           aria-expanded={expandedSections.categories}
           aria-controls="category-filters"
         >
-          <h3 className="font-semibold">Category</h3>
-          {expandedSections.categories ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          <h3 className="font-semibold text-gray-900 group-hover:text-primary-light transition-colors">Category</h3>
+          {expandedSections.categories ? (
+            <ChevronUp size={18} className="text-gray-500 group-hover:text-primary-light transition-colors" />
+          ) : (
+            <ChevronDown size={18} className="text-gray-500 group-hover:text-primary-light transition-colors" />
+          )}
         </button>
         {expandedSections.categories && (
           <div id="category-filters" className="space-y-2">
-            <div className="relative mb-2">
+            <div className="relative mb-4">
               <input
                 type="text"
                 value={searchTerms.categories}
                 onChange={(e) => setSearchTerms((prev) => ({ ...prev, categories: e.target.value || "" }))}
                 placeholder="Search categories..."
-                className="w-full p-2 text-sm border border-gray-300 rounded"
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-light focus:border-transparent transition-all duration-200 placeholder-gray-400"
               />
             </div>
-            <div className="max-h-48 overflow-y-auto pr-2 space-y-2">
+            <div className="max-h-48 overflow-y-auto pr-2 space-y-3">
               {filteredCategories.map((category) => (
-                <div key={category} className="flex items-center">
-                  <Checkbox
-                    id={`category-${category}`}
-                    checked={(filters.categories || []).includes(category)}
-                    onCheckedChange={(checked) => handleCategoryChange(category, checked === true)}
-                    className="mr-2"
-                  />
-                  <label htmlFor={`category-${category}`} className="text-sm cursor-pointer flex items-center">
-                    {category}
-                    {categoryCounts[category] && (
-                      <span className="ml-1 text-xs text-gray-500">({categoryCounts[category]})</span>
-                    )}
-                  </label>
+                <div key={category} className="group">
+                  <div className="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                    <Checkbox
+                      id={`category-${category}`}
+                      checked={(filters.categories || []).includes(category)}
+                      onCheckedChange={(checked) => handleCategoryChange(category, checked === true)}
+                      className="mr-3 h-4 w-4"
+                    />
+                    <label htmlFor={`category-${category}`} className="text-sm font-medium cursor-pointer flex items-center justify-between w-full group-hover:text-gray-900 transition-colors">
+                      <span>{category}</span>
+                      {categoryCounts[category] && (
+                        <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
+                          {categoryCounts[category]}
+                        </span>
+                      )}
+                    </label>
+                  </div>
                 </div>
               ))}
 
@@ -548,21 +569,25 @@ export default function FilterSidebar({
       </div>
 
       {/* Price Range Filter */}
-      <div className="border-b pb-4">
+      <div className="border-b border-gray-50 pb-6">
         <button
-          className="flex justify-between items-center w-full mb-3"
+          className="flex justify-between items-center w-full mb-4 group"
           onClick={() => toggleSection("price")}
           aria-expanded={expandedSections.price}
           aria-controls="price-filters"
         >
-          <h3 className="font-semibold">Price Range</h3>
-          {expandedSections.price ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          <h3 className="font-semibold text-gray-900 group-hover:text-primary-light transition-colors">Price Range</h3>
+          {expandedSections.price ? (
+            <ChevronUp size={18} className="text-gray-500 group-hover:text-primary-light transition-colors" />
+          ) : (
+            <ChevronDown size={18} className="text-gray-500 group-hover:text-primary-light transition-colors" />
+          )}
         </button>
         {expandedSections.price && (
-          <div id="price-filters">
-            <div className="flex justify-between mb-2">
-              <span className="text-sm">${(priceRange[0] || 0).toLocaleString()}</span>
-              <span className="text-sm">${(priceRange[1] || 1000000).toLocaleString()}</span>
+          <div id="price-filters" className="space-y-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">${(priceRange[0] || 0).toLocaleString()}</span>
+              <span className="text-sm font-medium text-gray-700">${(priceRange[1] || 1000000).toLocaleString()}</span>
             </div>
             <Slider
               defaultValue={[0, 1000000]}
@@ -574,46 +599,58 @@ export default function FilterSidebar({
               onValueCommit={handlePriceChangeEnd}
               className="my-4"
             />
-            <div className="flex justify-between mt-2">
-              <input
-                type="number"
-                value={priceRange[0] || 0}
-                onChange={(e) => {
-                  const value = Number.parseInt(e.target.value) || 0
-                  if (value >= 0 && value <= (priceRange[1] || 1000000)) {
-                    setPriceRange([value, priceRange[1] || 1000000])
-                  }
-                }}
-                onBlur={() => handlePriceChangeEnd(priceRange)}
-                className="w-24 p-1 text-sm border border-gray-300 rounded"
-              />
-              <input
-                type="number"
-                value={priceRange[1] || 1000000}
-                onChange={(e) => {
-                  const value = Number.parseInt(e.target.value) || 1000000
-                  if (value >= (priceRange[0] || 0) && value <= 1000000) {
-                    setPriceRange([priceRange[0] || 0, value])
-                  }
-                }}
-                onBlur={() => handlePriceChangeEnd(priceRange)}
-                className="w-24 p-1 text-sm border border-gray-300 rounded"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Min Price</label>
+                <input
+                  type="number"
+                  value={priceRange[0] || 0}
+                  onChange={(e) => {
+                    const value = Number.parseInt(e.target.value) || 0
+                    if (value >= 0 && value <= (priceRange[1] || 1000000)) {
+                      setPriceRange([value, priceRange[1] || 1000000])
+                    }
+                  }}
+                  onBlur={() => handlePriceChangeEnd(priceRange)}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-light focus:border-transparent transition-all duration-200"
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Max Price</label>
+                <input
+                  type="number"
+                  value={priceRange[1] || 1000000}
+                  onChange={(e) => {
+                    const value = Number.parseInt(e.target.value) || 1000000
+                    if (value >= (priceRange[0] || 0) && value <= 1000000) {
+                      setPriceRange([priceRange[0] || 0, value])
+                    }
+                  }}
+                  onBlur={() => handlePriceChangeEnd(priceRange)}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-light focus:border-transparent transition-all duration-200"
+                  placeholder="1000000"
+                />
+              </div>
             </div>
           </div>
         )}
       </div>
 
       {/* Year Filter */}
-      <div className="border-b pb-4">
+      <div className="border-b border-gray-50 pb-6">
         <button
-          className="flex justify-between items-center w-full mb-3"
+          className="flex justify-between items-center w-full mb-4 group"
           onClick={() => toggleSection("year")}
           aria-expanded={expandedSections.year}
           aria-controls="year-filters"
         >
-          <h3 className="font-semibold">Year</h3>
-          {expandedSections.year ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          <h3 className="font-semibold text-gray-900 group-hover:text-primary-light transition-colors">Year</h3>
+          {expandedSections.year ? (
+            <ChevronUp size={18} className="text-gray-500 group-hover:text-primary-light transition-colors" />
+          ) : (
+            <ChevronDown size={18} className="text-gray-500 group-hover:text-primary-light transition-colors" />
+          )}
         </button>
         {expandedSections.year && (
           <div id="year-filters" className="space-y-2">
@@ -846,23 +883,26 @@ export default function FilterSidebar({
       </div>
 
       {/* Filter Tips */}
-      <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="mt-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center text-sm text-gray-600 cursor-help">
-                <Info size={16} className="mr-2 text-gray-400" />
-                <span>Filter Tips</span>
+              <div className="flex items-center text-sm text-blue-700 cursor-help">
+                <Info size={16} className="mr-2 text-blue-500" />
+                <span className="font-medium">Filter Tips</span>
               </div>
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">
               <p className="text-sm">
                 Combine multiple filters to narrow your search. You can select multiple brands, categories, and other
-                options simultaneously.
+                options simultaneously. Use the search boxes to quickly find specific options.
               </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        <p className="text-xs text-blue-600 mt-2">
+          💡 Tip: Use multiple filters together for more precise results
+        </p>
       </div>
     </div>
   )

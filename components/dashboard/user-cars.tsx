@@ -65,6 +65,22 @@ export default function UserCars({ cars }: UserCarsProps) {
                     alt={`${car.brand} ${car.name}`}
                     className="w-full h-full object-cover"
                   />
+                  
+                  {/* Location Badge */}
+                  {car.location && (
+                    <div className="absolute top-2 left-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                      <span className="text-red-400">📍</span>
+                      {car.location}
+                    </div>
+                  )}
+                  
+                  {/* Date Added Badge */}
+                  <div className="absolute bottom-2 left-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md">
+                    {car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric'
+                    }) : 'New'}
+                  </div>
                 </div>
                 <CardContent className="p-4">
                   <h3 className="font-bold text-lg mb-1">

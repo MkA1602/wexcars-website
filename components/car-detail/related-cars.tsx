@@ -15,13 +15,31 @@ export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {relatedCars.map((car) => (
         <div key={car.id} className="bg-white rounded-lg shadow-md overflow-hidden group">
-          <Link href={`/collections/${car.id}`} className="block relative h-48 overflow-hidden">
-            <img
-              src={car.image || "/placeholder.svg"}
-              alt={`${car.brand} ${car.name}`}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-          </Link>
+          <div className="relative">
+            <Link href={`/collections/${car.id}`} className="block relative h-48 overflow-hidden">
+              <img
+                src={car.image || "/placeholder.svg"}
+                alt={`${car.brand} ${car.name}`}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+            </Link>
+            
+            {/* Location Badge */}
+            {car.location && (
+              <div className="absolute top-2 left-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                <span className="text-red-400">📍</span>
+                {car.location}
+              </div>
+            )}
+            
+            {/* Date Added Badge */}
+            <div className="absolute bottom-2 left-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md">
+              {car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+              }) : 'New'}
+            </div>
+          </div>
 
           <div className="p-4">
             <h3 className="font-bold text-lg mb-1">
