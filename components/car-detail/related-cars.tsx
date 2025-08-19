@@ -30,17 +30,11 @@ export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
               </Link>
             </h3>
             <p className="text-gray-600 text-sm mb-2">
-              {car.year} • {car.category}
+              {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+              }) : 'Date N/A'}</span>
             </p>
-            {car.created_at && (
-              <p className="text-gray-500 text-[10px] mb-2">
-                {new Date(car.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </p>
-            )}
 
             <div className="flex justify-between items-center pt-3 border-t border-gray-100">
               <div className="text-xl font-bold">{formatCurrency(car.price, car.currency)}</div>

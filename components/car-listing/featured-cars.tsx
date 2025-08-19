@@ -213,11 +213,10 @@ const FeaturedCars = () => {
                         </Link>
                       </h3>
                       <p className="text-gray-500 text-sm">
-                        {car.year} • {car.fuel_type || 'Not specified'} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
+                        {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric'
-                        }) : 'Not specified'}</span>
+                        }) : 'Date N/A'}</span>
                       </p>
                     </div>
                     <div className="flex items-center ml-2">
