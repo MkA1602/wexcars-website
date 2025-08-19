@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS public.cars (
     features TEXT, -- JSON array of car features
     specifications JSONB,
     user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    seller_type TEXT DEFAULT 'individual' CHECK (seller_type IN ('individual', 'dealership')),
+    dealership_name TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -114,6 +116,30 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                   WHERE table_name = 'cars' AND column_name = 'specifications') THEN
         ALTER TABLE public.cars ADD COLUMN specifications JSONB;
+    END IF;
+
+    -- Add seller_type column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                  WHERE table_name = 'cars' AND column_name = 'seller_type') THEN
+        ALTER TABLE public.cars ADD COLUMN seller_type TEXT DEFAULT 'individual' CHECK (seller_type IN ('individual', 'dealership'));
+    END IF;
+
+    -- Add dealership_name column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                  WHERE table_name = 'cars' AND column_name = 'dealership_name') THEN
+        ALTER TABLE public.cars ADD COLUMN dealership_name TEXT;
+    END IF;
+
+    -- Add chassis_number column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                  WHERE table_name = 'cars' AND column_name = 'chassis_number') THEN
+        ALTER TABLE public.cars ADD COLUMN chassis_number TEXT;
+    END IF;
+
+    -- Add location column if it doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                  WHERE table_name = 'cars' AND column_name = 'location') THEN
+        ALTER TABLE public.cars ADD COLUMN location TEXT;
     END IF;
 END $$;
 

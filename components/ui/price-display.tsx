@@ -1,7 +1,33 @@
 "use client"
 
 import type React from "react"
+import { useState, memo, useEffect, useRef } from "react"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { ChevronDown, ChevronUp } from "lucide-react"
+
+// Global state store for toggle states - ensures complete isolation
+const toggleStates = new Map<string, boolean>()
+
+// Helper functions for persistent state
+const getStoredState = (carId: string): boolean => {
+  if (typeof window === 'undefined') return false
+  try {
+    const stored = localStorage.getItem(`toggle_${carId}`)
+    return stored === 'true'
+  } catch {
+    return false
+  }
+}
+
+const setStoredState = (carId: string, state: boolean): void => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(`toggle_${carId}`, state.toString())
+  } catch {
+    // Ignore localStorage errors
+  }
+}
 
 interface PriceDisplayProps {
   price: number
@@ -12,9 +38,11 @@ interface PriceDisplayProps {
   showVatBreakdown?: boolean
   size?: "sm" | "md" | "lg"
   className?: string
+  enableToggle?: boolean // New prop to enable the More Details functionality
+  carId?: string // Unique identifier to ensure component isolation
 }
 
-export default function PriceDisplay({
+function PriceDisplay({
   price,
   priceExclVat,
   vatRate = 5,
@@ -22,8 +50,32 @@ export default function PriceDisplay({
   currency = "AED",
   showVatBreakdown = false,
   size = "md",
-  className = ""
+  className = "",
+  enableToggle = false,
+  carId = ""
 }: PriceDisplayProps) {
+  // Force re-render when component mounts/unmounts
+  const [, forceUpdate] = useState({})
+  const componentId = useRef(`${carId}_${Date.now()}_${Math.random()}`).current
+  
+  // Initialize state for this specific car if not exists
+  useEffect(() => {
+    if (carId && !toggleStates.has(carId)) {
+      const storedState = getStoredState(carId)
+      toggleStates.set(carId, storedState)
+      console.log(`[${componentId}] Initialized state for car ${carId}: ${storedState}`)
+    }
+  }, [carId, componentId])
+  
+  const isExpanded = carId ? toggleStates.get(carId) || false : false
+  
+  const setIsExpanded = (newValue: boolean) => {
+    if (carId) {
+      toggleStates.set(carId, newValue)
+      setStoredState(carId, newValue)
+      forceUpdate({}) // Force re-render
+    }
+  }
   // Calculate values if not provided
   const calculatedPriceExclVat = priceExclVat || (price / (1 + vatRate / 100))
   const calculatedVatAmount = vatAmount || (price - calculatedPriceExclVat)
@@ -69,6 +121,61 @@ export default function PriceDisplay({
       : formatted
   }
 
+  // If toggle is enabled, show compact view with expandable details
+  if (enableToggle && priceExclVat) {
+    return (
+      <div className={`space-y-1 ${className}`}>
+        {/* Main price with VAT - always visible */}
+        <div className="flex items-baseline gap-2">
+          <span className={`text-primary-light ${sizeClasses[size].main}`}>
+            {formatPrice(price)}
+          </span>
+          <Badge variant="secondary" className="text-xs">
+            incl. VAT
+          </Badge>
+        </div>
+        
+        {/* Price excluding VAT - always visible */}
+        <div className={`text-gray-600 ${sizeClasses[size].breakdown}`}>
+          <span>Price (excl. VAT): </span>
+          <span className="font-semibold">{formatPrice(calculatedPriceExclVat)}</span>
+        </div>
+        
+        {/* More Details Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            const newState = !isExpanded
+            console.log(`[${componentId}] Toggling car ${carId}: ${isExpanded} -> ${newState}`)
+            setIsExpanded(newState)
+          }}
+          className="h-auto p-1 text-xs text-gray-600 hover:text-primary-light flex items-center gap-1"
+        >
+          {isExpanded ? 'Less Details' : 'More Details'}
+          {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+        </Button>
+        
+        {/* VAT breakdown - expandable */}
+        {isExpanded && (
+          <div className={`text-gray-600 space-y-1 ${sizeClasses[size].breakdown} bg-gray-50 p-3 rounded-md border`}>
+            <div className="flex justify-between">
+              <span>VAT ({vatRate}%):</span>
+              <span className="font-semibold">{formatPrice(calculatedVatAmount)}</span>
+            </div>
+            <div className="flex justify-between border-t pt-1 font-bold">
+              <span>Total:</span>
+              <span className="text-primary-light">{formatPrice(price)}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  // Legacy VAT breakdown display (for existing components that use showVatBreakdown)
   if (showVatBreakdown && priceExclVat) {
     return (
       <div className={`space-y-2 ${className}`}>
@@ -101,6 +208,7 @@ export default function PriceDisplay({
     )
   }
 
+  // Simple price display (default)
   return (
     <div className={`flex items-baseline gap-2 ${className}`}>
       <span className={`text-primary-light ${sizeClasses[size].main}`}>
@@ -118,4 +226,7 @@ export default function PriceDisplay({
       )}
     </div>
   )
-} 
+}
+
+// Export memoized component to ensure each instance is isolated
+export default memo(PriceDisplay)

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import PriceDisplay from "@/components/ui/price-display"
 import { 
   Car, 
   Users, 
@@ -30,6 +31,9 @@ interface CarData {
   category: string
   year: number
   price: number
+  price_excl_vat?: number
+  vat_rate?: number
+  vat_amount?: number
   currency: string
   color: string
   transmission: string
@@ -377,22 +381,62 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredCars.map((car) => (
                     <Card key={car.id} className="overflow-hidden">
-                      <div className="aspect-video bg-gray-200 flex items-center justify-center">
-                        <Car className="h-8 w-8 text-gray-400" />
+                      <div className="aspect-video bg-gray-200 flex items-center justify-center relative overflow-hidden">
+                        {car.image ? (
+                          <img 
+                            src={car.image} 
+                            alt={`${car.brand} ${car.name}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                        ) : null}
+                        <div className={`absolute inset-0 flex items-center justify-center ${car.image ? 'hidden' : ''}`}>
+                          <Car className="h-8 w-8 text-gray-400" />
+                        </div>
                       </div>
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-semibold">{car.brand} {car.name}</h3>
                             <p className="text-sm text-gray-500">{car.year} • {car.category}</p>
+                            {car.created_at && (
+                              <p className="text-sm text-gray-500 mt-1">
+                                <span className="text-xs">{new Date(car.created_at).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric'
+                                })}</span>
+                              </p>
+                            )}
                           </div>
-                          <Badge variant="outline">${car.price.toLocaleString()}</Badge>
+                          <div className="text-right">
+                            <PriceDisplay
+                              key={`admin-price-${car.id}`}
+                              price={car.price}
+                              priceExclVat={car.price_excl_vat}
+                              vatRate={car.vat_rate}
+                              vatAmount={car.vat_amount}
+                              currency={car.currency}
+                              enableToggle={true}
+                              carId={car.id}
+                              size="sm"
+                            />
+                          </div>
                         </div>
                         <p className="text-sm text-gray-600 mb-3">
                           Owner: {car.users?.full_name || 'Unknown'}
                         </p>
                         <div className="flex gap-2">
-                          <Button size="sm" variant="outline" className="flex-1">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => window.location.href = `/dashboard/edit-car/${car.id}`}
+                          >
                             <Edit size={14} className="mr-1" />
                             Edit
                           </Button>

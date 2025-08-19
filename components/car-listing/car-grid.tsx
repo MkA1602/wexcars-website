@@ -57,16 +57,6 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
     }))
   }
 
-  // Parse features from JSON if available
-  const parseFeatures = (featuresString: string | null | undefined): string[] => {
-    if (!featuresString) return []
-    try {
-      return JSON.parse(featuresString)
-    } catch {
-      return []
-    }
-  }
-
   if (!isMounted) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -90,8 +80,6 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
     <ErrorBoundary>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {cars.map((car) => {
-          const features = parseFeatures(car.features)
-          
           return (
             <Card
               key={car.id}
@@ -138,7 +126,11 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
                       </Link>
                     </h3>
                     <p className="text-gray-500 text-sm">
-                      {car.year} • {car.transmission || 'Manual'} • {car.color || 'Not specified'}
+                      {car.year} • {car.fuel_type || 'Not specified'} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      }) : 'Not specified'}</span>
                     </p>
                   </div>
                   {car.rating && (
@@ -153,6 +145,9 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
                 <div className="flex flex-wrap gap-1 mb-3">
                   <Badge variant="outline" className="text-xs bg-gray-50">
                     {car.category}
+                  </Badge>
+                  <Badge variant="outline" className="text-xs bg-gray-50">
+                    {car.transmission || 'Manual'}
                   </Badge>
                   {car.specifications?.engine?.toLowerCase().includes("electric") ? (
                     <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
@@ -171,42 +166,31 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
                   )}
                 </div>
 
-                {/* Top Features */}
-                {features.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-xs text-gray-600 mb-1">Features:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {features.slice(0, 3).map((feature) => (
-                        <Badge key={feature} variant="secondary" className="text-xs">
-                          {feature}
-                        </Badge>
-                      ))}
-                      {features.length > 3 && (
-                        <Badge variant="secondary" className="text-xs">
-                          +{features.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Short description */}
-                {car.description && (
-                  <p className="text-gray-600 text-sm line-clamp-2 mb-2">
-                    {car.description}
-                  </p>
-                )}
+                {/* Seller Information */}
+                <div className="mb-3">
+                  {car.seller_type === 'dealership' ? (
+                    <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                      🏢 {car.dealership_name || 'Dealership'}
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
+                      👤 Individual Seller
+                    </Badge>
+                  )}
+                </div>
               </CardContent>
               
               <CardFooter className="p-4 pt-0 flex justify-between items-center border-t mt-auto">
                 <div className="flex-1">
                   <PriceDisplay
+                    key={`price-${car.id}`}
                     price={car.price}
                     priceExclVat={car.price_excl_vat}
                     vatRate={car.vat_rate}
                     vatAmount={car.vat_amount}
                     currency={car.currency}
-                    showVatBreakdown={vatDisplay === "both"}
+                    enableToggle={true}
+                    carId={car.id}
                     size="sm"
                   />
                 </div>

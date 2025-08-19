@@ -96,7 +96,10 @@ export default function RegisterForm() {
       if (error) {
         setServerError(error.message)
       } else if (success) {
-        setSuccessMessage("Registration successful! Please check your email to verify your account.")
+        const message = "Registration successful! Please check your email to verify your account."
+        // Show success message briefly
+        setSuccessMessage(message || "Registration successful! Please check your email to verify your account.")
+        
         // Reset form
         setFormData({
           fullName: "",
@@ -104,6 +107,11 @@ export default function RegisterForm() {
           password: "",
           confirmPassword: "",
         })
+
+        // Redirect to email confirmation page after a brief delay
+        setTimeout(() => {
+          router.push('/auth/email-confirmation')
+        }, 2000)
       }
     } catch (error: any) {
       setServerError(error.message || "An unexpected error occurred")
@@ -241,3 +249,7 @@ export default function RegisterForm() {
     </div>
   )
 }
+
+0+.0
+0
+0.

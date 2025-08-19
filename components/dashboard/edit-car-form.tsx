@@ -51,7 +51,12 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     horsepower: car.horsepower || "",
     engine_size: car.engine_size || "",
     drivetrain: car.drivetrain || "",
+    chassis_number: car.chassis_number || "",
+    location: car.location || "",
     features: car.features ? JSON.parse(car.features) : [],
+    // Seller information
+    seller_type: car.seller_type || "individual",
+    dealership_name: car.dealership_name || "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -135,12 +140,22 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     if (uploadMethod === 'url') {
       if (!formData.image.trim()) {
         newErrors.image = "Image URL is required"
-      } else if (!/^https?:\/\/.+/.test(formData.image)) {
-        newErrors.image = "Please enter a valid image URL"
+      } else if (!/^https?:\/\/.+/.test(formData.image) && !formData.image.startsWith('data:image/')) {
+        newErrors.image = "Please enter a valid image URL or use the file upload option"
+      } else {
+        // Clear image error if we have a valid image
+        if (newErrors.image) {
+          delete newErrors.image
+        }
       }
     } else {
       if (selectedFiles.length === 0 && previewUrls.length === 0) {
         newErrors.image = "Please select at least one image file"
+      } else {
+        // Clear image error if we have files
+        if (newErrors.image) {
+          delete newErrors.image
+        }
       }
     }
 
@@ -149,6 +164,11 @@ export default function EditCarForm({ car }: EditCarFormProps) {
       newErrors.description = "Description is required"
     } else if (formData.description.length < 20) {
       newErrors.description = "Description must be at least 20 characters"
+    }
+
+    // Validate dealership name if seller type is dealership
+    if (formData.seller_type === 'dealership' && !formData.dealership_name.trim()) {
+      newErrors.dealership_name = "Dealership name is required when selling as a dealership"
     }
 
     return newErrors
@@ -180,19 +200,19 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         continue
       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({ ...prev, image: `${file.name} is too large (max 5MB)` }))
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setErrors((prev) => ({ ...prev, image: `${file.name} is too large (max 10MB)` }))
         continue
       }
 
       validFiles.push(file)
     }
 
-    // Check total files limit (max 10 images)
+    // Check total files limit (max 30 images)
     const totalFiles = previewUrls.length + validFiles.length
-    if (totalFiles > 10) {
-      setErrors((prev) => ({ ...prev, image: 'Maximum 10 images allowed' }))
+    if (totalFiles > 30) {
+      setErrors((prev) => ({ ...prev, image: `Maximum 30 images allowed. You can add ${30 - previewUrls.length} more images.` }))
       return
     }
 
@@ -258,6 +278,27 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     }
     
     setPreviewUrls(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const setPrimaryImage = (index: number) => {
+    if (index === 0) return // Already primary
+    
+    setPreviewUrls(prev => {
+      const newUrls = [...prev]
+      const primaryUrl = newUrls[0]
+      newUrls[0] = newUrls[index]
+      newUrls[index] = primaryUrl
+      return newUrls
+    })
+  }
+
+  const reorderImages = (fromIndex: number, toIndex: number) => {
+    setPreviewUrls(prev => {
+      const newUrls = [...prev]
+      const [movedUrl] = newUrls.splice(fromIndex, 1)
+      newUrls.splice(toIndex, 0, movedUrl)
+      return newUrls
+    })
   }
 
   const clearAllImages = () => {
@@ -379,6 +420,10 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         horsepower: formData.horsepower ? Number(formData.horsepower) : null,
         engine_size: formData.engine_size,
         drivetrain: formData.drivetrain,
+        chassis_number: formData.chassis_number,
+        location: formData.location,
+        seller_type: formData.seller_type,
+        dealership_name: formData.seller_type === 'dealership' ? formData.dealership_name : null,
         updated_at: new Date().toISOString(),
       }
 
@@ -516,6 +561,58 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                 />
               </div>
               {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
+            </div>
+          </div>
+
+          {/* Seller Information Section */}
+          <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+            <h3 className="font-semibold text-lg">Seller Information</h3>
+            
+            <div className="space-y-4">
+              {/* Seller Type Selection */}
+              <div className="space-y-3">
+                <Label>Seller Type</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="seller_type"
+                      value="individual"
+                      checked={formData.seller_type === 'individual'}
+                      onChange={handleChange}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Individual User</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="seller_type"
+                      value="dealership"
+                      checked={formData.seller_type === 'dealership'}
+                      onChange={handleChange}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Dealership</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Dealership Name Input */}
+              {formData.seller_type === 'dealership' && (
+                <div className="space-y-2">
+                  <Label htmlFor="dealership_name">Dealership Name</Label>
+                  <Input
+                    id="dealership_name"
+                    name="dealership_name"
+                    value={formData.dealership_name}
+                    onChange={handleChange}
+                    placeholder="Enter your dealership name"
+                    className={errors.dealership_name ? "border-red-500" : ""}
+                  />
+                  {errors.dealership_name && <p className="text-red-500 text-sm">{errors.dealership_name}</p>}
+                </div>
+              )}
             </div>
           </div>
 
@@ -681,6 +778,34 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                   <option value="Four-Wheel Drive">Four-Wheel Drive (4WD)</option>
                 </select>
               </div>
+
+              {/* Chassis Number */}
+              <div className="space-y-2">
+                <Label htmlFor="chassis_number">Chassis Number (VIN)</Label>
+                <Input
+                  id="chassis_number"
+                  name="chassis_number"
+                  value={formData.chassis_number}
+                  onChange={handleChange}
+                  placeholder="e.g. WBA12345678901234"
+                  className={errors.chassis_number ? "border-red-500" : ""}
+                />
+                {errors.chassis_number && <p className="text-red-500 text-sm">{errors.chassis_number}</p>}
+              </div>
+
+              {/* Location */}
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="e.g. Dubai, UAE"
+                  className={errors.location ? "border-red-500" : ""}
+                />
+                {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
+              </div>
             </div>
           </div>
 
@@ -812,7 +937,23 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                       {/* Image Grid */}
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         {previewUrls.map((url, index) => (
-                          <div key={index} className="relative group">
+                          <div 
+                            key={index} 
+                            className="relative group cursor-move"
+                            draggable
+                            onDragStart={(e) => {
+                              e.dataTransfer.setData('text/plain', index.toString())
+                            }}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                              e.preventDefault()
+                              const fromIndex = parseInt(e.dataTransfer.getData('text/plain'))
+                              const toIndex = index
+                              if (fromIndex !== toIndex) {
+                                reorderImages(fromIndex, toIndex)
+                              }
+                            }}
+                          >
                             <img
                               src={url}
                               alt={`Preview ${index + 1}`}
@@ -832,11 +973,24 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                                 Primary
                               </div>
                             )}
+                            {index !== 0 && (
+                              <button
+                                type="button"
+                                onClick={() => setPrimaryImage(index)}
+                                className="absolute bottom-1 left-1 bg-gray-600 hover:bg-blue-500 text-white text-xs px-2 py-1 rounded transition-colors"
+                                title="Set as primary image"
+                              >
+                                Set Primary
+                              </button>
+                            )}
                             {existingImages.includes(url) && (
                               <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-2 py-1 rounded">
                                 Saved
                               </div>
                             )}
+                            <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-1 py-0.5 rounded">
+                              {index + 1}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -844,7 +998,7 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                       {/* Controls */}
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-green-600 font-medium">
-                          ✓ {previewUrls.length} image{previewUrls.length !== 1 ? 's' : ''} total
+                          ✓ {previewUrls.length}/30 image{previewUrls.length !== 1 ? 's' : ''} total
                           {selectedFiles.length > 0 && ` (${selectedFiles.length} new)`}
                         </p>
                         <div className="flex gap-2">
@@ -854,6 +1008,7 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                             size="sm"
                             onClick={() => fileInputRef.current?.click()}
                             className="flex items-center gap-1"
+                            disabled={previewUrls.length >= 30}
                           >
                             <Plus size={14} />
                             Add More
@@ -880,6 +1035,9 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                           </Button>
                         </div>
                       </div>
+                      <p className="text-xs text-gray-500">
+                        Drag and drop images to reorder. The first image will be the primary image.
+                      </p>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -897,7 +1055,7 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                           </Button>
                         </p>
                         <p className="text-sm text-gray-500 mt-2">
-                          Supports: JPG, PNG, GIF, WebP (max 5MB each, 10 images max)
+                          Supports: JPG, PNG, GIF, WebP (max 10MB each, 30 images max)
                         </p>
                       </div>
                     </div>

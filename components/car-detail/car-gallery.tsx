@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import type { Car } from "@/lib/types"
-import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
+import { ZoomIn, Calendar, Image as ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface CarGalleryProps {
@@ -17,7 +17,9 @@ export default function CarGallery({ car }: CarGalleryProps) {
   const parseImages = (imagesString: string | null | undefined): string[] => {
     if (!imagesString) return []
     try {
-      return JSON.parse(imagesString)
+      const parsed = JSON.parse(imagesString)
+      // Ensure we have an array and filter out any empty/null values
+      return Array.isArray(parsed) ? parsed.filter(img => img && img.trim() !== '') : []
     } catch {
       return []
     }
@@ -30,13 +32,14 @@ export default function CarGallery({ car }: CarGalleryProps) {
   // Fallback to placeholder if no images
   const displayImages = images.length > 0 ? images : ["/placeholder.svg?height=400&width=600&query=luxury+car"]
 
-  const nextImage = () => {
-    setActiveIndex((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1))
-  }
+  // Ensure we have unique images for thumbnails
+  const uniqueImages = [...new Set(displayImages)]
+  const thumbnailImages = uniqueImages.slice(0, 4)
 
-  const prevImage = () => {
-    setActiveIndex((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1))
-  }
+  // Debug logging to check for duplicates
+  console.log('Original images:', displayImages)
+  console.log('Unique images:', uniqueImages)
+  console.log('Thumbnail images:', thumbnailImages)
 
   const openLightbox = () => {
     setShowLightbox(true)
@@ -48,98 +51,113 @@ export default function CarGallery({ car }: CarGalleryProps) {
 
   return (
     <>
-      <div className="bg-primary-light rounded-lg shadow-md overflow-hidden">
-        <div className="relative">
-          {/* Main image */}
-          <div className="relative h-[300px] md:h-[500px] bg-primary-light">
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+        {/* Main Image Section - Left Side - Made Smaller */}
+        <div className="lg:col-span-4 relative">
+          <div className="relative h-[300px] md:h-[400px] lg:h-[450px] bg-gray-50 rounded-lg overflow-hidden">
             <img
               src={displayImages[activeIndex] || "/placeholder.svg"}
               alt={`${car.brand} ${car.name}`}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover cursor-pointer"
+              onClick={openLightbox}
             />
+            
+            {/* Availability Banner */}
+            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-lg font-semibold text-sm flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              {car.availability === 'available_now' ? 'AVAILABLE NOW' : 
+               car.availability === 'available_soon' ? `AVAILABLE IN ${car.availability_days || 12} DAYS` :
+               car.availability === 'available_date' ? `AVAILABLE FROM ${car.availability_date || 'TBD'}` :
+               'AVAILABLE'}
+            </div>
+            
+            {/* Photo Count Button */}
+            <div className="absolute bottom-4 right-4 bg-gray-800 text-white px-3 py-2 rounded-lg font-medium text-sm flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              +{displayImages.length} photos
+            </div>
+            
+            {/* Zoom Button */}
             <Button
               variant="outline"
               size="icon"
-              className="absolute top-4 right-4 bg-white/80 hover:bg-white"
+              className="absolute top-4 right-4 bg-white/90 hover:bg-white shadow-md"
               onClick={openLightbox}
             >
               <ZoomIn size={20} />
             </Button>
           </div>
-
-          {/* Navigation arrows */}
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80 hover:bg-white"
-            onClick={prevImage}
-          >
-            <ChevronLeft size={20} />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80 hover:bg-white"
-            onClick={nextImage}
-          >
-            <ChevronRight size={20} />
-          </Button>
         </div>
 
-        {/* Thumbnails */}
-        <div className="flex p-2 overflow-x-auto bg-white">
-          {displayImages.map((image, index) => (
-            <div
-              key={index}
-              className={`relative flex-shrink-0 w-24 h-16 mx-1 cursor-pointer ${
-                activeIndex === index ? "ring-2 ring-primary-light" : ""
-              }`}
-              onClick={() => setActiveIndex(index)}
-            >
-              <img src={image || "/placeholder.svg"} alt="" className="w-full h-full object-cover" />
-            </div>
-          ))}
+        {/* Thumbnail Grid - Right Side - Made Bigger */}
+        <div className="lg:col-span-2">
+          <div className="grid grid-cols-2 gap-3">
+            {thumbnailImages.map((image, index) => (
+              <div
+                key={`thumbnail-${index}-${image}`}
+                className={`relative aspect-square bg-gray-50 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:scale-105 ${
+                  activeIndex === index ? "ring-2 ring-red-600/30" : "hover:ring-2 hover:ring-red-300/30"
+                }`}
+                onClick={() => setActiveIndex(index)}
+              >
+                <img 
+                  src={image} 
+                  alt={`${car.brand} ${car.name} view ${index + 1}`} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Lightbox */}
       {showLightbox && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center" onClick={closeLightbox}>
-          <div className="relative max-w-4xl max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-6xl max-h-[90vh] p-4" onClick={(e) => e.stopPropagation()}>
             <img
               src={displayImages[activeIndex] || "/placeholder.svg"}
               alt={`${car.brand} ${car.name}`}
-              className="max-w-full max-h-[90vh] object-contain"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />
+            
+            {/* Navigation in Lightbox */}
             <Button
               variant="outline"
               size="icon"
-              className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/20 hover:bg-white/40"
+              className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white border-white/30"
               onClick={(e) => {
                 e.stopPropagation()
-                prevImage()
+                setActiveIndex(prev => prev === 0 ? displayImages.length - 1 : prev - 1)
               }}
             >
-              <ChevronLeft size={24} />
+              ←
             </Button>
             <Button
               variant="outline"
               size="icon"
-              className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/20 hover:bg-white/40"
+              className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white border-white/30"
               onClick={(e) => {
                 e.stopPropagation()
-                nextImage()
+                setActiveIndex(prev => prev === displayImages.length - 1 ? 0 : prev + 1)
               }}
             >
-              <ChevronRight size={24} />
+              →
             </Button>
+            
+            {/* Image Counter */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-lg">
+              {activeIndex + 1} of {displayImages.length}
+            </div>
+            
+            {/* Close Button */}
             <Button
               variant="outline"
               size="sm"
-              className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white"
+              className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white border-white/30"
               onClick={closeLightbox}
             >
-              Close
+              ✕
             </Button>
           </div>
         </div>

@@ -92,8 +92,21 @@ export default function CarListingPage() {
             seating: 'Not specified'
           },
           user_id: car.user_id,
+          seller_type: car.seller_type || 'individual',
+          dealership_name: car.dealership_name,
           created_at: car.created_at,
-          updated_at: car.updated_at
+          updated_at: car.updated_at,
+          // Add the new fields that exist in database but not in Car interface
+          mileage: car.mileage,
+          fuel_type: car.fuel_type,
+          horsepower: car.horsepower,
+          gearbox: car.gearbox,
+          car_type: car.car_type,
+          engine_size: car.engine_size,
+          drivetrain: car.drivetrain,
+          availability: car.availability,
+          availability_days: car.availability_days,
+          availability_date: car.availability_date
         }))
 
         setCars(transformedCars)

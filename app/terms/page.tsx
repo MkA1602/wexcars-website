@@ -91,7 +91,7 @@ export default function TermsPage() {
               <br />
               Phone: +1 (555) 123-4567
               <br />
-              Address: 123 Luxury Lane, Beverly Hills, CA 90210, United States
+              Address: 215 52 Malmo. Sweden
             </p>
           </div>
         </div>

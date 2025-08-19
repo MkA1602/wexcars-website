@@ -73,8 +73,20 @@ export default function CarDetail() {
             seating: 'Not specified'
           },
           user_id: carData.user_id,
+          seller_type: carData.seller_type || 'individual',
+          dealership_name: carData.dealership_name,
           created_at: carData.created_at,
-          updated_at: carData.updated_at
+          updated_at: carData.updated_at,
+          mileage: carData.mileage,
+          fuel_type: carData.fuel_type,
+          horsepower: carData.horsepower,
+          gearbox: carData.gearbox,
+          car_type: carData.car_type,
+          engine_size: carData.engine_size,
+          drivetrain: carData.drivetrain,
+          availability: carData.availability,
+          availability_days: carData.availability_days,
+          availability_date: carData.availability_date
         }
 
         setCar(transformedCar)

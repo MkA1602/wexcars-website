@@ -257,8 +257,10 @@ export default function PricingContent() {
             Join thousands of satisfied customers who have elevated their driving experience with WexCars.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button className="bg-white hover:bg-gray-100 text-primary-light">Get Started Today</Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white/10 bg-gray-500">
+            <Button className="bg-white hover:bg-gray-100 text-primary-light transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              Get Started Today
+            </Button>
+            <Button className="bg-white hover:bg-gray-100 text-primary-light transition-all duration-300 hover:scale-105 hover:shadow-lg">
               Contact Us
             </Button>
           </div>

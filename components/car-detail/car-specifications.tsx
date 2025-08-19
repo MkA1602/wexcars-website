@@ -1,5 +1,6 @@
 import type { Car } from "@/lib/types"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Link from "next/link"
 
 interface CarSpecificationsProps {
   car: Car
@@ -128,6 +129,30 @@ export default function CarSpecifications({ car }: CarSpecificationsProps) {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Description Section */}
+      {car.description && (
+        <div className="mt-8 pt-8 border-t border-gray-200">
+          <h3 className="text-xl font-bold mb-4">Description</h3>
+          <p className="text-gray-700 leading-relaxed">{car.description}</p>
+        </div>
+      )}
+
+      {/* Interested Section */}
+      <div className="mt-8 pt-8 border-t border-gray-200">
+        <h3 className="text-xl font-bold mb-4">Interested?</h3>
+        <p className="text-gray-600 mb-4">
+          Contact our luxury car specialists to get more information about this vehicle.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link 
+            href="/contact" 
+            className="bg-primary-light hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-medium text-center transition-colors"
+          >
+            Contact Us
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

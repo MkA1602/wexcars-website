@@ -84,8 +84,21 @@ const FeaturedCars = () => {
             seating: 'Not specified'
           },
           user_id: car.user_id,
+          seller_type: car.seller_type || 'individual',
+          dealership_name: car.dealership_name,
           created_at: car.created_at,
-          updated_at: car.updated_at
+          updated_at: car.updated_at,
+          // Add the new fields that exist in database but not in Car interface
+          mileage: car.mileage,
+          fuel_type: car.fuel_type,
+          horsepower: car.horsepower,
+          gearbox: car.gearbox,
+          car_type: car.car_type,
+          engine_size: car.engine_size,
+          drivetrain: car.drivetrain,
+          availability: car.availability,
+          availability_days: car.availability_days,
+          availability_date: car.availability_date
         }))
 
         setCars(transformedCars)
@@ -200,7 +213,11 @@ const FeaturedCars = () => {
                         </Link>
                       </h3>
                       <p className="text-gray-500 text-sm">
-                        {car.year} • {car.transmission} • {car.color}
+                        {car.year} • {car.fuel_type || 'Not specified'} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        }) : 'Not specified'}</span>
                       </p>
                     </div>
                     <div className="flex items-center ml-2">
@@ -222,12 +239,17 @@ const FeaturedCars = () => {
                 
                 <CardFooter className="p-4 pt-0 flex justify-between items-center border-t mt-auto">
                   <div className="flex-1">
-                                         <PriceDisplay
-                       price={car.price}
-                       currency={car.currency}
-                       showVatBreakdown={false}
-                       className="text-lg font-semibold"
-                     />
+                    <PriceDisplay
+                      key={`featured-price-${car.id}`}
+                      price={car.price}
+                      priceExclVat={car.price_excl_vat}
+                      vatRate={car.vat_rate}
+                      vatAmount={car.vat_amount}
+                      currency={car.currency}
+                      enableToggle={true}
+                      carId={car.id}
+                      size="sm"
+                    />
                   </div>
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/collections/${car.id}`}>

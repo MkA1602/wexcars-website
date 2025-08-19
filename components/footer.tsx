@@ -253,20 +253,19 @@ const Footer = () => {
               <h5 className="text-lg font-semibold text-white">Contact Info</h5>
               <div className="space-y-3">
                 <div className="flex items-start space-x-3 text-gray-medium">
-                  <MapPin className="w-5 h-5 mt-0.5 text-primary" />
+                  <MapPin className="w-5 h-5 mt-0.5 text-red-500" />
                   <div>
-                    <p className="text-sm">Sweden-Malmö</p>
-                    <p className="text-sm">Docentgatan 2e, 21552 Malmö</p>
+                    <p className="text-sm">215 52 Malmo. Sweden</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-medium">
-                  <Phone className="w-5 h-5 text-primary" />
+                  <Phone className="w-5 h-5 text-red-500" />
                   <a href="tel:+1234567890" className="text-sm hover:text-white transition-colors duration-200">
                     +46 737 200588
                   </a>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-medium">
-                  <Mail className="w-5 h-5 text-primary" />
+                  <Mail className="w-5 h-5 text-red-500" />
                   <a href="mailto:info@wexcars.com" className="text-sm hover:text-white transition-colors duration-200">
                     info@wexcars.com
                   </a>

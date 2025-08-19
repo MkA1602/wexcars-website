@@ -50,6 +50,14 @@ export default function AddCarForm() {
     horsepower: "",
     engine_size: "",
     drivetrain: "",
+    chassis_number: "",
+    location: "",
+    availability_type: "available_now",
+    availability_days: 12,
+    availability_date: "",
+    // Seller information
+    seller_type: "individual" as "individual" | "dealership",
+    dealership_name: "",
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -124,12 +132,22 @@ export default function AddCarForm() {
     if (uploadMethod === 'url') {
       if (!formData.image.trim()) {
         newErrors.image = "Image URL is required"
-      } else if (!/^https?:\/\/.+/.test(formData.image)) {
-        newErrors.image = "Please enter a valid image URL"
+      } else if (!/^https?:\/\/.+/.test(formData.image) && !formData.image.startsWith('data:image/')) {
+        newErrors.image = "Please enter a valid image URL or use the file upload option"
+      } else {
+        // Clear image error if we have a valid image
+        if (newErrors.image) {
+          delete newErrors.image
+        }
       }
     } else {
       if (selectedFiles.length === 0 && previewUrls.length === 0) {
         newErrors.image = "Please select at least one image file"
+      } else {
+        // Clear image error if we have files
+        if (newErrors.image) {
+          delete newErrors.image
+        }
       }
     }
 
@@ -138,6 +156,11 @@ export default function AddCarForm() {
       newErrors.description = "Description is required"
     } else if (formData.description.length < 20) {
       newErrors.description = "Description must be at least 20 characters"
+    }
+
+    // Validate dealership name if seller type is dealership
+    if (formData.seller_type === 'dealership' && !formData.dealership_name.trim()) {
+      newErrors.dealership_name = "Dealership name is required when selling as a dealership"
     }
 
     setErrors(newErrors)
@@ -150,6 +173,33 @@ export default function AddCarForm() {
       ...prev,
       [name]: value,
     }))
+
+    // Auto-detect image type and switch upload method if needed
+    if (name === 'image' && value.trim()) {
+      if (value.startsWith('data:image/')) {
+        // If it's a base64 image, switch to file upload method
+        setUploadMethod('file')
+        // Clear any image errors
+        if (errors.image) {
+          setErrors((prev) => {
+            const newErrors = { ...prev }
+            delete newErrors.image
+            return newErrors
+          })
+        }
+      } else if (value.startsWith('http://') || value.startsWith('https://')) {
+        // If it's a regular URL, switch to URL method
+        setUploadMethod('url')
+        // Clear any image errors
+        if (errors.image) {
+          setErrors((prev) => {
+            const newErrors = { ...prev }
+            delete newErrors.image
+            return newErrors
+          })
+        }
+      }
+    }
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -165,7 +215,7 @@ export default function AddCarForm() {
       const priceExclVat = name === 'priceExclVat' ? value : formData.priceExclVat
       const vatRate = name === 'vatRate' ? value : formData.vatRate
       
-      const { priceWithVat } = calculatePrices(priceExclVat, vatRate)
+      const { priceWithVat, vatAmount } = calculatePrices(priceExclVat, vatRate)
       if (priceWithVat) {
         setFormData((prev) => ({
           ...prev,
@@ -214,6 +264,12 @@ export default function AddCarForm() {
       setServerError("Some files were skipped. Please ensure all files are images under 10MB")
     } else {
       setServerError(null)
+    }
+
+    // Check if adding these files would exceed the 30 image limit
+    if (selectedFiles.length + validFiles.length > 30) {
+      setServerError(`Maximum 30 images allowed. You can add ${30 - selectedFiles.length} more images.`)
+      return
     }
 
     if (validFiles.length > 0) {
@@ -267,6 +323,42 @@ export default function AddCarForm() {
   const removeFile = (index: number) => {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index))
     setPreviewUrls(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const setPrimaryImage = (index: number) => {
+    if (index === 0) return // Already primary
+    
+    setSelectedFiles(prev => {
+      const newFiles = [...prev]
+      const primaryFile = newFiles[0]
+      newFiles[0] = newFiles[index]
+      newFiles[index] = primaryFile
+      return newFiles
+    })
+    
+    setPreviewUrls(prev => {
+      const newUrls = [...prev]
+      const primaryUrl = newUrls[0]
+      newUrls[0] = newUrls[index]
+      newUrls[index] = primaryUrl
+      return newUrls
+    })
+  }
+
+  const reorderImages = (fromIndex: number, toIndex: number) => {
+    setSelectedFiles(prev => {
+      const newFiles = [...prev]
+      const [movedFile] = newFiles.splice(fromIndex, 1)
+      newFiles.splice(toIndex, 0, movedFile)
+      return newFiles
+    })
+    
+    setPreviewUrls(prev => {
+      const newUrls = [...prev]
+      const [movedUrl] = newUrls.splice(fromIndex, 1)
+      newUrls.splice(toIndex, 0, movedUrl)
+      return newUrls
+    })
   }
 
   const clearAllFiles = () => {
@@ -354,7 +446,6 @@ export default function AddCarForm() {
         updated_at: new Date().toISOString(),
         transmission: formData.transmission,
         color: formData.color,
-        availability: formData.availability,
         fuel_type: formData.fuel_type,
         gearbox: formData.gearbox,
         mileage: formData.mileage ? Number(formData.mileage) : null,
@@ -362,6 +453,13 @@ export default function AddCarForm() {
         horsepower: formData.horsepower ? Number(formData.horsepower) : null,
         engine_size: formData.engine_size,
         drivetrain: formData.drivetrain,
+        chassis_number: formData.chassis_number,
+        location: formData.location,
+        seller_type: formData.seller_type,
+        dealership_name: formData.seller_type === 'dealership' ? formData.dealership_name : null,
+        availability: formData.availability_type,
+        availability_days: formData.availability_type === 'available_soon' ? Number(formData.availability_days) : null,
+        availability_date: formData.availability_type === 'available_date' ? formData.availability_date : null,
       }
 
       console.log('Inserting car data:', carData)
@@ -653,6 +751,161 @@ export default function AddCarForm() {
                   <option value="Four-Wheel Drive">Four-Wheel Drive (4WD)</option>
                 </select>
               </div>
+
+              {/* Chassis Number */}
+              <div className="space-y-2">
+                <Label htmlFor="chassis_number">Chassis Number (VIN)</Label>
+                <Input
+                  id="chassis_number"
+                  name="chassis_number"
+                  value={formData.chassis_number}
+                  onChange={handleChange}
+                  placeholder="e.g. WBA12345678901234"
+                  className={errors.chassis_number ? "border-red-500" : ""}
+                />
+                {errors.chassis_number && <p className="text-red-500 text-sm">{errors.chassis_number}</p>}
+              </div>
+
+              {/* Location */}
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="e.g. Dubai, UAE"
+                  className={errors.location ? "border-red-500" : ""}
+                />
+                {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
+              </div>
+
+              {/* Availability Section */}
+              <div className="space-y-2">
+                <Label>Availability</Label>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="available_now"
+                      name="availability_type"
+                      value="available_now"
+                      checked={formData.availability_type === 'available_now'}
+                      onChange={handleChange}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <Label htmlFor="available_now" className="cursor-pointer">Available Now</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="available_soon"
+                      name="availability_type"
+                      value="available_soon"
+                      checked={formData.availability_type === 'available_soon'}
+                      onChange={handleChange}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <Label htmlFor="available_soon" className="cursor-pointer">Available Soon</Label>
+                  </div>
+                  
+                  {formData.availability_type === 'available_soon' && (
+                    <div className="ml-6">
+                      <Label htmlFor="availability_days">Days until available</Label>
+                      <Input
+                        id="availability_days"
+                        name="availability_days"
+                        type="number"
+                        min="1"
+                        value={formData.availability_days}
+                        onChange={handleChange}
+                        placeholder="e.g. 12"
+                        className="w-full"
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id="available_date"
+                      name="availability_type"
+                      value="available_date"
+                      checked={formData.availability_type === 'available_date'}
+                      onChange={handleChange}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <Label htmlFor="available_date" className="cursor-pointer">Available from specific date</Label>
+                  </div>
+                  
+                  {formData.availability_type === 'available_date' && (
+                    <div className="ml-6">
+                      <Label htmlFor="availability_date">Available from date</Label>
+                      <Input
+                        id="availability_date"
+                        name="availability_date"
+                        type="date"
+                        value={formData.availability_date}
+                        onChange={handleChange}
+                        className="w-full"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Seller Information Section */}
+          <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+            <h3 className="font-semibold text-lg">Seller Information</h3>
+            
+            <div className="space-y-4">
+              {/* Seller Type Selection */}
+              <div className="space-y-3">
+                <Label>Seller Type</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="seller_type"
+                      value="individual"
+                      checked={formData.seller_type === 'individual'}
+                      onChange={handleChange}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Individual User</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="seller_type"
+                      value="dealership"
+                      checked={formData.seller_type === 'dealership'}
+                      onChange={handleChange}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Dealership</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Dealership Name Input */}
+              {formData.seller_type === 'dealership' && (
+                <div className="space-y-2">
+                  <Label htmlFor="dealership_name">Dealership Name</Label>
+                  <Input
+                    id="dealership_name"
+                    name="dealership_name"
+                    value={formData.dealership_name}
+                    onChange={handleChange}
+                    placeholder="Enter your dealership name"
+                    className={errors.dealership_name ? "border-red-500" : ""}
+                  />
+                  {errors.dealership_name && <p className="text-red-500 text-sm">{errors.dealership_name}</p>}
+                </div>
+              )}
             </div>
           </div>
 
@@ -680,14 +933,16 @@ export default function AddCarForm() {
                     id="priceExclVat"
                     name="priceExclVat"
                     type="number"
-                    step="0.01"
+                    step="1"
+                    min="0"
                     value={formData.priceExclVat}
                     onChange={handleChange}
-                    placeholder="e.g. 100000"
+                    placeholder="e.g. 257240 (full amount)"
                     className={`flex-1 ${errors.priceExclVat ? "border-red-500" : ""}`}
                   />
                 </div>
                 {errors.priceExclVat && <p className="text-red-500 text-sm">{errors.priceExclVat}</p>}
+                <p className="text-xs text-gray-500">Enter the full price amount (e.g., 257240 for €257,240)</p>
               </div>
 
               <div className="space-y-2">
@@ -845,7 +1100,7 @@ export default function AddCarForm() {
                       <span className="font-medium">Click to upload</span> or drag and drop
                     </div>
                     <div className="text-xs text-gray-500">
-                      PNG, JPG, GIF up to 10MB
+                      PNG, JPG, GIF up to 10MB (Max 30 images)
                     </div>
                   </div>
                   <input
@@ -871,7 +1126,9 @@ export default function AddCarForm() {
                 {previewUrls.length > 0 && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Selected Images ({previewUrls.length})</span>
+                      <span className="text-sm font-medium">
+                        Selected Images ({previewUrls.length}/30)
+                      </span>
                       <Button
                         type="button"
                         variant="outline"
@@ -885,7 +1142,23 @@ export default function AddCarForm() {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                       {previewUrls.map((url, index) => (
-                        <div key={index} className="relative group">
+                        <div 
+                          key={index} 
+                          className="relative group cursor-move"
+                          draggable
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('text/plain', index.toString())
+                          }}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            e.preventDefault()
+                            const fromIndex = parseInt(e.dataTransfer.getData('text/plain'))
+                            const toIndex = index
+                            if (fromIndex !== toIndex) {
+                              reorderImages(fromIndex, toIndex)
+                            }
+                          }}
+                        >
                           <img
                             src={url}
                             alt={`Preview ${index + 1}`}
@@ -903,9 +1176,25 @@ export default function AddCarForm() {
                               Primary
                             </div>
                           )}
+                          {index !== 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setPrimaryImage(index)}
+                              className="absolute bottom-1 left-1 bg-gray-600 hover:bg-blue-500 text-white text-xs px-2 py-1 rounded transition-colors"
+                              title="Set as primary image"
+                            >
+                              Set Primary
+                            </button>
+                          )}
+                          <div className="absolute top-1 left-1 bg-black/50 text-white text-xs px-1 py-0.5 rounded">
+                            {index + 1}
+                          </div>
                         </div>
                       ))}
                     </div>
+                    <p className="text-xs text-gray-500">
+                      Drag and drop images to reorder. The first image will be the primary image.
+                    </p>
                   </div>
                 )}
               </div>
@@ -914,11 +1203,11 @@ export default function AddCarForm() {
                 <Input
                   id="image"
                   name="image"
-                  type="url"
+                  type="text"
                   value={formData.image}
                   onChange={handleChange}
-                  placeholder="https://example.com/car-image.jpg"
-                  className={errors.image ? "border-red-500" : ""}
+                  placeholder="Enter image URL or paste base64 image data"
+                  className={`${errors.image ? "border-red-500" : ""} ${formData.image && (formData.image.startsWith('http') || formData.image.startsWith('data:image/')) ? "border-green-500" : ""}`}
                 />
                 {formData.image && (
                   <div className="mt-2">
@@ -926,10 +1215,18 @@ export default function AddCarForm() {
                       src={formData.image}
                       alt="Preview"
                       className="w-32 h-24 object-cover rounded-lg border"
-                      onError={() => setErrors(prev => ({ ...prev, image: "Invalid image URL" }))}
+                      onError={() => {
+                        // Only show error if it's not a base64 image
+                        if (!formData.image.startsWith('data:image/')) {
+                          setErrors(prev => ({ ...prev, image: "Invalid image URL" }))
+                        }
+                      }}
                     />
                   </div>
                 )}
+                <p className="text-xs text-gray-500">
+                  You can enter a URL (starting with http:// or https://) or paste base64 image data
+                </p>
               </div>
             )}
             {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}

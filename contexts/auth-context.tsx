@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        return { error, success: false }
+        return { error, success: false, message: null }
       }
 
       // User profile will be created automatically by the database trigger
@@ -140,9 +140,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      return { error: null, success: true }
+      return { error: null, success: true, message: 'Registration completed successfully.' }
     } catch (error) {
-      return { error, success: false }
+      return { error, success: false, message: null }
     } finally {
       setIsLoading(false)
     }

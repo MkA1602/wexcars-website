@@ -25,10 +25,10 @@ export default function GoogleMap({ className = "", height = "400px" }: GoogleMa
       if (!window.google || !mapRef.current) return
 
       try {
-        // WexCars location in Malmö, Sweden
+        // WexCars location in Beverly Hills, CA
         const wexCarsLocation = {
-          lat: 55.5893, // Malmö latitude
-          lng: 13.0004, // Malmö longitude
+          lat: 34.0736, // Beverly Hills latitude
+          lng: -118.4004, // Beverly Hills longitude
         }
 
         const map = new window.google.maps.Map(mapRef.current, {
@@ -103,8 +103,8 @@ export default function GoogleMap({ className = "", height = "400px" }: GoogleMa
               <h3 style="margin: 0 0 10px 0; color: #1a365d; font-size: 16px;">WexCars</h3>
               <p style="margin: 0 0 5px 0; color: #666; font-size: 14px;">
                 <strong>Address:</strong><br>
-                Docentgatan 2E<br>
-                21552 Malmö, Sweden
+                123 Luxury Lane<br>
+                Beverly Hills, CA 90210, United States
               </p>
               <p style="margin: 0 0 5px 0; color: #666; font-size: 14px;">
                 <strong>Phone:</strong> +46 737 200588

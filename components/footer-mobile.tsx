@@ -107,13 +107,13 @@ const FooterMobile = () => {
           <h5 className="font-semibold text-white mb-4">Contact Us</h5>
           <div className="space-y-2 text-sm text-gray-medium">
             <div className="flex items-center justify-center space-x-2">
-              <Phone className="w-4 h-4 text-primary" />
+              <Phone className="w-4 h-4 text-red-500" />
               <a href="tel:+1234567890" className="hover:text-white transition-colors duration-200">
                 +1 (234) 567-8900
               </a>
             </div>
             <div className="flex items-center justify-center space-x-2">
-              <Mail className="w-4 h-4 text-primary" />
+              <Mail className="w-4 h-4 text-red-500" />
               <a href="mailto:info@wexcars.com" className="hover:text-white transition-colors duration-200">
                 info@wexcars.com
               </a>

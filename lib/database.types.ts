@@ -43,6 +43,10 @@ export interface Database {
           image: string
           description: string
           user_id: string
+          seller_type: string
+          dealership_name: string | null
+          chassis_number: string | null
+          location: string | null
           created_at: string
           updated_at: string
         }
@@ -56,6 +60,10 @@ export interface Database {
           image: string
           description: string
           user_id: string
+          seller_type?: string
+          dealership_name?: string | null
+          chassis_number?: string | null
+          location?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -69,6 +77,10 @@ export interface Database {
           image?: string
           description?: string
           user_id?: string
+          seller_type?: string
+          dealership_name?: string | null
+          chassis_number?: string | null
+          location?: string | null
           created_at?: string
           updated_at?: string
         }

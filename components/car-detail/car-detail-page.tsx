@@ -1,115 +1,494 @@
-import type React from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
-import type { Car } from "@/lib/types"
-import { formatCurrency } from "@/lib/utils"
-import CarHero from "./car-hero"
+import { Home, Car as CarIcon, Edit, Trash2, User, Shield, MessageCircle, Heart, Sofa, Car as CarIcon2, ShieldCheck, Monitor, Star, Settings } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/contexts/auth-context"
 import CarGallery from "./car-gallery"
 import CarSpecifications from "./car-specifications"
+import CarInquiryForm from "./car-inquiry-form"
+import type { Car } from "@/lib/types"
+import { formatCurrency } from "@/lib/utils"
 import RelatedCars from "./related-cars"
 
 interface CarDetailPageProps {
   car: Car
 }
 
-const CarDetailPage: React.FC<CarDetailPageProps> = ({ car }) => {
+export default function CarDetailPage({ car }: CarDetailPageProps) {
+  const { user } = useAuth()
+  const router = useRouter()
+  const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false)
+  
+  // Debug logging to see what's in the car object
+  console.log('Car object:', car)
+  console.log('Car mileage:', car.mileage)
+  console.log('Car mileage type:', typeof car.mileage)
+  console.log('Car fuel_type:', car.fuel_type)
+  console.log('Car horsepower:', car.horsepower)
+  
+  // Check all possible field names for mileage
+  console.log('All car object keys:', Object.keys(car))
+  console.log('All car object values:', Object.values(car))
+  
+  // Check if mileage might be in specifications
+  console.log('Car specifications:', car.specifications)
+  
+  // Check if mileage might be in a different field
+  const possibleMileageFields = ['mileage', 'odometer', 'distance', 'km', 'kilometers', 'miles']
+  possibleMileageFields.forEach(field => {
+    console.log(`Checking field "${field}":`, (car as any)[field])
+  })
+
+  const getMileageDisplay = (car: Car) => {
+    const mileage = car.mileage
+    console.log('getMileageDisplay called with:', mileage)
+    console.log('Mileage type:', typeof mileage)
+    console.log('Mileage value:', mileage)
+    
+    // Handle the mileage field (now properly typed as number | null)
+    if (mileage !== null && mileage !== undefined) {
+      if (typeof mileage === 'number') {
+        // Check if it's a valid positive number
+        if (mileage > 0) {
+          return `${mileage.toLocaleString()} km`
+        } else if (mileage === 0) {
+          return '0 km'
+        }
+      }
+    }
+    return 'Mileage not specified'
+  }
+
+  // Check if current user owns this car
+  const isCarOwner = user?.id === car.user_id
+  const isAdmin = user?.role === 'admin'
+
   return (
-    <div className="min-h-screen">
-      {/* Breadcrumb Navigation */}
-      <nav className="bg-white border-b border-gray-200 py-4 px-6 md:px-12">
+    <div className="min-h-screen bg-gray-50">
+      {/* Top Navigation Bar with Dashboard Integration */}
+      <nav className="bg-white border-b border-gray-200 py-4 px-6 md:px-12 sticky top-0 z-50">
         <div className="container mx-auto">
-          <div className="flex items-center space-x-2 text-sm">
-            <Link href="/" className="text-gray-500 hover:text-primary-light transition-colors">
-              Home
-            </Link>
-            <span className="text-gray-400">/</span>
-            <Link href="/collections" className="text-gray-500 hover:text-primary-light transition-colors">
-              Collections
-            </Link>
-            <span className="text-gray-400">/</span>
-            <span className="text-gray-900 font-medium">
-              {car.brand} {car.name}
-            </span>
+          <div className="flex items-center justify-between">
+            {/* Left Side - Breadcrumbs */}
+            <div className="flex items-center space-x-2 text-sm">
+              <Link href="/" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-2">
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
+              <span className="text-gray-400">/</span>
+              <Link href="/collections" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-2">
+                <CarIcon className="w-4 h-4" />
+                Collections
+              </Link>
+              <span className="text-gray-400">/</span>
+              <span className="text-gray-900 font-medium">
+                {car.brand} {car.name}
+              </span>
+            </div>
+
+            {/* Right Side - Dashboard Actions */}
+            <div className="flex items-center gap-4">
+              {isCarOwner && (
+                <>
+                  <Link href={`/dashboard/edit-car/${car.id}`}>
+                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                      <Edit className="w-4 h-4" />
+                      Edit Car
+                    </Button>
+                  </Link>
+                  <Button variant="destructive" size="sm" className="flex items-center gap-2">
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </Button>
+                </>
+              )}
+              
+              {isAdmin && (
+                <Link href="/admin/dashboard">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    Admin
+                  </Button>
+                </Link>
+              )}
+              
+              <Link href="/dashboard">
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Dashboard
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Car Hero Section */}
-      <CarHero car={car} />
-
-      {/* Car Details Content */}
-      <main className="bg-gray-50 py-12">
+      {/* Main Content */}
+      <main className="py-8">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-            {/* Car Gallery */}
-            <div>
-              <CarGallery car={car} />
+          {/* Car Gallery Section */}
+          <div className="mb-8">
+            <CarGallery car={car} />
+          </div>
+
+          {/* Car Information and Pricing Section - Clean Design */}
+          <div className="mb-12">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+              {/* Left Side - Car Name and Specifications */}
+              <div className="flex-1">
+                {/* Car Name and Year */}
+                <div className="mb-6">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                    {car.brand} {car.name}, {car.year}
+                  </h1>
+                  <div className="flex items-center gap-4">
+                    <p className="text-lg text-gray-600">
+                      {car.year} • {getMileageDisplay(car)}
+                    </p>
+                    
+                    {/* Specification Tags - Smaller and beside mileage */}
+                    <div className="flex items-center gap-2">
+                      {car.fuel_type && (
+                        <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
+                          {car.fuel_type}
+                        </span>
+                      )}
+                      {car.specifications?.power && (
+                        <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
+                          {car.specifications.power}
+                        </span>
+                      )}
+                      {car.specifications?.drivetrain && (
+                        <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
+                          {car.specifications.drivetrain}
+                        </span>
+                      )}
+                      {car.transmission && (
+                        <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
+                          {car.transmission}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Remove the old Specification Tags section */}
+              </div>
+              
+              {/* Right Side - Pricing and Buy Button */}
+              <div className="flex flex-col items-end gap-4">
+                {/* Pricing Information */}
+                <div className="text-right">
+                  <div className="text-3xl font-bold mb-1">
+                    <span className="text-gray-600 font-normal text-lg">Price excl. VAT: </span>
+                    <span className="text-red-600">€{(car.price_excl_vat || car.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                  </div>
+                  <div className="text-xl text-gray-600">
+                    <span className="font-normal text-base">Price incl. VAT: </span>
+                    €{car.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  </div>
+                </div>
+                
+                {/* Buy Button */}
+                <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 text-lg font-semibold rounded-lg" onClick={() => setIsInquiryModalOpen(true)}>
+                  Buy the car
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Sidebar and Content Area */}
+          <div className="flex flex-col lg:flex-row gap-12">
+            {/* Left Sidebar Navigation - Clean Design */}
+            <div className="lg:w-64 flex-shrink-0">
+              <div className="sticky top-24">
+                <h3 className="font-semibold text-xl mb-6 text-gray-900">Navigation</h3>
+                <nav className="space-y-1">
+                  <a href="#specification" className="flex items-center justify-between p-4 rounded-lg bg-primary-light/10 text-primary-dark font-medium border-l-4 border-primary-light">
+                    <span>Specification</span>
+                    <span className="text-xs">▼</span>
+                  </a>
+                  <a href="#features" className="flex items-center justify-between p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30">
+                    <span>Features</span>
+                    <span className="text-xs">▼</span>
+                  </a>
+                  <a href="#description" className="flex items-center justify-between p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30">
+                    <span>Description</span>
+                    <span className="text-xs">▼</span>
+                  </a>
+                  <a href="#contact" className="flex items-center justify-between p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30">
+                    <span>Contact us</span>
+                    <span className="text-xs">▼</span>
+                  </a>
+                  <a href="#related" className="flex items-center justify-between p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30">
+                    <span>You might like</span>
+                    <span className="text-xs">▼</span>
+                  </a>
+                </nav>
+              </div>
             </div>
 
-            {/* Car Information */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold mb-4">Vehicle Information</h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm text-gray-500">Year</div>
-                    <div className="font-medium">{car.year}</div>
+            {/* Right Content Area */}
+            <div className="flex-1">
+              {/* Specification Section - Clean Design */}
+              <div id="specification" className="mb-16">
+                <h2 className="text-3xl font-bold text-gray-900 mb-8">Specification</h2>
+                
+                {/* Information Banner */}
+                <div className="bg-primary-light/5 rounded-lg p-6 mb-8 flex items-center gap-3 border border-primary-light/20">
+                  <CarIcon className="w-5 h-5 text-primary-light" />
+                  <span className="text-gray-700">
+                    Car is currently located in export center in Slovakia. 
+                    <a href="#" className="text-primary-light hover:text-primary-dark hover:underline ml-1">More information →</a>
+                  </span>
+                </div>
+
+                {/* Specification Details Table */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-6">
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">First registration</span>
+                      <span className="text-gray-900">{car.created_at ? new Date(car.created_at).toLocaleDateString() : 'Not specified'}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Engine</span>
+                      <span className="text-gray-900">
+                        {car.engine_size || 'Not specified'}, {car.specifications?.power || 'Not specified'}, {car.specifications?.drivetrain || 'Not specified'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Odometer</span>
+                      <span className="text-gray-900">{getMileageDisplay(car)}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Transmission</span>
+                      <span className="text-gray-900">{car.transmission || 'Not specified'}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Body type</span>
+                      <span className="text-gray-900">{car.category || 'Not specified'}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Fuel</span>
+                      <span className="text-gray-900">{car.fuel_type || 'Not specified'}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Chassis Number</span>
+                      <span className="text-gray-900">{car.chassis_number || 'Not specified'}</span>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm text-gray-500">Category</div>
-                    <div className="font-medium">{car.category}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">Transmission</div>
-                    <div className="font-medium">{car.transmission}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">Color</div>
-                    <div className="font-medium">{car.color}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">Price</div>
-                    <div className="font-medium text-xl text-primary-light">{formatCurrency(car.price, car.currency)}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">Availability</div>
-                    <div className="font-medium text-green-600">Available</div>
+                  
+                  <div className="space-y-6">
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Color</span>
+                      <span className="text-gray-900">{car.color || 'Not specified'}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Seats</span>
+                      <span className="text-gray-900">{car.specifications?.seating || 'Not specified'}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Location</span>
+                      <span className="text-gray-900">{car.location || 'Not specified'}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Emission class</span>
+                      <span className="text-gray-900">Euro6d</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Ref. no</span>
+                      <span className="text-gray-900">{car.id}</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Certificate of Conformity</span>
+                      <span className="text-gray-900">Yes</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">Service book</span>
+                      <span className="text-gray-900">Yes</span>
+                    </div>
+                    <div className="flex justify-between py-4 border-b border-primary-light/20">
+                      <span className="font-medium text-gray-600">History</span>
+                      <span className="text-gray-900">After the first owner, Service book</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Description */}
+              {/* Features Section - Clean Design */}
+              <div id="features" className="mb-16">
+                <h2 className="text-3xl font-bold text-gray-900 mb-8">Features</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {/* Interior Features */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Sofa className="w-10 h-10 text-red-600" />
+                      <h3 className="font-semibold text-lg text-gray-900">INTERIOR</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Automatic air-conditioning
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Leather seats
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Panoramic roof window
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Exterior Features */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <CarIcon2 className="w-10 h-10 text-red-600" />
+                      <h3 className="font-semibold text-lg text-gray-900">EXTERIOR</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Automatic daytime-running lights
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Aluminum alloy wheels
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        LED headlights
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Safety Features */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <ShieldCheck className="w-10 h-10 text-red-600" />
+                      <h3 className="font-semibold text-lg text-gray-900">SAFETY</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Airbags
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        ABS
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Blind spot monitoring system
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Infotainment Features */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Monitor className="w-10 h-10 text-red-600" />
+                      <h3 className="font-semibold text-lg text-gray-900">INFOTAINMENT</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Android Auto
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Apple CarPlay
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Wireless Charging
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Extra Features */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Settings className="w-10 h-10 text-red-600" />
+                      <h3 className="font-semibold text-lg text-gray-900">EXTRA</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Adaptive headlights
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Automatic parking system
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Tow bar
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Other Features */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Star className="w-10 h-10 text-red-600" />
+                      <h3 className="font-semibold text-lg text-gray-900">OTHER</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        360° parking camera
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        USB connection
+                      </li>
+                      <li className="flex items-center gap-3 text-gray-700">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Premium sound system
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description Section */}
               {car.description && (
-                <div className="bg-white rounded-lg shadow-md p-6">
-                  <h2 className="text-2xl font-bold mb-4">Description</h2>
-                  <p className="text-gray-700 leading-relaxed">{car.description}</p>
+                <div id="description" className="mb-16">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-8">Description</h2>
+                  <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                    <div className="prose prose-lg max-w-none">
+                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                        {car.description}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Contact/Inquiry Button */}
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold mb-4">Interested?</h2>
-                <p className="text-gray-600 mb-4">
-                  Contact our luxury car specialists to get more information about this vehicle.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Link 
-                    href="/contact" 
-                    className="bg-primary-light hover:bg-primary-dark text-white px-6 py-3 rounded-lg font-medium text-center transition-colors"
-                  >
-                    Contact Us
-                  </Link>
+              {/* Contact Section - Clean Design */}
+              <div id="contact" className="mb-16">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Contact us</h2>
+                <p className="text-gray-600 mb-6">Interested in this vehicle? Get in touch with us.</p>
+                <div className="flex gap-4">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Send Message
+                  </Button>
+                  <Button variant="outline" className="px-6 py-3 rounded-lg">
+                    <Heart className="w-4 h-4 mr-2" />
+                    Add to Favorites
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Car Specifications */}
-          <div className="mb-12">
-            <CarSpecifications car={car} />
-          </div>
-
-          {/* Related Cars */}
-          <div>
+          {/* Related Cars Section */}
+          <div id="related" className="mt-12">
             <div className="mb-8">
               <h2 className="text-3xl font-bold mb-2">Related Vehicles</h2>
               <p className="text-gray-600">Explore similar luxury vehicles you might be interested in</p>
@@ -118,8 +497,14 @@ const CarDetailPage: React.FC<CarDetailPageProps> = ({ car }) => {
           </div>
         </div>
       </main>
+
+      {/* Car Inquiry Modal */}
+      <CarInquiryForm
+        isOpen={isInquiryModalOpen}
+        onClose={() => setIsInquiryModalOpen(false)}
+        carName={car.name}
+        carBrand={car.brand}
+      />
     </div>
   )
 }
-
-export default CarDetailPage

@@ -74,9 +74,9 @@ export default function ContactContent() {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900">Visit Us</h3>
-                    <p className="text-gray-600">Docentgatan 2E</p>
-                    <p className="text-gray-600">Malmö, 21552</p>
-                    <p className="text-gray-600">Sweden</p>
+                    <p className="text-gray-600">215 52
+Malmo
+Sweden</p>
                   </div>
                 </div>
 

@@ -32,6 +32,15 @@ export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
             <p className="text-gray-600 text-sm mb-2">
               {car.year} • {car.category}
             </p>
+            {car.created_at && (
+              <p className="text-gray-500 text-[10px] mb-2">
+                {new Date(car.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </p>
+            )}
 
             <div className="flex justify-between items-center pt-3 border-t border-gray-100">
               <div className="text-xl font-bold">{formatCurrency(car.price, car.currency)}</div>

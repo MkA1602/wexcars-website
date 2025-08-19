@@ -150,7 +150,7 @@ export default function PrivacyPage() {
                 <strong>Phone:</strong> +1 (555) 123-4567
               </p>
               <p>
-                <strong>Address:</strong> 123 Luxury Lane, Beverly Hills, CA 90210, United States
+                <strong>Address:</strong> 215 52 Malmo. Sweden
               </p>
             </div>
           </div>

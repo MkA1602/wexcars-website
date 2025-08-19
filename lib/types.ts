@@ -40,8 +40,23 @@ export interface Car {
   }
   // Database fields for Supabase integration
   user_id?: string
+  seller_type?: string // 'individual' or 'dealership'
+  dealership_name?: string | null // Name of dealership if seller_type is 'dealership'
   created_at?: string
   updated_at?: string
+  // New fields added to database
+  mileage?: number | null
+  fuel_type?: string | null
+  horsepower?: number | null
+  gearbox?: string | null
+  car_type?: string | null
+  engine_size?: string | null
+  drivetrain?: string | null
+  availability?: string | null
+  availability_days?: number | null
+  availability_date?: string | null
+  chassis_number?: string | null // Chassis number (VIN) of the car
+  location?: string | null // Country location of the car
 }
 
 export interface FilterOptions {

@@ -117,7 +117,7 @@ export default function CarCategories() {
   }
 
   // Handle search input change
-  const handleSearchChange = (e) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
 
@@ -674,5 +674,5 @@ export default function CarCategories() {
         </div>
       </div>
     </section>
-  )
+  );
 }

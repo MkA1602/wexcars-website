@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Pencil, Trash2, AlertCircle, Eye, Calendar, DollarSign, Tag } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
+import PriceDisplay from "@/components/ui/price-display"
 import type { Car } from "@/lib/types"
 
 interface UserCarsProps {
@@ -78,10 +79,39 @@ export default function UserCars({ cars }: UserCarsProps) {
                       <Calendar size={12} className="mr-1" />
                       <span>{car.year}</span>
                     </div>
-                    <div className="flex items-center text-xs bg-gray-100 px-2 py-1 rounded-full">
-                      <DollarSign size={12} className="mr-1" />
-                      <span>{formatCurrency(car.price, car.currency)}</span>
+                    <div className="bg-gray-50 px-3 py-2 rounded-lg">
+                      <PriceDisplay
+                        key={`user-price-${car.id}`}
+                        price={car.price}
+                        priceExclVat={car.price_excl_vat}
+                        vatRate={car.vat_rate}
+                        vatAmount={car.vat_amount}
+                        currency={car.currency}
+                        enableToggle={true}
+                        carId={car.id}
+                        size="sm"
+                      />
                     </div>
+                    {car.chassis_number && (
+                      <div className="flex items-center text-xs bg-blue-100 px-2 py-1 rounded-full">
+                        <span className="text-blue-700">VIN: {car.chassis_number}</span>
+                      </div>
+                    )}
+                    {car.location && (
+                      <div className="flex items-center text-xs bg-green-100 px-2 py-1 rounded-full">
+                        <span className="text-green-700">📍 {car.location}</span>
+                      </div>
+                    )}
+                    {car.created_at && (
+                      <div className="flex items-center text-[10px] bg-purple-100 px-2 py-1 rounded-full">
+                        <Calendar size={10} className="mr-1" />
+                        <span className="text-purple-700">{new Date(car.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}</span>
+                      </div>
+                    )}
                   </div>
                   <p className="text-gray-600 text-sm line-clamp-2">{car.description}</p>
                 </CardContent>
