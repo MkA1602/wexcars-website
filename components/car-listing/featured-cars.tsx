@@ -199,23 +199,7 @@ const FeaturedCars = () => {
                   >
                     <Heart size={18} className={favorites[car.id] ? "fill-red-500 text-red-500" : "text-gray-600"} />
                   </Button>
-                  {/* Location Badge */}
-                  {car.location && (
-                    <Badge className="absolute top-2 left-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
-                      <span className="text-red-400">📍</span>
-                      {car.location}
-                    </Badge>
-                  )}
-                  
-                  {/* Date Added Badge */}
-                  <Badge className="absolute bottom-2 left-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md">
-                    {car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric'
-                    }) : 'New'}
-                  </Badge>
-
-                  <Badge className="absolute top-2 right-12 bg-primary-light hover:bg-primary-dark">
+                  <Badge className="absolute top-2 left-2 bg-primary-light hover:bg-primary-dark">
                     Featured
                   </Badge>
                 </div>
@@ -229,7 +213,11 @@ const FeaturedCars = () => {
                         </Link>
                       </h3>
                       <p className="text-gray-500 text-sm">
-                        {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
+                        {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
+                          <span className="text-red-500 font-medium">📍 {car.location}</span>
+                        ) : (
+                          <span className="text-gray-400">Location N/A</span>
+                        )} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric'
                         }) : 'Date N/A'}</span>

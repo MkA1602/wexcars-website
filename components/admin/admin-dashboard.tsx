@@ -399,27 +399,17 @@ export default function AdminDashboard() {
                           <Car className="h-8 w-8 text-gray-400" />
                         </div>
                         
-                        {/* Location Badge */}
-                        {car.location && (
-                          <Badge className="absolute top-2 left-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
-                            <span className="text-red-400">📍</span>
-                            {car.location}
-                          </Badge>
-                        )}
-                        
-                        {/* Date Added Badge */}
-                        <Badge className="absolute bottom-2 left-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md">
-                          {car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric'
-                          }) : 'New'}
-                        </Badge>
+
                       </div>
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-semibold">{car.brand} {car.name}</h3>
-                            <p className="text-sm text-gray-500">{car.year} • {car.category}</p>
+                            <p className="text-sm text-gray-500">{car.year} • {car.category} • {car.location ? (
+                              <span className="text-red-500 font-medium">📍 {car.location}</span>
+                            ) : (
+                              <span className="text-gray-400">Location N/A</span>
+                            )}</p>
                             {car.created_at && (
                               <p className="text-sm text-gray-500 mt-1">
                                 <span className="text-xs">{new Date(car.created_at).toLocaleDateString('en-US', {

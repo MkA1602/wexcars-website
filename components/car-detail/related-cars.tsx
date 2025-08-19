@@ -24,21 +24,7 @@ export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
               />
             </Link>
             
-            {/* Location Badge */}
-            {car.location && (
-              <div className="absolute top-2 left-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
-                <span className="text-red-400">📍</span>
-                {car.location}
-              </div>
-            )}
-            
-            {/* Date Added Badge */}
-            <div className="absolute bottom-2 left-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md">
-              {car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric'
-              }) : 'New'}
-            </div>
+
           </div>
 
           <div className="p-4">
@@ -48,7 +34,11 @@ export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
               </Link>
             </h3>
             <p className="text-gray-600 text-sm mb-2">
-              {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
+              {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
+                <span className="text-red-500 font-medium">📍 {car.location}</span>
+              ) : (
+                <span className="text-gray-400">Location N/A</span>
+              )} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric'
               }) : 'Date N/A'}</span>

@@ -66,21 +66,7 @@ export default function UserCars({ cars }: UserCarsProps) {
                     className="w-full h-full object-cover"
                   />
                   
-                  {/* Location Badge */}
-                  {car.location && (
-                    <div className="absolute top-2 left-2 bg-gray-900/80 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
-                      <span className="text-red-400">📍</span>
-                      {car.location}
-                    </div>
-                  )}
-                  
-                  {/* Date Added Badge */}
-                  <div className="absolute bottom-2 left-2 bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded-md">
-                    {car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric'
-                    }) : 'New'}
-                  </div>
+
                 </div>
                 <CardContent className="p-4">
                   <h3 className="font-bold text-lg mb-1">
@@ -95,6 +81,11 @@ export default function UserCars({ cars }: UserCarsProps) {
                       <Calendar size={12} className="mr-1" />
                       <span>{car.year}</span>
                     </div>
+                    {car.location && (
+                      <div className="flex items-center text-xs bg-red-100 px-2 py-1 rounded-full">
+                        <span className="text-red-700">📍 {car.location}</span>
+                      </div>
+                    )}
                     <div className="bg-gray-50 px-3 py-2 rounded-lg">
                       <PriceDisplay
                         key={`user-price-${car.id}`}
