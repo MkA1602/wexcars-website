@@ -98,7 +98,9 @@ const FeaturedCars = () => {
           drivetrain: car.drivetrain,
           availability: car.availability,
           availability_days: car.availability_days,
-          availability_date: car.availability_date
+          availability_date: car.availability_date,
+          chassis_number: car.chassis_number,
+          location: car.location
         }))
 
         setCars(transformedCars)
