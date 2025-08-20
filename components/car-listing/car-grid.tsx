@@ -183,25 +183,18 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
                 </div>
               </CardContent>
               
-              <CardFooter className="p-4 pt-0 flex justify-between items-center border-t mt-auto">
-                <div className="flex-1">
-                  <PriceDisplay
-                    key={`price-${car.id}`}
-                    price={car.price}
-                    priceExclVat={car.price_excl_vat}
-                    vatRate={car.vat_rate}
-                    vatAmount={car.vat_amount}
-                    currency={car.currency}
-                    enableToggle={true}
-                    carId={car.id}
-                    size="sm"
-                  />
-                </div>
-                <Button variant="outline" size="sm" className="text-xs ml-3" asChild>
-                  <Link href={`/collections/${car.id}`}>
-                    View Details
-                  </Link>
-                </Button>
+              <CardFooter className="p-4 pt-0 border-t mt-auto">
+                <PriceDisplay
+                  key={`price-${car.id}`}
+                  price={car.price}
+                  priceExclVat={car.price_excl_vat}
+                  vatRate={car.vat_rate}
+                  vatAmount={car.vat_amount}
+                  currency={car.currency}
+                  enableToggle={true}
+                  carId={car.id}
+                  size="sm"
+                />
               </CardFooter>
             </Card>
           )

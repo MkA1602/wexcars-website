@@ -236,26 +236,18 @@ const FeaturedCars = () => {
                   </Badge>
                 </CardContent>
                 
-                <CardFooter className="p-4 pt-0 flex justify-between items-center border-t mt-auto">
-                  <div className="flex-1">
-                    <PriceDisplay
-                      key={`featured-price-${car.id}`}
-                      price={car.price}
-                      priceExclVat={car.price_excl_vat}
-                      vatRate={car.vat_rate}
-                      vatAmount={car.vat_amount}
-                      currency={car.currency}
-                      enableToggle={true}
-                      carId={car.id}
-                      size="sm"
-                    />
-                  </div>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/collections/${car.id}`}>
-                      View Details
-                      <ArrowRight size={16} className="ml-1" />
-                    </Link>
-                  </Button>
+                <CardFooter className="p-4 pt-0 border-t mt-auto">
+                  <PriceDisplay
+                    key={`featured-price-${car.id}`}
+                    price={car.price}
+                    priceExclVat={car.price_excl_vat}
+                    vatRate={car.vat_rate}
+                    vatAmount={car.vat_amount}
+                    currency={car.currency}
+                    enableToggle={true}
+                    carId={car.id}
+                    size="sm"
+                  />
                 </CardFooter>
               </Card>
             ))}

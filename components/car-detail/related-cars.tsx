@@ -44,13 +44,8 @@ export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
               }) : 'Date N/A'}</span>
             </p>
 
-            <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+            <div className="pt-3 border-t border-gray-100">
               <div className="text-xl font-bold">{formatCurrency(car.price, car.currency)}</div>
-              <Link href={`/collections/${car.id}`}>
-                <Button size="sm" className="bg-primary-light hover:bg-primary-dark text-white">
-                  View Details
-                </Button>
-              </Link>
             </div>
           </div>
         </div>

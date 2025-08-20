@@ -124,12 +124,6 @@ export default function UserCars({ cars }: UserCarsProps) {
                 </CardContent>
                 <CardFooter className="p-4 pt-0 flex justify-between">
                   <div className="flex gap-2">
-                    <Link href={`/collections/${car.id}`}>
-                      <Button variant="outline" size="sm" className="flex items-center gap-1">
-                        <Eye size={14} />
-                        <span>View</span>
-                      </Button>
-                    </Link>
                     <Link href={`/dashboard/edit-car/${car.id}`}>
                       <Button variant="outline" size="sm" className="flex items-center gap-1">
                         <Pencil size={14} />
