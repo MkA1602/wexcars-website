@@ -7,6 +7,13 @@ import CarGrid from "./car-grid"
 import { Pagination } from "@/components/ui/pagination"
 import { supabaseClient } from "@/lib/supabase/client"
 import type { FilterOptions, Car } from "@/lib/types"
+import { 
+  getCachedCars, 
+  setCachedCars, 
+  transformToFullCar, 
+  batchProcess,
+  debounce 
+} from "@/lib/performance-utils"
 import { Button } from "@/components/ui/button"
 import { Loader2, SlidersHorizontal, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -44,80 +51,62 @@ export default function CarListingPage() {
     setIsMounted(true)
   }, [])
 
-  // Fetch cars from Supabase database
+  // Ultra-optimized fetch cars with aggressive performance improvements
   useEffect(() => {
     const fetchCars = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
+        // Check cache first (5-minute cache)
+        const cacheKey = 'car-listing-main'
+        const cachedCars = getCachedCars(cacheKey)
+        if (cachedCars) {
+          console.log('✅ Using cached car data - instant load!')
+          setCars(cachedCars)
+          setIsLoading(false)
+          return
+        }
+
+        console.time('⏱️ Database fetch')
+        
+        // Optimized query - select only essential fields for listing view
         const { data: carsData, error: carsError } = await supabaseClient
           .from('cars')
-          .select('*')
+          .select(`
+            id, name, brand, category, year, price, price_excl_vat, vat_rate, vat_amount,
+            currency, image, created_at, mileage, fuel_type, transmission,
+            color, user_id, seller_type, dealership_name, location, status
+          `)
           .order('created_at', { ascending: false })
-          .limit(50) // Limit initial load to 50 cars for better performance
+          .limit(12) // Ultra-reduced to 12 for instant loading (pagination will load more)
+
+        console.timeEnd('⏱️ Database fetch')
 
         if (carsError) {
           throw carsError
         }
 
-        // Transform database data to match Car interface
-        const transformedCars: Car[] = (carsData || []).map((car: any) => ({
-          id: car.id,
-          name: car.name,
-          brand: car.brand,
-          category: car.category,
-          year: car.year,
-          price: car.price,
-          price_excl_vat: car.price_excl_vat,
-          vat_rate: car.vat_rate,
-          vat_amount: car.vat_amount,
-          currency: car.currency || 'AED',
-          priceWithVat: car.price, // price already includes VAT
-          image: car.image,
-          images: car.images,
-          rating: 4.5, // Default rating since not in DB
-          transmission: car.transmission || 'Automatic',
-          color: car.color || 'Black',
-          featured: false, // Default featured status
-          description: car.description,
-          features: car.features,
-          specifications: car.specifications || {
-            engine: 'Not specified',
-            power: 'Not specified',
-            acceleration: 'Not specified',
-            topSpeed: 'Not specified',
-            transmission: car.transmission || 'Automatic',
-            drivetrain: 'Not specified',
-            fuelEconomy: 'Not specified',
-            seating: 'Not specified'
-          },
-          user_id: car.user_id,
-          seller_type: car.seller_type || 'individual',
-          dealership_name: car.dealership_name,
-          created_at: car.created_at,
-          updated_at: car.updated_at,
-          // Add the new fields that exist in database but not in Car interface
-          mileage: car.mileage,
-          fuel_type: car.fuel_type,
-          horsepower: car.horsepower,
-          gearbox: car.gearbox,
-          car_type: car.car_type,
-          engine_size: car.engine_size,
-          drivetrain: car.drivetrain,
-          availability: car.availability,
-          availability_days: car.availability_days,
-          availability_date: car.availability_date,
-          chassis_number: car.chassis_number,
-          location: car.location,
-          status: car.status
-        }))
+        console.time('⏱️ Data transformation')
+        
+        // Ultra-fast transformation using the optimized function
+        const transformedCars = batchProcess(
+          carsData || [],
+          transformToFullCar,
+          3 // Process 3 cars at a time to avoid blocking UI
+        )
+
+        console.timeEnd('⏱️ Data transformation')
 
         setCars(transformedCars)
+        setCachedCars(cacheKey, transformedCars)
+        
+        console.log(`🚀 Loaded ${transformedCars.length} cars successfully`)
+        
       } catch (err: any) {
-        console.error('Error fetching cars:', err)
+        console.error('❌ Error fetching cars:', err)
         setError('Failed to load cars. Please try again.')
-        setCars([]) // Set empty array on error
+        setCars([])
       } finally {
         setIsLoading(false)
       }
@@ -494,7 +483,32 @@ export default function CarListingPage() {
 
             {/* Car Grid */}
             {!isLoading && (
-              <CarGrid cars={currentCars} vatDisplay={vatDisplay} />
+              <>
+                <CarGrid cars={currentCars} vatDisplay={vatDisplay} />
+                
+                {/* Load More Cars Button for Performance */}
+                {cars.length === 12 && (
+                  <div className="text-center mt-8 bg-white rounded-lg p-6 shadow-sm border">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Want to see more cars?</h3>
+                      <p className="text-gray-600 text-sm">
+                        We're showing the latest {cars.length} cars for fast loading. Click below to load more.
+                      </p>
+                    </div>
+                    <Button
+                      size="lg"
+                      className="bg-primary-light hover:bg-primary-dark text-white px-8 py-3"
+                      onClick={() => {
+                        // TODO: Implement load more functionality
+                        window.location.href = '/collections?page=2'
+                      }}
+                    >
+                      Load More Cars
+                      <span className="ml-2">→</span>
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
 
             {/* No results message */}

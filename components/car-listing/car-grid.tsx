@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart, Star, Zap } from "lucide-react"
@@ -19,7 +17,8 @@ interface CarGridProps {
   vatDisplay: "include" | "exclude" | "both"
 }
 
-export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
+// Memoized car grid for better performance
+const CarGrid = React.memo(function CarGrid({ cars, vatDisplay }: CarGridProps) {
   const [favorites, setFavorites] = useState<Record<string, boolean>>({})
   const [isMounted, setIsMounted] = useState(false)
 
@@ -208,4 +207,6 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
       </div>
     </ErrorBoundary>
   )
-}
+})
+
+export default CarGrid

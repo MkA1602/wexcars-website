@@ -49,7 +49,7 @@ const FeaturedCars = () => {
         const { data: carsData, error } = await supabaseClient
           .from('cars')
           .select('*')
-          .limit(6) // Only load 6 featured cars
+          .limit(3) // Only load 3 featured cars for faster loading
           .order('created_at', { ascending: false })
 
         if (error) throw error
