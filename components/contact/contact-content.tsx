@@ -7,7 +7,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Check, MapPin, Phone, Mail, Clock } from "lucide-react"
-import GoogleMap from "@/components/google-map"
+import dynamic from "next/dynamic"
+
+// Dynamically import GoogleMap to avoid SSR issues and chunk loading problems
+const GoogleMap = dynamic(() => import("@/components/google-map"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-96 bg-gray-100 rounded-xl overflow-hidden shadow-lg flex items-center justify-center">
+      <div className="text-center text-gray-600">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600 mx-auto mb-2"></div>
+        <p className="text-sm">Loading map...</p>
+      </div>
+    </div>
+  ),
+})
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
