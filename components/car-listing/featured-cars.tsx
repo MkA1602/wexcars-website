@@ -234,12 +234,6 @@ const FeaturedCars = () => {
                   <Badge variant="outline" className="text-xs bg-gray-50 mb-3">
                     {car.category}
                   </Badge>
-
-                  {car.description && (
-                    <p className="text-gray-600 text-sm line-clamp-2 mb-2">
-                      {car.description}
-                    </p>
-                  )}
                 </CardContent>
                 
                 <CardFooter className="p-4 pt-0 flex justify-between items-center border-t mt-auto">
