@@ -55,6 +55,7 @@ export default function CarListingPage() {
           .from('cars')
           .select('*')
           .order('created_at', { ascending: false })
+          .limit(50) // Limit initial load to 50 cars for better performance
 
         if (carsError) {
           throw carsError
@@ -108,7 +109,8 @@ export default function CarListingPage() {
           availability_days: car.availability_days,
           availability_date: car.availability_date,
           chassis_number: car.chassis_number,
-          location: car.location
+          location: car.location,
+          status: car.status
         }))
 
         setCars(transformedCars)

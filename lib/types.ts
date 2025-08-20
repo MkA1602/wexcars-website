@@ -57,6 +57,7 @@ export interface Car {
   availability_date?: string | null
   chassis_number?: string | null // Chassis number (VIN) of the car
   location?: string | null // Country location of the car
+  status?: 'available' | 'sold' | 'reserved' | null // Car availability status
 }
 
 export interface FilterOptions {

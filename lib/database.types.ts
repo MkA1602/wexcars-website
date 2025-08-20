@@ -47,6 +47,7 @@ export interface Database {
           dealership_name: string | null
           chassis_number: string | null
           location: string | null
+          status: string | null
           created_at: string
           updated_at: string
         }
@@ -64,6 +65,7 @@ export interface Database {
           dealership_name?: string | null
           chassis_number?: string | null
           location?: string | null
+          status?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -81,6 +83,7 @@ export interface Database {
           dealership_name?: string | null
           chassis_number?: string | null
           location?: string | null
+          status?: string | null
           created_at?: string
           updated_at?: string
         }
