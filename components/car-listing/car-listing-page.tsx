@@ -61,19 +61,40 @@ export default function CarListingPage() {
 
         console.log('🔄 Fetching cars from database...')
         
+        // Check if Supabase client is available
+        if (!supabaseClient) {
+          throw new Error('Supabase client not initialized')
+        }
+        
+        console.log('✅ Supabase client is available')
+        
         // Simplified query to debug issues
-        const { data: carsData, error: carsError } = await supabaseClient
+        console.log('📡 Making database request...')
+        const result = await supabaseClient
           .from('cars')
           .select('*')
           .order('created_at', { ascending: false })
           .limit(12) // Reduced for faster loading
 
+        console.log('📥 Database response received:', result)
+        
+        const { data: carsData, error: carsError } = result
+
         if (carsError) {
-          console.error('Database error:', carsError)
-          throw carsError
+          console.error('❌ Database error details:')
+          console.error('- Message:', carsError.message)
+          console.error('- Code:', carsError.code)
+          console.error('- Details:', carsError.details)
+          throw new Error(`Database error: ${carsError.message || 'Unknown database error'}`)
         }
 
-        console.log(`✅ Database returned ${carsData?.length || 0} cars`)
+        if (!carsData) {
+          console.warn('⚠️ No data returned from database')
+          setCars([])
+          return
+        }
+
+        console.log(`✅ Database returned ${carsData.length} cars`)
         
         // Simple transformation (no external utils to avoid import issues)
         const transformedCars: Car[] = (carsData || []).map((car: any) => ({
@@ -130,10 +151,52 @@ export default function CarListingPage() {
         console.log(`🚀 Successfully loaded ${transformedCars.length} cars`)
         
       } catch (err: any) {
-        console.error('❌ Error fetching cars:', err)
-        console.error('Error details:', JSON.stringify(err, null, 2))
-        setError(`Failed to load cars: ${err.message || 'Unknown error'}`)
-        setCars([])
+        console.error('❌ Error fetching cars:')
+        console.error('Error message:', err?.message || 'No message')
+        console.error('Error code:', err?.code || 'No code')
+        console.error('Error details:', err?.details || 'No details')
+        console.error('Full error object:', err)
+        
+        setError(`Failed to load cars: ${err?.message || 'Database connection error'}`)
+        
+        // Fallback: Show mock data for testing if database is completely down
+        console.log('🔄 Attempting to show with mock data for testing...')
+        const mockCars: Car[] = [
+          {
+            id: 'mock-1',
+            name: 'Test Car',
+            brand: 'Test Brand',
+            category: 'Sedan',
+            year: 2024,
+            price: 100000,
+            currency: 'AED',
+            image: '/placeholder.svg',
+            transmission: 'Automatic',
+            color: 'Black',
+            description: 'Mock car for testing',
+            rating: 4.5,
+            priceWithVat: 100000,
+            featured: false,
+            specifications: {
+              engine: 'Test Engine',
+              power: 'Test Power',
+              acceleration: 'Test Acceleration',
+              topSpeed: 'Test Speed',
+              transmission: 'Automatic',
+              drivetrain: 'Test Drivetrain',
+              fuelEconomy: 'Test Economy',
+              seating: 'Test Seating'
+            },
+            user_id: 'test-user',
+            seller_type: 'individual',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            location: 'Dubai, UAE',
+            status: 'available'
+          }
+        ]
+        setCars(mockCars)
+        console.log('✅ Showing mock data to prevent empty page')
       } finally {
         setIsLoading(false)
       }
