@@ -7,13 +7,14 @@ import CarGrid from "./car-grid"
 import { Pagination } from "@/components/ui/pagination"
 import { supabaseClient } from "@/lib/supabase/client"
 import type { FilterOptions, Car } from "@/lib/types"
-import { 
-  getCachedCars, 
-  setCachedCars, 
-  transformToFullCar, 
-  batchProcess,
-  debounce 
-} from "@/lib/performance-utils"
+// Temporarily disabled performance utils to debug
+// import { 
+//   getCachedCars, 
+//   setCachedCars, 
+//   transformToFullCar, 
+//   batchProcess,
+//   debounce 
+// } from "@/lib/performance-utils"
 import { Button } from "@/components/ui/button"
 import { Loader2, SlidersHorizontal, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -51,61 +52,87 @@ export default function CarListingPage() {
     setIsMounted(true)
   }, [])
 
-  // Ultra-optimized fetch cars with aggressive performance improvements
+  // Simplified and stable fetch cars (debugging version)
   useEffect(() => {
     const fetchCars = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
-        // Check cache first (5-minute cache)
-        const cacheKey = 'car-listing-main'
-        const cachedCars = getCachedCars(cacheKey)
-        if (cachedCars) {
-          console.log('✅ Using cached car data - instant load!')
-          setCars(cachedCars)
-          setIsLoading(false)
-          return
-        }
-
-        console.time('⏱️ Database fetch')
+        console.log('🔄 Fetching cars from database...')
         
-        // Optimized query - select only essential fields for listing view
+        // Simplified query to debug issues
         const { data: carsData, error: carsError } = await supabaseClient
           .from('cars')
-          .select(`
-            id, name, brand, category, year, price, price_excl_vat, vat_rate, vat_amount,
-            currency, image, created_at, mileage, fuel_type, transmission,
-            color, user_id, seller_type, dealership_name, location, status
-          `)
+          .select('*')
           .order('created_at', { ascending: false })
-          .limit(12) // Ultra-reduced to 12 for instant loading (pagination will load more)
-
-        console.timeEnd('⏱️ Database fetch')
+          .limit(12) // Reduced for faster loading
 
         if (carsError) {
+          console.error('Database error:', carsError)
           throw carsError
         }
 
-        console.time('⏱️ Data transformation')
+        console.log(`✅ Database returned ${carsData?.length || 0} cars`)
         
-        // Ultra-fast transformation using the optimized function
-        const transformedCars = batchProcess(
-          carsData || [],
-          transformToFullCar,
-          3 // Process 3 cars at a time to avoid blocking UI
-        )
-
-        console.timeEnd('⏱️ Data transformation')
+        // Simple transformation (no external utils to avoid import issues)
+        const transformedCars: Car[] = (carsData || []).map((car: any) => ({
+          id: car.id,
+          name: car.name,
+          brand: car.brand,
+          category: car.category,
+          year: car.year,
+          price: car.price,
+          price_excl_vat: car.price_excl_vat,
+          vat_rate: car.vat_rate,
+          vat_amount: car.vat_amount,
+          currency: car.currency || 'AED',
+          priceWithVat: car.price,
+          image: car.image,
+          images: car.images,
+          rating: 4.5,
+          transmission: car.transmission || 'Automatic',
+          color: car.color || 'Black',
+          featured: false,
+          description: car.description,
+          features: car.features,
+          specifications: car.specifications || {
+            engine: 'Not specified',
+            power: 'Not specified',
+            acceleration: 'Not specified',
+            topSpeed: 'Not specified',
+            transmission: car.transmission || 'Automatic',
+            drivetrain: 'Not specified',
+            fuelEconomy: 'Not specified',
+            seating: 'Not specified'
+          },
+          user_id: car.user_id,
+          seller_type: car.seller_type || 'individual',
+          dealership_name: car.dealership_name,
+          created_at: car.created_at,
+          updated_at: car.updated_at,
+          mileage: car.mileage,
+          fuel_type: car.fuel_type,
+          horsepower: car.horsepower,
+          gearbox: car.gearbox,
+          car_type: car.car_type,
+          engine_size: car.engine_size,
+          drivetrain: car.drivetrain,
+          availability: car.availability,
+          availability_days: car.availability_days,
+          availability_date: car.availability_date,
+          chassis_number: car.chassis_number,
+          location: car.location,
+          status: car.status
+        }))
 
         setCars(transformedCars)
-        setCachedCars(cacheKey, transformedCars)
-        
-        console.log(`🚀 Loaded ${transformedCars.length} cars successfully`)
+        console.log(`🚀 Successfully loaded ${transformedCars.length} cars`)
         
       } catch (err: any) {
         console.error('❌ Error fetching cars:', err)
-        setError('Failed to load cars. Please try again.')
+        console.error('Error details:', JSON.stringify(err, null, 2))
+        setError(`Failed to load cars: ${err.message || 'Unknown error'}`)
         setCars([])
       } finally {
         setIsLoading(false)
