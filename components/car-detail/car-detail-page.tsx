@@ -235,14 +235,15 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
               <div id="specification" className="mb-16">
                 <h2 className="text-3xl font-bold text-gray-900 mb-8">Specification</h2>
                 
-                {/* Information Banner */}
-                <div className="bg-primary-light/5 rounded-lg p-6 mb-8 flex items-center gap-3 border border-primary-light/20">
-                  <CarIcon className="w-5 h-5 text-primary-light" />
-                  <span className="text-gray-700">
-                    Car is currently located in export center in Slovakia. 
-                    <a href="#" className="text-primary-light hover:text-primary-dark hover:underline ml-1">More information →</a>
-                  </span>
-                </div>
+                {/* Location Information Banner - User's Location */}
+                {car.location && (
+                  <div className="bg-blue-50 rounded-lg p-6 mb-8 flex items-center gap-3 border border-blue-200">
+                    <CarIcon className="w-5 h-5 text-blue-600" />
+                    <span className="text-gray-700">
+                      <span className="text-red-500 font-medium">📍 Vehicle Location: {car.location}</span>
+                    </span>
+                  </div>
+                )}
 
                 {/* Specification Details Table */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
