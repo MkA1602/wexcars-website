@@ -7,14 +7,6 @@ import CarGrid from "./car-grid"
 import { Pagination } from "@/components/ui/pagination"
 import { supabaseClient } from "@/lib/supabase/client"
 import type { FilterOptions, Car } from "@/lib/types"
-// Temporarily disabled performance utils to debug
-// import { 
-//   getCachedCars, 
-//   setCachedCars, 
-//   transformToFullCar, 
-//   batchProcess,
-//   debounce 
-// } from "@/lib/performance-utils"
 import { Button } from "@/components/ui/button"
 import { Loader2, SlidersHorizontal, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -52,138 +44,85 @@ export default function CarListingPage() {
     setIsMounted(true)
   }, [])
 
-  // TEMPORARY: Using mock data to bypass database issues
+  // Fetch cars from Supabase database
   useEffect(() => {
-    const loadMockData = () => {
+    const fetchCars = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
-        console.log('🔄 Loading mock data (database bypass mode)...')
-        
-        // Simulate loading delay
-        setTimeout(() => {
-          const mockCars: Car[] = [
-            {
-              id: 'mock-1',
-              name: 'BMW M3',
-              brand: 'BMW',
-              category: 'Sports Car',
-              year: 2024,
-              price: 250000,
-              currency: 'AED',
-              image: '/placeholder.svg',
-              transmission: 'Automatic',
-              color: 'Blue',
-              description: 'High-performance luxury sports sedan',
-              rating: 4.8,
-              priceWithVat: 250000,
-              featured: true,
-              specifications: {
-                engine: '3.0L Twin-Turbo I6',
-                power: '503 HP',
-                acceleration: '0-100 km/h in 4.2s',
-                topSpeed: '280 km/h',
-                transmission: '8-Speed Automatic',
-                drivetrain: 'RWD',
-                fuelEconomy: '9.1L/100km',
-                seating: '5 Seats'
-              },
-              user_id: 'test-user',
-              seller_type: 'dealership',
-              dealership_name: 'BMW Dubai',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-              location: 'Dubai, UAE',
-              status: 'available',
-              mileage: 5000,
-              fuel_type: 'Petrol'
-            },
-            {
-              id: 'mock-2',
-              name: 'Range Rover Evoque',
-              brand: 'Land Rover',
-              category: 'SUV',
-              year: 2023,
-              price: 180000,
-              currency: 'AED',
-              image: '/placeholder.svg',
-              transmission: 'Automatic',
-              color: 'White',
-              description: 'Compact luxury SUV with distinctive design',
-              rating: 4.6,
-              priceWithVat: 180000,
-              featured: false,
-              specifications: {
-                engine: '2.0L Turbo I4',
-                power: '246 HP',
-                acceleration: '0-100 km/h in 7.9s',
-                topSpeed: '213 km/h',
-                transmission: '9-Speed Automatic',
-                drivetrain: 'AWD',
-                fuelEconomy: '7.8L/100km',
-                seating: '5 Seats'
-              },
-              user_id: 'test-user-2',
-              seller_type: 'individual',
-              created_at: new Date(Date.now() - 86400000).toISOString(),
-              updated_at: new Date(Date.now() - 86400000).toISOString(),
-              location: 'Abu Dhabi, UAE',
-              status: 'available',
-              mileage: 12000,
-              fuel_type: 'Petrol'
-            },
-            {
-              id: 'mock-3',
-              name: 'Porsche 911',
-              brand: 'Porsche',
-              category: 'Sports Car',
-              year: 2024,
-              price: 420000,
-              currency: 'AED',
-              image: '/placeholder.svg',
-              transmission: 'Manual',
-              color: 'Red',
-              description: 'Iconic sports car with timeless design',
-              rating: 4.9,
-              priceWithVat: 420000,
-              featured: true,
-              specifications: {
-                engine: '3.0L Twin-Turbo Flat-6',
-                power: '443 HP',
-                acceleration: '0-100 km/h in 3.7s',
-                topSpeed: '308 km/h',
-                transmission: '7-Speed Manual',
-                drivetrain: 'RWD',
-                fuelEconomy: '9.5L/100km',
-                seating: '4 Seats'
-              },
-              user_id: 'test-user-3',
-              seller_type: 'dealership',
-              dealership_name: 'Porsche Centre Dubai',
-              created_at: new Date(Date.now() - 172800000).toISOString(),
-              updated_at: new Date(Date.now() - 172800000).toISOString(),
-              location: 'Dubai, UAE',
-              status: 'reserved',
-              mileage: 2500,
-              fuel_type: 'Petrol'
-            }
-          ]
-          
-          setCars(mockCars)
-          setIsLoading(false)
-          console.log(`✅ Mock data loaded successfully - ${mockCars.length} cars available`)
-        }, 1000) // 1 second simulated loading
-        
+        const { data: carsData, error: carsError } = await supabaseClient
+          .from('cars')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (carsError) {
+          throw carsError
+        }
+
+        // Transform database data to match Car interface
+        const transformedCars: Car[] = (carsData || []).map((car: any) => ({
+          id: car.id,
+          name: car.name,
+          brand: car.brand,
+          category: car.category,
+          year: car.year,
+          price: car.price,
+          price_excl_vat: car.price_excl_vat,
+          vat_rate: car.vat_rate,
+          vat_amount: car.vat_amount,
+          currency: car.currency || 'AED',
+          priceWithVat: car.price, // price already includes VAT
+          image: car.image,
+          images: car.images,
+          rating: 4.5, // Default rating since not in DB
+          transmission: car.transmission || 'Automatic',
+          color: car.color || 'Black',
+          featured: false, // Default featured status
+          description: car.description,
+          features: car.features,
+          specifications: car.specifications || {
+            engine: 'Not specified',
+            power: 'Not specified',
+            acceleration: 'Not specified',
+            topSpeed: 'Not specified',
+            transmission: car.transmission || 'Automatic',
+            drivetrain: 'Not specified',
+            fuelEconomy: 'Not specified',
+            seating: 'Not specified'
+          },
+          user_id: car.user_id,
+          seller_type: car.seller_type || 'individual',
+          dealership_name: car.dealership_name,
+          created_at: car.created_at,
+          updated_at: car.updated_at,
+          // Add the new fields that exist in database but not in Car interface
+          mileage: car.mileage,
+          fuel_type: car.fuel_type,
+          horsepower: car.horsepower,
+          gearbox: car.gearbox,
+          car_type: car.car_type,
+          engine_size: car.engine_size,
+          drivetrain: car.drivetrain,
+          availability: car.availability,
+          availability_days: car.availability_days,
+          availability_date: car.availability_date,
+          chassis_number: car.chassis_number,
+          location: car.location
+        }))
+
+        setCars(transformedCars)
       } catch (err: any) {
-        console.log('Error in mock data loading:', err)
+        console.error('Error fetching cars:', err)
+        setError('Failed to load cars. Please try again.')
+        setCars([]) // Set empty array on error
+      } finally {
         setIsLoading(false)
-        setError('Failed to load mock data')
       }
     }
 
     if (isMounted) {
-      loadMockData()
+      fetchCars()
     }
   }, [isMounted])
 
@@ -553,32 +492,7 @@ export default function CarListingPage() {
 
             {/* Car Grid */}
             {!isLoading && (
-              <>
-                <CarGrid cars={currentCars} vatDisplay={vatDisplay} />
-                
-                {/* Load More Cars Button for Performance */}
-                {cars.length === 12 && (
-                  <div className="text-center mt-8 bg-white rounded-lg p-6 shadow-sm border">
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Want to see more cars?</h3>
-                      <p className="text-gray-600 text-sm">
-                        We're showing the latest {cars.length} cars for fast loading. Click below to load more.
-                      </p>
-                    </div>
-                    <Button
-                      size="lg"
-                      className="bg-primary-light hover:bg-primary-dark text-white px-8 py-3"
-                      onClick={() => {
-                        // TODO: Implement load more functionality
-                        window.location.href = '/collections?page=2'
-                      }}
-                    >
-                      Load More Cars
-                      <span className="ml-2">→</span>
-                    </Button>
-                  </div>
-                )}
-              </>
+              <CarGrid cars={currentCars} vatDisplay={vatDisplay} />
             )}
 
             {/* No results message */}

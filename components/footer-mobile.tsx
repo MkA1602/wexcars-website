@@ -46,7 +46,6 @@ const FooterMobile = () => {
         { href: "/help", label: "Help Center" },
         { href: "/faq", label: "FAQ" },
         { href: "/shipping", label: "Shipping Info" },
-        { href: "/description", label: "Car Descriptions" },
       ],
     },
   ]

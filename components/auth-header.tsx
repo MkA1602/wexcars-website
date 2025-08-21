@@ -104,14 +104,7 @@ export default function AuthHeader() {
                 About
               </Link>
             </li>
-            <li>
-              <Link
-                href="/description"
-                className="text-black hover:text-primary-light font-medium transition-colors duration-200"
-              >
-                Description
-              </Link>
-            </li>
+
             <li>
               <Link
                 href="/contact"
@@ -266,15 +259,7 @@ export default function AuthHeader() {
                   About
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/description"
-                  className="text-xl font-medium text-black hover:text-primary-light block"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Description
-                </Link>
-              </li>
+
               <li>
                 <Link
                   href="/contact"

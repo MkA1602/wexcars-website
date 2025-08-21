@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import PriceDisplay from "@/components/ui/price-display"
-import CarStatusBadge from "@/components/ui/car-status-badge"
 import type { Car } from "@/lib/types"
 import { supabaseClient } from "@/lib/supabase/client"
 
@@ -49,7 +48,7 @@ const FeaturedCars = () => {
         const { data: carsData, error } = await supabaseClient
           .from('cars')
           .select('*')
-          .limit(3) // Only load 3 featured cars for faster loading
+          .limit(6) // Only load 6 featured cars
           .order('created_at', { ascending: false })
 
         if (error) throw error
@@ -101,8 +100,7 @@ const FeaturedCars = () => {
           availability_days: car.availability_days,
           availability_date: car.availability_date,
           chassis_number: car.chassis_number,
-          location: car.location,
-          status: car.status
+          location: car.location
         }))
 
         setCars(transformedCars)
@@ -206,11 +204,6 @@ const FeaturedCars = () => {
                   <Badge className="absolute top-2 left-2 bg-primary-light hover:bg-primary-dark">
                     Featured
                   </Badge>
-                  
-                  {/* Car Status Badge - positioned at top-right */}
-                  <div className="absolute top-12 right-2">
-                    <CarStatusBadge status={car.status} size="sm" />
-                  </div>
                 </div>
                 
                 <CardContent className="p-4 flex-grow">

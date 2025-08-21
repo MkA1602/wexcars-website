@@ -1,6 +1,8 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import type React from "react"
+
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Heart, Star, Zap } from "lucide-react"
@@ -8,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import PriceDisplay from "@/components/ui/price-display"
-import CarStatusBadge from "@/components/ui/car-status-badge"
 import type { Car } from "@/lib/types"
 import ErrorBoundary from "@/components/error-boundary"
 
@@ -17,8 +18,7 @@ interface CarGridProps {
   vatDisplay: "include" | "exclude" | "both"
 }
 
-// Memoized car grid for better performance
-const CarGrid = React.memo(function CarGrid({ cars, vatDisplay }: CarGridProps) {
+export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
   const [favorites, setFavorites] = useState<Record<string, boolean>>({})
   const [isMounted, setIsMounted] = useState(false)
 
@@ -115,11 +115,6 @@ const CarGrid = React.memo(function CarGrid({ cars, vatDisplay }: CarGridProps) 
                     Featured
                   </Badge>
                 )}
-                
-                {/* Car Status Badge - positioned at top-right */}
-                <div className="absolute top-12 right-2">
-                  <CarStatusBadge status={car.status} size="sm" />
-                </div>
               </div>
               
               <CardContent className="p-4 flex-grow">
@@ -207,6 +202,4 @@ const CarGrid = React.memo(function CarGrid({ cars, vatDisplay }: CarGridProps) 
       </div>
     </ErrorBoundary>
   )
-})
-
-export default CarGrid
+}

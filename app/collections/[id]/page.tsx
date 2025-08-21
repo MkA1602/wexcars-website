@@ -6,7 +6,6 @@ import { notFound, useParams } from "next/navigation"
 import { supabaseClient } from "@/lib/supabase/client"
 import CarDetailPage from "@/components/car-detail/car-detail-page"
 import { Loader2 } from "lucide-react"
-import RacingLoader from "@/components/ui/racing-loader"
 import type { Car } from "@/lib/types"
 
 export default function CarDetail() {
@@ -106,8 +105,13 @@ export default function CarDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <RacingLoader size="lg" showText={true} text="Loading car details..." />
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-gray-600">Loading car details...</p>
+          </div>
+        </div>
       </div>
     )
   }
