@@ -71,52 +71,55 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
             {/* Left Side - Breadcrumbs */}
-            <div className="flex items-center space-x-2 text-sm">
-              <Link href="/" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-2">
-                <Home className="w-4 h-4" />
-                Home
+            <div className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm overflow-hidden">
+              <Link href="/" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                <Home className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Home</span>
               </Link>
               <span className="text-gray-400">/</span>
-              <Link href="/collections" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-2">
-                <CarIcon className="w-4 h-4" />
-                Collections
+              <Link href="/collections" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                <CarIcon className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Collections</span>
               </Link>
               <span className="text-gray-400">/</span>
-              <span className="text-gray-900 font-medium">
+              <span className="text-gray-900 font-medium truncate">
                 {car.brand} {car.name}
               </span>
             </div>
 
             {/* Right Side - Dashboard Actions */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               {isCarOwner && (
                 <>
                   <Link href={`/dashboard/edit-car/${car.id}`}>
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
-                      <Edit className="w-4 h-4" />
-                      Edit Car
+                    <Button variant="outline" size="sm" className="flex items-center gap-1 sm:gap-2">
+                      <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">Edit Car</span>
+                      <span className="sm:hidden">Edit</span>
                     </Button>
                   </Link>
-                  <Button variant="destructive" size="sm" className="flex items-center gap-2">
-                    <Trash2 className="w-4 h-4" />
-                    Delete
+                  <Button variant="destructive" size="sm" className="flex items-center gap-1 sm:gap-2">
+                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Delete</span>
+                    <span className="sm:hidden">Del</span>
                   </Button>
                 </>
               )}
               
               {isAdmin && (
                 <Link href="/admin/dashboard">
-                  <Button variant="outline" size="sm" className="flex items-center gap-2">
-                    <Shield className="w-4 h-4" />
-                    Admin
+                  <Button variant="outline" size="sm" className="flex items-center gap-1 sm:gap-2">
+                    <Shield className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Admin</span>
                   </Button>
                 </Link>
               )}
               
               <Link href="/dashboard">
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Dashboard
+                <Button variant="outline" size="sm" className="flex items-center gap-1 sm:gap-2">
+                  <User className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                  <span className="sm:hidden">Menu</span>
                 </Button>
               </Link>
             </div>
@@ -199,31 +202,32 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
           </div>
 
           {/* Navigation Sidebar and Content Area */}
-          <div className="flex flex-col lg:flex-row gap-12">
-            {/* Left Sidebar Navigation - Clean Design */}
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
+            {/* Left Sidebar Navigation - Mobile Optimized */}
             <div className="lg:w-64 flex-shrink-0">
-              <div className="sticky top-24">
-                <h3 className="font-semibold text-xl mb-6 text-gray-900">Navigation</h3>
-                <nav className="space-y-1">
-                  <a href="#specification" className="flex items-center justify-between p-4 rounded-lg bg-primary-light/10 text-primary-dark font-medium border-l-4 border-primary-light">
-                    <span>Specification</span>
-                    <span className="text-xs">▼</span>
+              <div className="lg:sticky lg:top-24">
+                <h3 className="font-semibold text-lg lg:text-xl mb-4 lg:mb-6 text-gray-900">Navigation</h3>
+                {/* Mobile horizontal scroll, Desktop vertical */}
+                <nav className="flex lg:flex-col gap-2 lg:gap-1 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
+                  <a href="#specification" className="flex items-center justify-between p-3 lg:p-4 rounded-lg bg-primary-light/10 text-primary-dark font-medium border-l-4 border-primary-light whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                    <span className="text-sm lg:text-base">Specification</span>
+                    <span className="text-xs hidden lg:inline">▼</span>
                   </a>
-                  <a href="#features" className="flex items-center justify-between p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30">
-                    <span>Features</span>
-                    <span className="text-xs">▼</span>
+                  <a href="#features" className="flex items-center justify-between p-3 lg:p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                    <span className="text-sm lg:text-base">Features</span>
+                    <span className="text-xs hidden lg:inline">▼</span>
                   </a>
-                  <a href="#description" className="flex items-center justify-between p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30">
-                    <span>Description</span>
-                    <span className="text-xs">▼</span>
+                  <a href="#description" className="flex items-center justify-between p-3 lg:p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                    <span className="text-sm lg:text-base">Description</span>
+                    <span className="text-xs hidden lg:inline">▼</span>
                   </a>
-                  <a href="#contact" className="flex items-center justify-between p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30">
-                    <span>Contact us</span>
-                    <span className="text-xs">▼</span>
+                  <a href="#contact" className="flex items-center justify-between p-3 lg:p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                    <span className="text-sm lg:text-base">Contact us</span>
+                    <span className="text-xs hidden lg:inline">▼</span>
                   </a>
-                  <a href="#related" className="flex items-center justify-between p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30">
-                    <span>You might like</span>
-                    <span className="text-xs">▼</span>
+                  <a href="#related" className="flex items-center justify-between p-3 lg:p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                    <span className="text-sm lg:text-base">You might like</span>
+                    <span className="text-xs hidden lg:inline">▼</span>
                   </a>
                 </nav>
               </div>
