@@ -50,13 +50,95 @@ export default function CarListingPage() {
       try {
         setIsLoading(true)
         setError(null)
+        console.log('Starting to fetch cars...')
+
+        // Check if we're using the mock client
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+          console.warn('Supabase environment variables not configured, using mock data')
+          // Use mock data for development
+          const mockCars = [
+            {
+              id: '1',
+              name: 'Revuelto',
+              brand: 'Lamborghini',
+              category: 'Sports',
+              year: 2025,
+              price: 620000,
+              currency: 'EUR',
+              image: 'https://i.imgur.com/67e2udd.png',
+              description: 'A stunning Lamborghini Revuelto',
+              user_id: 'mock-user',
+              seller_type: 'dealership',
+              transmission: 'Automatic',
+              color: 'Orange',
+              mileage: 10,
+              fuel_type: 'Hybrid',
+              location: 'Slovakia',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+          ]
+          
+          const transformedMockCars: Car[] = mockCars.map((car: any) => ({
+            id: car.id,
+            name: car.name,
+            brand: car.brand,
+            category: car.category,
+            year: car.year,
+            price: car.price,
+            currency: car.currency || 'AED',
+            priceWithVat: car.price,
+            image: car.image,
+            images: [car.image],
+            rating: 4.5,
+            transmission: car.transmission || 'Automatic',
+            color: car.color || 'Black',
+            featured: false,
+            description: car.description,
+            features: [],
+            specifications: {
+              engine: 'V12 Hybrid',
+              power: '1001 HP',
+              acceleration: '2.5s 0-100',
+              topSpeed: '350 km/h',
+              transmission: car.transmission || 'Automatic',
+              drivetrain: 'AWD',
+              fuelEconomy: '15L/100km',
+              seating: '2'
+            },
+            user_id: car.user_id,
+            seller_type: car.seller_type || 'individual',
+            dealership_name: car.dealership_name,
+            created_at: car.created_at,
+            updated_at: car.updated_at,
+            mileage: car.mileage,
+            fuel_type: car.fuel_type,
+            horsepower: 1001,
+            gearbox: car.transmission,
+            car_type: car.category,
+            engine_size: '6.5L',
+            drivetrain: 'AWD',
+            availability: 'available_now',
+            availability_days: 0,
+            availability_date: null,
+            chassis_number: 'MOCK123456',
+            location: car.location
+          }))
+          
+          console.log('Using mock cars:', transformedMockCars.length, 'cars found')
+          setCars(transformedMockCars)
+          return
+        }
 
         const { data: carsData, error: carsError } = await supabaseClient
           .from('cars')
           .select('*')
           .order('created_at', { ascending: false })
 
+        console.log('Supabase response:', { data: carsData, error: carsError })
+
         if (carsError) {
+          console.error('Supabase error:', carsError)
           throw carsError
         }
 
@@ -111,12 +193,14 @@ export default function CarListingPage() {
           location: car.location
         }))
 
+        console.log('Transformed cars:', transformedCars.length, 'cars found')
         setCars(transformedCars)
       } catch (err: any) {
         console.error('Error fetching cars:', err)
         setError('Failed to load cars. Please try again.')
         setCars([]) // Set empty array on error
       } finally {
+        console.log('Setting isLoading to false')
         setIsLoading(false)
       }
     }
