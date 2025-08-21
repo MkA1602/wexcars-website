@@ -151,7 +151,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     </p>
                     
                     {/* Specification Tags - Smaller and beside mileage */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       {car.fuel_type && (
                         <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
                           {car.fuel_type}
@@ -170,6 +170,11 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                       {car.transmission && (
                         <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
                           {car.transmission}
+                        </span>
+                      )}
+                      {car.location && (
+                        <span className="bg-red-500 text-white px-2 py-1 rounded-md font-medium text-xs flex items-center gap-1">
+                          📍 {car.location}
                         </span>
                       )}
                     </div>
@@ -236,15 +241,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
               <div id="specification" className="mb-16">
                 <h2 className="text-3xl font-bold text-gray-900 mb-8">Specification</h2>
                 
-                {/* Location Information Banner - User's Location */}
-                {car.location && (
-                  <div className="bg-blue-50 rounded-lg p-6 mb-8 flex items-center gap-3 border border-blue-200">
-                    <CarIcon className="w-5 h-5 text-blue-600" />
-                    <span className="text-gray-700">
-                      <span className="text-red-500 font-medium">📍 Vehicle Location: {car.location}</span>
-                    </span>
-                  </div>
-                )}
+
 
                 {/* Specification Details Table */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -290,16 +287,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                       <span className="font-medium text-gray-600">Seats</span>
                       <span className="text-gray-900">{car.specifications?.seating || 'Not specified'}</span>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-600">Location</span>
-                      <span className="text-gray-900">
-                        {car.location ? (
-                          <span className="text-red-500 font-medium">📍 {car.location}</span>
-                        ) : (
-                          'Not specified'
-                        )}
-                      </span>
-                    </div>
+
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Emission class</span>
                       <span className="text-gray-900">Euro6d</span>
