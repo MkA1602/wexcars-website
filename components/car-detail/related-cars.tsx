@@ -1,15 +1,70 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { cars } from "@/lib/car-data"
+import { supabaseClient } from "@/lib/supabase/client"
 import { formatCurrency } from "@/lib/utils"
+import type { Car } from "@/lib/types"
 
 interface RelatedCarsProps {
   currentCarId: string
 }
 
 export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
-  // Get 3 related cars (excluding the current one)
-  const relatedCars = cars.filter((car) => car.id !== currentCarId).slice(0, 3)
+  const [relatedCars, setRelatedCars] = useState<Car[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchRelatedCars = async () => {
+      try {
+        // Fetch 3 random cars excluding the current one
+        const { data, error } = await supabaseClient
+          .from('cars')
+          .select('*')
+          .neq('id', currentCarId)
+          .limit(3)
+          
+        if (error) {
+          console.error('Error fetching related cars:', error)
+          return
+        }
+        
+        setRelatedCars(data || [])
+      } catch (error) {
+        console.error('Error fetching related cars:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchRelatedCars()
+  }, [currentCarId])
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
+            <div className="h-48 bg-gray-200"></div>
+            <div className="p-4">
+              <div className="h-6 bg-gray-200 rounded mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded mb-2"></div>
+              <div className="h-6 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (relatedCars.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">No related vehicles found</p>
+      </div>
+    )
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

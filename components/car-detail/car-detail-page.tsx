@@ -225,10 +225,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     <span className="text-sm lg:text-base">Contact us</span>
                     <span className="text-xs hidden lg:inline">▼</span>
                   </a>
-                  <a href="#related" className="flex items-center justify-between p-3 lg:p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
-                    <span className="text-sm lg:text-base">You might like</span>
-                    <span className="text-xs hidden lg:inline">▼</span>
-                  </a>
+
                 </nav>
               </div>
             </div>
@@ -258,17 +255,17 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Engine</span>
-                      <span className="text-gray-900">
+                      <span className="text-gray-600">
                         {car.engine_size || 'Not specified'}, {car.specifications?.power || 'Not specified'}, {car.specifications?.drivetrain || 'Not specified'}
                       </span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Odometer</span>
-                      <span className="text-gray-900">{getMileageDisplay(car)}</span>
+                      <span className="text-gray-600">{getMileageDisplay(car)}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Transmission</span>
-                      <span className="text-gray-900">{car.transmission || 'Not specified'}</span>
+                      <span className="text-gray-600">{car.transmission || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Body type</span>
@@ -295,7 +292,13 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Location</span>
-                      <span className="text-gray-900">{car.location || 'Not specified'}</span>
+                      <span className="text-gray-900">
+                        {car.location ? (
+                          <span className="text-red-500 font-medium">📍 {car.location}</span>
+                        ) : (
+                          'Not specified'
+                        )}
+                      </span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Emission class</span>
@@ -474,19 +477,40 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                 </div>
               )}
 
-              {/* Contact Section - Clean Design */}
+              {/* Contact Section - Enhanced Design */}
               <div id="contact" className="mb-16">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Contact us</h2>
-                <p className="text-gray-600 mb-6">Interested in this vehicle? Get in touch with us.</p>
-                <div className="flex gap-4">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Send Message
-                  </Button>
-                  <Button variant="outline" className="px-6 py-3 rounded-lg">
-                    <Heart className="w-4 h-4 mr-2" />
-                    Add to Favorites
-                  </Button>
+                <div className="bg-gradient-to-br from-primary-light/5 to-primary-dark/5 rounded-2xl p-8 border border-primary-light/20">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">Contact us</h2>
+                  <p className="text-gray-600 mb-8">Interested in this vehicle? Get in touch with us for more information, schedule a viewing, or make an inquiry.</p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button 
+                      onClick={() => setIsInquiryModalOpen(true)}
+                      className="bg-primary-light hover:bg-primary-dark text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                    >
+                      <MessageCircle className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                      Send Message
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="px-8 py-4 rounded-lg border-2 border-primary-light/30 hover:border-primary-light hover:bg-primary-light/5 text-primary-dark hover:text-primary-dark font-medium transition-all duration-200 flex items-center justify-center group"
+                    >
+                      <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                      Add to Favorites
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-6 pt-6 border-t border-primary-light/20">
+                    <p className="text-sm text-gray-500 mb-2">Need immediate assistance?</p>
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      <a href="tel:+46737200588" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
+                        📞 +46 737 200 588
+                      </a>
+                      <a href="mailto:info@wexcars.com" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
+                        ✉️ info@wexcars.com
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
