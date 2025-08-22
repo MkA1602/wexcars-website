@@ -161,7 +161,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     {/* Specification Tags - Smaller and beside mileage */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {car.fuel_type && (
-                        <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
+                        <span className="bg-primary-light/30 text-primary-dark px-2 py-1 rounded-md font-medium text-xs">
                           {car.fuel_type}
                         </span>
                       )}
@@ -176,8 +176,13 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                         </span>
                       )}
                       {car.transmission && (
-                        <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
+                        <span className="bg-primary-light/30 text-primary-dark px-2 py-1 rounded-md font-medium text-xs">
                           {car.transmission}
+                        </span>
+                      )}
+                      {car.location && (
+                        <span className="bg-red-500/20 text-red-700 px-2 py-1 rounded-md font-medium text-xs flex items-center gap-1">
+                          📍 {car.location}
                         </span>
                       )}
                     </div>
@@ -251,65 +256,65 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                   <div className="space-y-6">
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">First registration</span>
-                      <span className="text-black">{car.created_at ? new Date(car.created_at).toLocaleDateString() : 'Not specified'}</span>
+                      <span className="text-gray-900">{car.created_at ? new Date(car.created_at).toLocaleDateString() : 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Engine</span>
-                      <span className="text-black">
+                      <span className="text-gray-600">
                         {car.engine_size || 'Not specified'}, {car.specifications?.power || 'Not specified'}, {car.specifications?.drivetrain || 'Not specified'}
                       </span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Odometer</span>
-                      <span className="text-black">{getMileageDisplay(car)}</span>
+                      <span className="text-gray-600">{getMileageDisplay(car)}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Transmission</span>
-                      <span className="text-black">{car.transmission || 'Not specified'}</span>
+                      <span className="text-gray-600">{car.transmission || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Body type</span>
-                      <span className="text-black">{car.category || 'Not specified'}</span>
+                      <span className="text-gray-900">{car.category || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Fuel</span>
-                      <span className="text-black">{car.fuel_type || 'Not specified'}</span>
+                      <span className="text-gray-900">{car.fuel_type || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Chassis Number</span>
-                      <span className="text-black">{car.chassis_number || 'Not specified'}</span>
+                      <span className="text-gray-900">{car.chassis_number || 'Not specified'}</span>
                     </div>
                   </div>
                   
                   <div className="space-y-6">
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Color</span>
-                      <span className="text-black">{car.color || 'Not specified'}</span>
+                      <span className="text-gray-900">{car.color || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Seats</span>
-                      <span className="text-black">{car.specifications?.seating || 'Not specified'}</span>
+                      <span className="text-gray-900">{car.specifications?.seating || 'Not specified'}</span>
                     </div>
 
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Emission class</span>
-                      <span className="text-black">Euro6d</span>
+                      <span className="text-gray-900">Euro6d</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Ref. no</span>
-                      <span className="text-black">{car.id}</span>
+                      <span className="text-gray-900">{car.id}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Certificate of Conformity</span>
-                      <span className="text-black">Yes</span>
+                      <span className="text-gray-900">Yes</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Service book</span>
-                      <span className="text-black">Yes</span>
+                      <span className="text-gray-900">Yes</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">History</span>
-                      <span className="text-black">After the first owner, Service book</span>
+                      <span className="text-gray-900">After the first owner, Service book</span>
                     </div>
                   </div>
                 </div>
