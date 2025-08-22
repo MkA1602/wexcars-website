@@ -86,7 +86,9 @@ export default function CarDetail() {
           drivetrain: carData.drivetrain,
           availability: carData.availability,
           availability_days: carData.availability_days,
-          availability_date: carData.availability_date
+          availability_date: carData.availability_date,
+          chassis_number: carData.chassis_number,
+          location: carData.location
         }
 
         setCar(transformedCar)
