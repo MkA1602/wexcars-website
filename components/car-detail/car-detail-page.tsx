@@ -163,7 +163,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     {/* Specification Tags - Smaller and beside mileage */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {car.fuel_type && (
-                        <span className="bg-primary-light/30 text-primary-dark px-2 py-1 rounded-md font-medium text-xs">
+                        <span className="bg-gray-300 text-gray-700 px-2 py-1 rounded-md font-medium text-xs">
                           {car.fuel_type}
                         </span>
                       )}
@@ -178,17 +178,13 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                         </span>
                       )}
                       {car.transmission && (
-                        <span className="bg-primary-light/30 text-primary-dark px-2 py-1 rounded-md font-medium text-xs">
+                        <span className="bg-gray-300 text-gray-700 px-2 py-1 rounded-md font-medium text-xs">
                           {car.transmission}
                         </span>
                       )}
-                      {car.location ? (
+                      {car.location && (
                         <span className="bg-red-500/20 text-red-700 px-2 py-1 rounded-md font-medium text-xs flex items-center gap-1">
                           📍 {car.location}
-                        </span>
-                      ) : (
-                        <span className="bg-red-500/20 text-red-700 px-2 py-1 rounded-md font-medium text-xs flex items-center gap-1">
-                          📍 Location not set
                         </span>
                       )}
                     </div>
