@@ -26,6 +26,8 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   console.log('Car mileage type:', typeof car.mileage)
   console.log('Car fuel_type:', car.fuel_type)
   console.log('Car horsepower:', car.horsepower)
+  console.log('Car location:', car.location)
+  console.log('Car location type:', typeof car.location)
   
   // Check all possible field names for mileage
   console.log('All car object keys:', Object.keys(car))
@@ -180,9 +182,13 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                           {car.transmission}
                         </span>
                       )}
-                      {car.location && (
+                      {car.location ? (
                         <span className="bg-red-500/20 text-red-700 px-2 py-1 rounded-md font-medium text-xs flex items-center gap-1">
                           📍 {car.location}
+                        </span>
+                      ) : (
+                        <span className="bg-red-500/20 text-red-700 px-2 py-1 rounded-md font-medium text-xs flex items-center gap-1">
+                          📍 Location not set
                         </span>
                       )}
                     </div>
