@@ -147,14 +147,6 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                   <h1 className="text-4xl font-bold text-gray-900 mb-3">
                     {car.brand} {car.name}, {car.year}
                   </h1>
-                  {/* Location Badge - positioned under title */}
-                  {car.location && (
-                    <div className="mb-3">
-                      <span className="bg-red-500/20 text-red-700 px-3 py-1 rounded-md font-medium text-sm flex items-center gap-2 inline-flex">
-                        📍 {car.location}
-                      </span>
-                    </div>
-                  )}
                   <div className="flex items-center gap-4">
                     <p className="text-lg text-gray-600">
                       {car.year} • {getMileageDisplay(car)}
