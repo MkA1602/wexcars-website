@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/contexts/auth-context"
-import AuthHeader from "@/components/auth-header"
+import DynamicHeader from "@/components/dynamic-header"
 import ErrorBoundary from "@/components/error-boundary"
 import { Suspense } from "react"
 import { PerformanceMonitor } from "@/components/performance-monitor"
@@ -74,7 +74,7 @@ export default function RootLayout({
             <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-100">
               <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin"></div>
             </div>}>
-              <AuthHeader />
+              <DynamicHeader />
               <main className="min-h-screen">{children}</main>
               <ResponsiveFooter />
             </Suspense>
