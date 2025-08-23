@@ -53,6 +53,11 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     drivetrain: car.drivetrain || "",
     chassis_number: car.chassis_number || "",
     location: car.location || "",
+    seats: car.seats || "",
+    certificate_of_conformity: car.certificate_of_conformity || "",
+    service_book: car.service_book || "",
+    ref_no: car.ref_no || "",
+    emission_class: car.emission_class || "",
     features: car.features ? JSON.parse(car.features) : [],
     // Seller information
     seller_type: car.seller_type || "individual",
@@ -422,6 +427,11 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         drivetrain: formData.drivetrain,
         chassis_number: formData.chassis_number,
         location: formData.location,
+        seats: formData.seats,
+        certificate_of_conformity: formData.certificate_of_conformity,
+        service_book: formData.service_book,
+        ref_no: formData.ref_no,
+        emission_class: formData.emission_class,
         seller_type: formData.seller_type,
         dealership_name: formData.seller_type === 'dealership' ? formData.dealership_name : null,
         updated_at: new Date().toISOString(),
@@ -805,6 +815,93 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                   className={errors.location ? "border-red-500" : ""}
                 />
                 {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
+              </div>
+
+              {/* Seats */}
+              <div className="space-y-2">
+                <Label htmlFor="seats">Number of Seats</Label>
+                <select
+                  id="seats"
+                  name="seats"
+                  value={formData.seats}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Number of Seats</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                </select>
+              </div>
+
+              {/* Certificate of Conformity */}
+              <div className="space-y-2">
+                <Label htmlFor="certificate_of_conformity">Certificate of Conformity</Label>
+                <select
+                  id="certificate_of_conformity"
+                  name="certificate_of_conformity"
+                  value={formData.certificate_of_conformity}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Option</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+
+              {/* Service Book */}
+              <div className="space-y-2">
+                <Label htmlFor="service_book">Service Book</Label>
+                <select
+                  id="service_book"
+                  name="service_book"
+                  value={formData.service_book}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Option</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+
+              {/* Reference Number */}
+              <div className="space-y-2">
+                <Label htmlFor="ref_no">Reference Number</Label>
+                <Input
+                  id="ref_no"
+                  name="ref_no"
+                  value={formData.ref_no}
+                  onChange={handleChange}
+                  placeholder="e.g. REF123456"
+                  className={errors.ref_no ? "border-red-500" : ""}
+                />
+                {errors.ref_no && <p className="text-red-500 text-sm">{errors.ref_no}</p>}
+              </div>
+
+              {/* Emission Class */}
+              <div className="space-y-2">
+                <Label htmlFor="emission_class">Emission Class</Label>
+                <select
+                  id="emission_class"
+                  name="emission_class"
+                  value={formData.emission_class}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Emission Class</option>
+                  <option value="Euro 1">Euro 1</option>
+                  <option value="Euro 2">Euro 2</option>
+                  <option value="Euro 3">Euro 3</option>
+                  <option value="Euro 4">Euro 4</option>
+                  <option value="Euro 5">Euro 5</option>
+                  <option value="Euro 6">Euro 6</option>
+                </select>
               </div>
             </div>
           </div>

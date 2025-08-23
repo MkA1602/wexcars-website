@@ -47,6 +47,11 @@ export interface Database {
           dealership_name: string | null
           chassis_number: string | null
           location: string | null
+          seats: string | null
+          certificate_of_conformity: string | null
+          service_book: string | null
+          ref_no: string | null
+          emission_class: string | null
           created_at: string
           updated_at: string
         }
@@ -64,6 +69,11 @@ export interface Database {
           dealership_name?: string | null
           chassis_number?: string | null
           location?: string | null
+          seats?: string | null
+          certificate_of_conformity?: string | null
+          service_book?: string | null
+          ref_no?: string | null
+          emission_class?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -81,6 +91,11 @@ export interface Database {
           dealership_name?: string | null
           chassis_number?: string | null
           location?: string | null
+          seats?: string | null
+          certificate_of_conformity?: string | null
+          service_book?: string | null
+          ref_no?: string | null
+          emission_class?: string | null
           created_at?: string
           updated_at?: string
         }

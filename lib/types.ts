@@ -57,6 +57,11 @@ export interface Car {
   availability_date?: string | null
   chassis_number?: string | null // Chassis number (VIN) of the car
   location?: string | null // Country location of the car
+  seats?: string | null // Number of seats (1-7)
+  certificate_of_conformity?: string | null // Certificate of Conformity (Yes/No)
+  service_book?: string | null // Service book availability (Yes/No)
+  ref_no?: string | null // Reference number
+  emission_class?: string | null // Emission class (Euro 1-6)
 }
 
 export interface FilterOptions {
