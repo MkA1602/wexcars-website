@@ -6,7 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Heart } from "lucide-react"
+import { Menu, X } from "lucide-react"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -15,43 +15,9 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [logoError, setLogoError] = useState(false)
-  const [favoritesCount, setFavoritesCount] = useState(0)
   const router = useRouter()
 
-  // Load favorites count from localStorage
-  useEffect(() => {
-    try {
-      const savedFavorites = localStorage.getItem("carFavorites")
-      if (savedFavorites) {
-        const favorites = JSON.parse(savedFavorites)
-        const count = Object.values(favorites).filter(Boolean).length
-        setFavoritesCount(count)
-      }
-    } catch (error) {
-      console.error("Error loading favorites count:", error)
-    }
-  }, [])
 
-  // Listen for storage changes to update favorites count
-  useEffect(() => {
-    const handleStorageChange = () => {
-      try {
-        const savedFavorites = localStorage.getItem("carFavorites")
-        if (savedFavorites) {
-          const favorites = JSON.parse(savedFavorites)
-          const count = Object.values(favorites).filter(Boolean).length
-          setFavoritesCount(count)
-        } else {
-          setFavoritesCount(0)
-        }
-      } catch (error) {
-        console.error("Error updating favorites count:", error)
-      }
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
-  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,14 +88,7 @@ export default function Header() {
                 Contact
               </Link>
             </li>
-            <li>
-              <Link
-                href="/favorites"
-                className="text-black hover:text-primary-light font-medium transition-colors duration-200"
-              >
-                Favorites
-              </Link>
-            </li>
+
           </ul>
         </nav>
       </div>
@@ -151,14 +110,7 @@ export default function Header() {
             Search
           </Button>
         </form>
-        <Link href="/favorites" className="relative p-2 hover:bg-gray-100 rounded-full transition-colors">
-          <Heart className="w-5 h-5 text-gray-600" />
-          {favoritesCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-              {favoritesCount > 9 ? '9+' : favoritesCount}
-            </span>
-          )}
-        </Link>
+
         <Link href="/sign-in">
           <Button variant="outline" className="border-primary-light text-primary-light hover:bg-primary-light/10">
             Sign In
@@ -243,15 +195,7 @@ export default function Header() {
                   Contact
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/favorites"
-                  className="text-xl font-medium text-black hover:text-primary-light block"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Favorites
-                </Link>
-              </li>
+
             </ul>
           </nav>
 
