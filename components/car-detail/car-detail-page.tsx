@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Home, Car as CarIcon, Edit, Trash2, User, Shield, MessageCircle, Heart, Sofa, Car as CarIcon2, ShieldCheck, Monitor, Star, Settings } from "lucide-react"
@@ -19,6 +19,8 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   const { user } = useAuth()
   const router = useRouter()
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   
   // Debug logging to see what's in the car object
   console.log('Car object:', car)
@@ -65,6 +67,38 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   // Check if current user owns this car
   const isCarOwner = user?.id === car.user_id
   const isAdmin = user?.role === 'admin'
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    setIsMounted(true)
+    
+    try {
+      const savedFavorites = localStorage.getItem("carFavorites")
+      if (savedFavorites) {
+        const favorites = JSON.parse(savedFavorites)
+        setIsFavorite(favorites[car.id] || false)
+      }
+    } catch (error) {
+      console.error("Error loading favorites:", error)
+    }
+  }, [car.id])
+
+  // Toggle favorite status
+  const toggleFavorite = () => {
+    if (!isMounted) return
+    
+    try {
+      const savedFavorites = localStorage.getItem("carFavorites")
+      const favorites = savedFavorites ? JSON.parse(savedFavorites) : {}
+      
+      const newFavorites = { ...favorites, [car.id]: !isFavorite }
+      localStorage.setItem("carFavorites", JSON.stringify(newFavorites))
+      
+      setIsFavorite(!isFavorite)
+    } catch (error) {
+      console.error("Error saving favorites:", error)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -483,10 +517,17 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     </Button>
                     <Button 
                       variant="outline" 
-                      className="px-8 py-4 rounded-lg border-2 border-primary-light/30 hover:border-primary-light hover:bg-primary-light/5 text-primary-dark hover:text-primary-dark font-medium transition-all duration-200 flex items-center justify-center group"
+                      onClick={toggleFavorite}
+                      className={`px-8 py-4 rounded-lg border-2 transition-all duration-200 flex items-center justify-center group ${
+                        isFavorite 
+                          ? 'border-red-500 bg-red-50 text-red-600 hover:bg-red-100' 
+                          : 'border-primary-light/30 hover:border-primary-light hover:bg-primary-light/5 text-primary-dark hover:text-primary-dark'
+                      }`}
                     >
-                      <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                      Add to Favorites
+                      <Heart className={`w-5 h-5 mr-2 group-hover:scale-110 transition-transform ${
+                        isFavorite ? 'fill-red-500' : ''
+                      }`} />
+                      {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
                     </Button>
                   </div>
                   
