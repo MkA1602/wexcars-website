@@ -13,10 +13,10 @@ const teamMembers = [
     bio: "With many years dealing with cars and offer car that are not available in the market, MK founded WexCars with a vision to revolutionize the premium car buying experience.",
   },
   {
-    name: "Gorje Alm",
+    name: "Roger Khori",
     position: "Chief Operating Officer",
     image: "/team/coo.jpg",
-    bio: "Gorje brings her extensive experience from leading automotive brands to oversee all operational aspects of WexCars.",
+    bio: "Gorje brings his extensive experience from leading automotive brands to oversee all operational aspects of WexCars.",
   },
   {
     name: "coming soon",
