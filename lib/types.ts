@@ -62,6 +62,8 @@ export interface Car {
   service_book?: string | null // Service book availability (Yes/No)
   ref_no?: string | null // Reference number
   emission_class?: string | null // Emission class (Euro 1-6)
+  first_registration?: string | null // First registration date of the car
+  crash_history?: string | null // Crash/accident history of the car
 }
 
 export interface FilterOptions {

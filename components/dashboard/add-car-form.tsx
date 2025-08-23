@@ -57,6 +57,8 @@ export default function AddCarForm() {
     service_book: "",
     ref_no: "",
     emission_class: "",
+    first_registration: "",
+    crash_history: "",
     availability_type: "available_now",
     availability_days: 12,
     availability_date: "",
@@ -465,6 +467,8 @@ export default function AddCarForm() {
         service_book: formData.service_book,
         ref_no: formData.ref_no,
         emission_class: formData.emission_class,
+        first_registration: formData.first_registration,
+        crash_history: formData.crash_history,
         seller_type: formData.seller_type,
         dealership_name: formData.seller_type === 'dealership' ? formData.dealership_name : null,
         availability: formData.availability_type,
@@ -875,6 +879,41 @@ export default function AddCarForm() {
                   <option value="Euro 5">Euro 5</option>
                   <option value="Euro 6">Euro 6</option>
                 </select>
+              </div>
+
+              {/* First Registration */}
+              <div className="space-y-2">
+                <Label htmlFor="first_registration">First Registration Date</Label>
+                <Input
+                  id="first_registration"
+                  name="first_registration"
+                  type="date"
+                  value={formData.first_registration}
+                  onChange={handleChange}
+                  className="w-full"
+                />
+                <p className="text-xs text-gray-500">When the car was first registered</p>
+              </div>
+
+              {/* Crash History */}
+              <div className="space-y-2">
+                <Label htmlFor="crash_history">Crash/Accident History</Label>
+                <select
+                  id="crash_history"
+                  name="crash_history"
+                  value={formData.crash_history}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md border-gray-300"
+                >
+                  <option value="">Select Option</option>
+                  <option value="No accidents">No accidents</option>
+                  <option value="Minor accident">Minor accident</option>
+                  <option value="Moderate accident">Moderate accident</option>
+                  <option value="Major accident">Major accident</option>
+                  <option value="Salvage/Totaled">Salvage/Totaled</option>
+                  <option value="Unknown">Unknown</option>
+                </select>
+                <p className="text-xs text-gray-500">Select the most accurate description of the car's accident history</p>
               </div>
 
               {/* Availability Section */}

@@ -52,6 +52,8 @@ export interface Database {
           service_book: string | null
           ref_no: string | null
           emission_class: string | null
+          first_registration: string | null
+          crash_history: string | null
           created_at: string
           updated_at: string
         }
@@ -74,6 +76,8 @@ export interface Database {
           service_book?: string | null
           ref_no?: string | null
           emission_class?: string | null
+          first_registration?: string | null
+          crash_history?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -96,6 +100,8 @@ export interface Database {
           service_book?: string | null
           ref_no?: string | null
           emission_class?: string | null
+          first_registration?: string | null
+          crash_history?: string | null
           created_at?: string
           updated_at?: string
         }
