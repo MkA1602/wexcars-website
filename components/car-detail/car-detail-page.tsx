@@ -288,17 +288,17 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Engine</span>
-                      <span className="text-gray-600">
+                      <span className="text-gray-900">
                         {car.engine_size || 'Not specified'}, {car.specifications?.power || 'Not specified'}, {car.specifications?.drivetrain || 'Not specified'}
                       </span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Odometer</span>
-                      <span className="text-gray-600">{getMileageDisplay(car)}</span>
+                      <span className="text-gray-900">{getMileageDisplay(car)}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Transmission</span>
-                      <span className="text-gray-600">{car.transmission || 'Not specified'}</span>
+                      <span className="text-gray-900">{car.transmission || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-600">Body type</span>
