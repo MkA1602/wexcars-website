@@ -34,8 +34,8 @@ export default function AddCarForm() {
     year: new Date().getFullYear(),
     price: "",
     priceExclVat: "",
-    vatRate: "5", // Default VAT rate for UAE
-    currency: "AED", // Default to AED
+    vatRate: "5", // Default VAT rate
+    currency: "EUR", // Default to EUR
     image: "",
     description: "",
     features: [] as string[],
@@ -1021,9 +1021,9 @@ export default function AddCarForm() {
                     onChange={handleChange}
                     className="w-20 px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                   >
-                    <option value="AED">AED</option>
-                    <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="AED">AED</option>
                     <option value="GBP">GBP</option>
                   </select>
                   <Input

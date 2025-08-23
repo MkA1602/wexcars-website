@@ -37,7 +37,7 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     category: car.category || "",
     year: car.year || new Date().getFullYear(),
     price: car.price || "",
-    currency: car.currency || "AED",
+    currency: car.currency || "EUR",
     image: car.image || "",
     description: car.description || "",
     // Additional car details
