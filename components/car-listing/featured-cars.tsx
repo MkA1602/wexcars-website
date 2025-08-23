@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Heart, Star, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import PriceDisplay from "@/components/ui/price-display"
 import type { Car } from "@/lib/types"
 import { supabaseClient } from "@/lib/supabase/client"
+import { useAuth } from "@/contexts/auth-context"
 
 const FeaturedCars = () => {
   const [cars, setCars] = useState<Car[]>([])
@@ -17,6 +19,8 @@ const FeaturedCars = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const router = useRouter()
+  const { user } = useAuth()
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -127,6 +131,17 @@ const FeaturedCars = () => {
   const toggleFavorite = useCallback((id: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    
+    // Check if user is authenticated
+    if (!user) {
+      // Store the car ID to add to favorites after sign-in
+      localStorage.setItem("pendingFavorite", id)
+      // Redirect to sign-in page
+      router.push("/auth/login")
+      return
+    }
+    
+    // User is authenticated, proceed with favorite toggle
     setFavorites((prev) => {
       const newFavorites = { ...prev, [id]: !prev[id] }
       try {
@@ -136,7 +151,7 @@ const FeaturedCars = () => {
       }
       return newFavorites
     })
-  }, [])
+  }, [user, router])
 
   return (
     <section ref={sectionRef} className="py-12 md:py-16 bg-white">

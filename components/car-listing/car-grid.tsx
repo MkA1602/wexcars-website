@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Heart, Star, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import PriceDisplay from "@/components/ui/price-display"
 import type { Car } from "@/lib/types"
 import ErrorBoundary from "@/components/error-boundary"
+import { useAuth } from "@/contexts/auth-context"
 
 interface CarGridProps {
   cars: Car[]
@@ -21,6 +23,8 @@ interface CarGridProps {
 export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
   const [favorites, setFavorites] = useState<Record<string, boolean>>({})
   const [isMounted, setIsMounted] = useState(false)
+  const router = useRouter()
+  const { user } = useAuth()
 
   // Set mounted state to prevent hydration issues
   useEffect(() => {
@@ -51,6 +55,17 @@ export default function CarGrid({ cars, vatDisplay }: CarGridProps) {
   const toggleFavorite = (id: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    
+    // Check if user is authenticated
+    if (!user) {
+      // Store the car ID to add to favorites after sign-in
+      localStorage.setItem("pendingFavorite", id)
+      // Redirect to sign-in page
+      router.push("/auth/login")
+      return
+    }
+    
+    // User is authenticated, proceed with favorite toggle
     setFavorites((prev) => ({
       ...prev,
       [id]: !prev[id],

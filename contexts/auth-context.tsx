@@ -83,6 +83,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Handle auth events
         if (event === "SIGNED_IN") {
+          // Check for pending favorite to add after sign-in
+          const pendingFavorite = localStorage.getItem("pendingFavorite")
+          if (pendingFavorite) {
+            // Add the car to favorites
+            try {
+              const savedFavorites = localStorage.getItem("carFavorites") || "{}"
+              const favorites = JSON.parse(savedFavorites)
+              favorites[pendingFavorite] = true
+              localStorage.setItem("carFavorites", JSON.stringify(favorites))
+              // Clear the pending favorite
+              localStorage.removeItem("pendingFavorite")
+              console.log(`Added car ${pendingFavorite} to favorites after sign-in`)
+            } catch (error) {
+              console.error("Error adding pending favorite:", error)
+              localStorage.removeItem("pendingFavorite")
+            }
+          }
           router.refresh()
         }
         if (event === "SIGNED_OUT") {
@@ -176,6 +193,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .select('role')
             .eq('id', data.user.id)
             .single()
+
+          // Check for pending favorite to add after sign-in
+          const pendingFavorite = localStorage.getItem("pendingFavorite")
+          if (pendingFavorite) {
+            // Add the car to favorites
+            try {
+              const savedFavorites = localStorage.getItem("carFavorites") || "{}"
+              const favorites = JSON.parse(savedFavorites)
+              favorites[pendingFavorite] = true
+              localStorage.setItem("carFavorites", JSON.stringify(favorites))
+              // Clear the pending favorite
+              localStorage.removeItem("pendingFavorite")
+              console.log(`Added car ${pendingFavorite} to favorites after sign-in`)
+            } catch (error) {
+              console.error("Error adding pending favorite:", error)
+              localStorage.removeItem("pendingFavorite")
+            }
+          }
 
           if (userProfile?.role === 'admin' || userProfile?.role === 'super_admin') {
             // Admin users go to admin dashboard

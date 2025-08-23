@@ -87,6 +87,16 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   const toggleFavorite = () => {
     if (!isMounted) return
     
+    // Check if user is authenticated
+    if (!user) {
+      // Store the car ID to add to favorites after sign-in
+      localStorage.setItem("pendingFavorite", car.id)
+      // Redirect to sign-in page
+      router.push("/auth/login")
+      return
+    }
+    
+    // User is authenticated, proceed with favorite toggle
     try {
       const savedFavorites = localStorage.getItem("carFavorites")
       const favorites = savedFavorites ? JSON.parse(savedFavorites) : {}
