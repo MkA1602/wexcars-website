@@ -284,65 +284,65 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                   <div className="space-y-6">
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">First registration</span>
-                      <span className="text-gray-900">{car.created_at ? new Date(car.created_at).toLocaleDateString() : 'Not specified'}</span>
+                      <span className="text-gray-900 font-semibold">{car.created_at ? new Date(car.created_at).toLocaleDateString() : 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Engine</span>
-                      <span className="text-gray-900">
+                      <span className="text-gray-900 font-semibold">
                         {car.engine_size || 'Not specified'}, {car.specifications?.power || 'Not specified'}, {car.specifications?.drivetrain || 'Not specified'}
                       </span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Odometer</span>
-                      <span className="text-gray-900">{getMileageDisplay(car)}</span>
+                      <span className="text-gray-900 font-semibold">{getMileageDisplay(car)}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Transmission</span>
-                      <span className="text-gray-900">{car.transmission || 'Not specified'}</span>
+                      <span className="text-gray-900 font-semibold">{car.transmission || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Body type</span>
-                      <span className="text-gray-900">{car.category || 'Not specified'}</span>
+                      <span className="text-gray-900 font-semibold">{car.category || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Fuel</span>
-                      <span className="text-gray-900">{car.fuel_type || 'Not specified'}</span>
+                      <span className="text-gray-900 font-semibold">{car.fuel_type || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Chassis Number</span>
-                      <span className="text-gray-900">{car.chassis_number || 'Not specified'}</span>
+                      <span className="text-gray-900 font-semibold">{car.chassis_number || 'Not specified'}</span>
                     </div>
                   </div>
                   
                   <div className="space-y-6">
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Color</span>
-                      <span className="text-gray-900">{car.color || 'Not specified'}</span>
+                      <span className="text-gray-900 font-semibold">{car.color || 'Not specified'}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Seats</span>
-                      <span className="text-gray-900">{car.specifications?.seating || 'Not specified'}</span>
+                      <span className="text-gray-900 font-semibold">{car.specifications?.seating || 'Not specified'}</span>
                     </div>
 
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Emission class</span>
-                      <span className="text-gray-900">Euro6d</span>
+                      <span className="text-gray-900 font-semibold">Euro6d</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Ref. no</span>
-                      <span className="text-gray-900">{car.id}</span>
+                      <span className="text-gray-900 font-semibold">{car.id}</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Certificate of Conformity</span>
-                      <span className="text-gray-900">Yes</span>
+                      <span className="text-gray-900 font-semibold">Yes</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Service book</span>
-                      <span className="text-gray-900">Yes</span>
+                      <span className="text-gray-900 font-semibold">Yes</span>
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">History</span>
-                      <span className="text-gray-900">After the first owner, Service book</span>
+                      <span className="text-gray-900 font-semibold">After the first owner, Service book</span>
                     </div>
                   </div>
                 </div>
