@@ -28,7 +28,7 @@ export async function middleware(req: NextRequest) {
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin")
 
   // Define public routes that don't require authentication
-  const publicRoutes = ["/", "/about", "/contact", "/pricing", "/collections", "/terms", "/privacy", "/cookies"]
+  const publicRoutes = ["/", "/about", "/contact", "/pricing", "/collections", "/terms", "/privacy", "/cookies", "/help", "/faq", "/shipping", "/description"]
 
   // Check if the current path is a public route or starts with one
   const isPublicRoute = publicRoutes.some(
