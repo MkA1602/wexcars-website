@@ -58,10 +58,7 @@ const faqData = [
         question: "Are there hidden fees?",
         answer: "No, we believe in transparent pricing. All fees including taxes, registration, and additional services are clearly displayed during the purchase process."
       },
-      {
-        question: "Do you offer financing?",
-        answer: "Yes, we work with premium financial institutions to offer competitive financing rates for qualified buyers. Our team can help you find the best financing solution."
-      }
+
     ]
   },
   {
