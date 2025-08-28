@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Search, MessageCircle, Phone, Mail, MapPin, ChevronRight, HelpCircle, Car, CreditCard, Truck, Shield, Users, FileText, Plus, Minus } from "lucide-react"
+import { Search, MessageCircle, Phone, Mail, MapPin, ChevronRight, HelpCircle, Car, CreditCard, Truck, Shield, Users, FileText, Plus, Minus, Building2, CarFront, Wallet, Package, Star, Settings, Globe, Clock, ShieldCheck, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 const faqData = [
   {
     category: "General",
+    icon: Building2,
     questions: [
       {
         question: "What is WexCars?",
@@ -32,6 +33,7 @@ const faqData = [
   },
   {
     category: "Vehicles",
+    icon: CarFront,
     questions: [
       {
         question: "Are all vehicles inspected?",
@@ -49,6 +51,7 @@ const faqData = [
   },
   {
     category: "Pricing & Payment",
+    icon: Wallet,
     questions: [
       {
         question: "What payment methods do you accept?",
@@ -57,12 +60,12 @@ const faqData = [
       {
         question: "Are there hidden fees?",
         answer: "No, we believe in transparent pricing. All fees including taxes, registration, and additional services are clearly displayed during the purchase process."
-      },
-
+      }
     ]
   },
   {
     category: "Shipping & Delivery",
+    icon: Package,
     questions: [
       {
         question: "How long does shipping take?",
@@ -124,7 +127,7 @@ export default function FAQPage() {
               {faqData.map((category, categoryIndex) => (
                 <div key={categoryIndex} className="bg-white rounded-xl shadow-md p-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <HelpCircle className="w-6 h-6 text-primary-light mr-3" />
+                    <category.icon className="w-6 h-6 text-primary-light mr-3" />
                     {category.category}
                   </h2>
                   <div className="space-y-4">
