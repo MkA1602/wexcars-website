@@ -1,0 +1,26 @@
+{
+  "name": "WexCars - Luxury Car Experience",
+  "short_name": "WexCars",
+  "description": "Experience the magic of luxury with WexCars - premium vehicles for discerning customers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "icons": [
+    {
+      "src": "/wexcars-logo-new.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/wexcars-logo-new.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["automotive", "shopping", "luxury"],
+  "lang": "en",
+  "dir": "ltr"
+}

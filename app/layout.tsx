@@ -14,9 +14,56 @@ import Script from "next/script"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://wexcars.com'),
   title: "WexCars - Luxury Car Experience",
   description: "Experience the magic of luxury with WexCars - premium vehicles for discerning customers",
-    generator: 'v0.dev'
+  generator: 'v0.dev',
+  icons: {
+    icon: [
+      { url: '/wexcars-logo-new.png', sizes: '32x32', type: 'image/png' },
+      { url: '/wexcars-logo-new.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/wexcars-logo-new.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/wexcars-logo-new.png',
+  },
+  openGraph: {
+    title: "WexCars - Luxury Car Experience",
+    description: "Experience the magic of luxury with WexCars - premium vehicles for discerning customers",
+    url: "https://wexcars.com",
+    siteName: "WexCars",
+    images: [
+      {
+        url: "/wexcars-logo-new.png",
+        width: 1200,
+        height: 630,
+        alt: "WexCars Logo",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WexCars - Luxury Car Experience",
+    description: "Experience the magic of luxury with WexCars - premium vehicles for discerning customers",
+    images: ["/wexcars-logo-new.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code", // Replace with your actual Google verification code
+  },
 }
 
 export default function RootLayout({
@@ -27,6 +74,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Favicon and app icons for better search result appearance */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/wexcars-logo-new.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/wexcars-logo-new.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/wexcars-logo-new.png" />
+        <link rel="shortcut icon" href="/wexcars-logo-new.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        
         {/* Critical resource preloading for performance */}
         <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public/wexcars-logo-new.png" as="image" />
