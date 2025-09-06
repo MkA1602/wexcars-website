@@ -1,89 +1,196 @@
 "use client"
 
-import { CheckCircle, Mail, RefreshCw } from "lucide-react"
+import { CheckCircle, Mail, RefreshCw, Shield, Clock, AlertCircle, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
+import { useState } from "react"
 
 export default function EmailConfirmationPage() {
+  const [isResending, setIsResending] = useState(false)
+  const [resendSuccess, setResendSuccess] = useState(false)
+
+  const handleResendEmail = async () => {
+    setIsResending(true)
+    // Simulate API call
+    setTimeout(() => {
+      setIsResending(false)
+      setResendSuccess(true)
+    }, 2000)
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow rounded-lg sm:px-10">
-          <div className="text-center">
-            {/* Email Icon */}
-            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4">
-              <Mail className="h-8 w-8 text-blue-600" />
-            </div>
-            
-            {/* Heading */}
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              تحقق من بريدك الإلكتروني
-            </h1>
-            <h2 className="text-xl font-semibold text-gray-700 mb-6">
-              Check Your Email
-            </h2>
-            
-            {/* Message */}
-            <div className="space-y-4 text-gray-600">
-              <p className="text-base">
-                لقد أرسلنا رابط التفعيل إلى بريدك الإلكتروني
-              </p>
-              <p className="text-base">
-                We've sent an activation link to your email address
-              </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 mb-6">
+            <Mail className="h-10 w-10 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Email Verification Required
+          </h1>
+          <p className="text-lg text-gray-600">
+            Complete your account setup to access WexCars
+          </p>
+        </div>
+
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="text-center pb-4">
+            <CardTitle className="text-2xl font-semibold text-gray-900">
+              Check Your Email Inbox
+            </CardTitle>
+            <CardDescription className="text-gray-600 text-base">
+              We've sent a secure verification link to your email address
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {/* Success Alert */}
+            <Alert className="border-green-200 bg-green-50">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800">
+                <strong>Verification email sent successfully!</strong> Please check your inbox and follow the instructions to activate your account.
+              </AlertDescription>
+            </Alert>
+
+            {/* Instructions */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Shield className="h-5 w-5 text-blue-600 mr-2" />
+                Next Steps
+              </h3>
               
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-                <div className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-                  <div className="text-sm text-blue-800">
-                    <p className="mb-1">اضغط على الرابط في البريد لتفعيل حسابك</p>
-                    <p>Click the link in the email to activate your account</p>
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-blue-600">1</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Check Your Email</p>
+                    <p className="text-gray-600 text-sm">Look for an email from <span className="font-mono bg-gray-100 px-1 rounded">support@wexcars.com</span></p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-blue-600">2</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Click the Verification Link</p>
+                    <p className="text-gray-600 text-sm">Click the blue "Confirm your mail" button in the email</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-blue-600">3</span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Access Your Account</p>
+                    <p className="text-gray-600 text-sm">You'll be redirected to your WexCars dashboard</p>
                   </div>
                 </div>
               </div>
-              
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
-                <div className="text-sm text-yellow-800">
-                  <p className="mb-1">لم تستلم البريد؟ تحقق من مجلد الرسائل المهملة</p>
-                  <p>Didn't receive the email? Check your spam folder</p>
+            </div>
+
+            {/* Important Notes */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" />
+                <div className="text-sm">
+                  <h4 className="font-semibold text-amber-800 mb-1">Important Notes:</h4>
+                  <ul className="text-amber-700 space-y-1">
+                    <li>• The verification link expires in 24 hours</li>
+                    <li>• Check your spam/junk folder if you don't see the email</li>
+                    <li>• Make sure you're using the same email address you registered with</li>
+                  </ul>
                 </div>
               </div>
             </div>
-            
+
+            {/* Timing Information */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <Clock className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                <div className="text-sm">
+                  <h4 className="font-semibold text-blue-800 mb-1">Email Delivery</h4>
+                  <p className="text-blue-700">
+                    Emails are typically delivered within 1-2 minutes. If you haven't received it after 5 minutes, 
+                    please check your spam folder or try resending the verification email.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Action Buttons */}
-            <div className="mt-8 space-y-3">
+            <div className="space-y-3 pt-4">
               <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => window.location.reload()}
+                onClick={handleResendEmail}
+                disabled={isResending || resendSuccess}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-12 text-base font-medium"
               >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                <span>إعادة إرسال البريد / Resend Email</span>
+                {isResending ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : resendSuccess ? (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Email Sent Successfully!
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Resend Verification Email
+                  </>
+                )}
               </Button>
               
               <Link href="/auth/login">
-                <Button variant="outline" className="w-full">
-                  العودة لتسجيل الدخول / Back to Login
+                <Button variant="outline" className="w-full h-12 text-base font-medium border-gray-300 hover:bg-gray-50">
+                  <ArrowRight className="h-4 w-4 mr-2" />
+                  Back to Login
                 </Button>
               </Link>
             </div>
-            
-            {/* Help Text */}
-            <div className="mt-6 text-sm text-gray-500">
-              <p className="mb-1">تحتاج مساعدة؟</p>
-              <p className="mb-2">Need help?</p>
-              <Link href="/contact" className="text-blue-600 hover:text-blue-500">
-                تواصل معنا / Contact Us
-              </Link>
+
+            {/* Support Section */}
+            <div className="border-t border-gray-200 pt-6">
+              <div className="text-center">
+                <h4 className="font-semibold text-gray-900 mb-2">Need Help?</h4>
+                <p className="text-gray-600 text-sm mb-4">
+                  Having trouble with email verification? Our support team is here to help.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Link href="/contact">
+                    <Button variant="ghost" className="text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                      Contact Support
+                    </Button>
+                  </Link>
+                  <Link href="/help">
+                    <Button variant="ghost" className="text-gray-600 hover:text-gray-700 hover:bg-gray-50">
+                      Help Center
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
+            <span>WexCars</span>
+            <span>•</span>
+            <span>Premium Luxury Vehicle Platform</span>
+            <span>•</span>
+            <span>Secure & Verified</span>
           </div>
         </div>
-      </div>
-      
-      {/* Footer */}
-      <div className="text-center mt-8">
-        <p className="text-sm text-gray-500">
-          WexCars - Premium Luxury Vehicle Platform
-        </p>
       </div>
     </div>
   )
