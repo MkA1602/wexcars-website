@@ -5,11 +5,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 
 export default function EmailConfirmationPage() {
   const [isResending, setIsResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
+  const searchParams = useSearchParams()
+  const message = searchParams.get("message")
+  const email = searchParams.get("email")
+  const isConfirmed = message === "confirmed"
 
   const handleResendEmail = async () => {
     setIsResending(true)
@@ -25,37 +30,60 @@ export default function EmailConfirmationPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 mb-6">
-            <Mail className="h-10 w-10 text-white" />
+          <div className={`mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-6 ${
+            isConfirmed 
+              ? "bg-gradient-to-r from-green-500 to-emerald-600" 
+              : "bg-gradient-to-r from-blue-500 to-indigo-600"
+          }`}>
+            {isConfirmed ? (
+              <CheckCircle className="h-10 w-10 text-white" />
+            ) : (
+              <Mail className="h-10 w-10 text-white" />
+            )}
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Email Verification Required
+            {isConfirmed ? "Email Successfully Confirmed!" : "Email Verification Required"}
           </h1>
           <p className="text-lg text-gray-600">
-            Complete your account setup to access WexCars
+            {isConfirmed 
+              ? "Your WexCars account is now active and ready to use" 
+              : "Complete your account setup to access WexCars"
+            }
           </p>
         </div>
 
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-2xl font-semibold text-gray-900">
-              Check Your Email Inbox
+              {isConfirmed ? "Welcome to WexCars!" : "Check Your Email Inbox"}
             </CardTitle>
             <CardDescription className="text-gray-600 text-base">
-              We've sent a secure verification link to your email address
+              {isConfirmed 
+                ? `Your email ${email ? `(${email})` : ''} has been successfully verified`
+                : "We've sent a secure verification link to your email address"
+              }
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
             {/* Success Alert */}
-            <Alert className="border-green-200 bg-green-50">
+            <Alert className={isConfirmed ? "border-green-200 bg-green-50" : "border-green-200 bg-green-50"}>
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-green-800">
-                <strong>Verification email sent successfully!</strong> Please check your inbox and follow the instructions to activate your account.
+                {isConfirmed ? (
+                  <>
+                    <strong>Account activated successfully!</strong> You can now access all WexCars features and start exploring our luxury vehicle collection.
+                  </>
+                ) : (
+                  <>
+                    <strong>Verification email sent successfully!</strong> Please check your inbox and follow the instructions to activate your account.
+                  </>
+                )}
               </AlertDescription>
             </Alert>
 
-            {/* Instructions */}
+            {/* Instructions - Only show if not confirmed */}
+            {!isConfirmed && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                 <Shield className="h-5 w-5 text-blue-600 mr-2" />
@@ -94,8 +122,10 @@ export default function EmailConfirmationPage() {
                 </div>
               </div>
             </div>
+            )}
 
-            {/* Important Notes */}
+            {/* Important Notes - Only show if not confirmed */}
+            {!isConfirmed && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
               <div className="flex items-start">
                 <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 mr-3 flex-shrink-0" />
@@ -109,8 +139,10 @@ export default function EmailConfirmationPage() {
                 </div>
               </div>
             </div>
+            )}
 
-            {/* Timing Information */}
+            {/* Timing Information - Only show if not confirmed */}
+            {!isConfirmed && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start">
                 <Clock className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
@@ -123,38 +155,58 @@ export default function EmailConfirmationPage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Action Buttons */}
             <div className="space-y-3 pt-4">
-              <Button 
-                onClick={handleResendEmail}
-                disabled={isResending || resendSuccess}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-12 text-base font-medium"
-              >
-                {isResending ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : resendSuccess ? (
-                  <>
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Email Sent Successfully!
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Resend Verification Email
-                  </>
-                )}
-              </Button>
-              
-              <Link href="/auth/login">
-                <Button variant="outline" className="w-full h-12 text-base font-medium border-gray-300 hover:bg-gray-50">
-                  <ArrowRight className="h-4 w-4 mr-2" />
-                  Back to Login
-                </Button>
-              </Link>
+              {isConfirmed ? (
+                <>
+                  <Link href="/dashboard">
+                    <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-12 text-base font-medium">
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Go to Dashboard
+                    </Button>
+                  </Link>
+                  <Link href="/">
+                    <Button variant="outline" className="w-full h-12 text-base font-medium border-gray-300 hover:bg-gray-50">
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Explore Vehicles
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    onClick={handleResendEmail}
+                    disabled={isResending || resendSuccess}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-12 text-base font-medium"
+                  >
+                    {isResending ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : resendSuccess ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Email Sent Successfully!
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Resend Verification Email
+                      </>
+                    )}
+                  </Button>
+                  
+                  <Link href="/auth/login">
+                    <Button variant="outline" className="w-full h-12 text-base font-medium border-gray-300 hover:bg-gray-50">
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Back to Login
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Support Section */}

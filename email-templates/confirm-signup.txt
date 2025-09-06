@@ -1,0 +1,45 @@
+Welcome to WexCars!
+Your account is almost ready
+
+Dear Valued Customer,
+
+Thank you for joining WexCars, the premier destination for luxury vehicles. 
+To complete your registration and start exploring our exclusive collection, 
+please confirm your email address by clicking the link below:
+
+CONFIRM YOUR ACCOUNT:
+{{ .ConfirmationURL }}
+
+SECURITY NOTICE:
+This confirmation link will expire in 24 hours for your security. 
+If you didn't create an account with WexCars, please ignore this email.
+
+What you'll get with your WexCars account:
+✓ Access to exclusive luxury vehicle listings
+✓ Personalized recommendations based on your preferences
+✓ Direct communication with our expert team
+✓ Priority access to new arrivals and special offers
+✓ Secure document management for transactions
+✓ 24/7 customer support from our luxury specialists
+
+Need Help?
+Our WexCars support team is here to assist you with any questions or concerns.
+
+📧 support@wexcars.com
+📞 +1 (555) 123-4567
+💬 Live Chat Available 24/7
+
+Alternative Link:
+If the button above doesn't work, copy and paste this link into your browser:
+{{ .ConfirmationURL }}
+
+---
+WexCars - Your Gateway to Luxury Automotive Excellence
+
+Website: https://wexcars.com
+About Us: https://wexcars.com/about
+Contact: https://wexcars.com/contact
+Privacy Policy: https://wexcars.com/privacy
+
+© 2024 WexCars. All rights reserved.
+This email was sent to {{ .Email }} because you signed up for a WexCars account.

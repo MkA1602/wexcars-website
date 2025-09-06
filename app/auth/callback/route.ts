@@ -12,6 +12,8 @@ export async function GET(request: NextRequest) {
   const type = requestUrl.searchParams.get("type")
   const next = requestUrl.searchParams.get("next") ?? "/dashboard"
 
+  console.log("Auth callback received:", { code: !!code, type, next })
+
   if (code) {
     const cookieStore = cookies()
     const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore })
@@ -21,29 +23,33 @@ export async function GET(request: NextRequest) {
       
       if (error) {
         console.error("Error exchanging code for session:", error)
-        return NextResponse.redirect(new URL("/auth/login?error=auth_callback_error", request.url))
+        return NextResponse.redirect(new URL("/auth/login?error=auth_callback_error&message=" + encodeURIComponent(error.message), request.url))
       }
 
       if (data.user) {
         console.log("User authenticated successfully:", data.user.email)
         
-        // Handle different types of auth flows
-        if (type === "signup") {
-          return NextResponse.redirect(new URL("/auth/email-confirmation?message=success", request.url))
+        // Check if this is an email confirmation (user just confirmed their email)
+        const isEmailConfirmation = !data.user.email_confirmed_at || data.user.email_confirmed_at === data.user.created_at
+        
+        if (type === "signup" || isEmailConfirmation) {
+          // This is a signup confirmation
+          return NextResponse.redirect(new URL("/auth/email-confirmation?message=confirmed&email=" + encodeURIComponent(data.user.email || ''), request.url))
         } else if (type === "recovery") {
           return NextResponse.redirect(new URL("/auth/reset-password?message=success", request.url))
         } else {
-          // Regular sign in
+          // Regular sign in or email confirmation
           return NextResponse.redirect(new URL(next, request.url))
         }
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Unexpected error in auth callback:", error)
-      return NextResponse.redirect(new URL("/auth/login?error=auth_callback_error", request.url))
+      return NextResponse.redirect(new URL("/auth/login?error=auth_callback_error&message=" + encodeURIComponent(error.message || 'Unknown error'), request.url))
     }
   }
 
   // If no code provided, redirect to login
+  console.log("No code provided in auth callback")
   return NextResponse.redirect(new URL("/auth/login?error=missing_code", request.url))
 } 
