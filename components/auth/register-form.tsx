@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react"
+import RateLimitHandler from "./rate-limit-handler"
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -128,10 +129,15 @@ export default function RegisterForm() {
       </div>
 
       {serverError && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{serverError}</AlertDescription>
-        </Alert>
+        <div className="mb-6">
+          <RateLimitHandler 
+            error={serverError} 
+            onRetry={() => {
+              setServerError(null)
+              // Optionally retry the registration
+            }}
+          />
+        </div>
       )}
 
       {successMessage && (

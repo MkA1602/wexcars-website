@@ -134,7 +134,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       if (error) {
-        return { error, success: false, message: null }
+        // Handle specific error types
+        let errorMessage = error.message
+        
+        if (error.message.includes('rate limit') || error.message.includes('Rate limit')) {
+          errorMessage = 'Email sending is temporarily limited. Please try again in a few minutes or contact support if the issue persists.'
+        } else if (error.message.includes('Email rate limit exceeded')) {
+          errorMessage = 'Too many registration attempts. Please wait 15 minutes before trying again.'
+        } else if (error.message.includes('Invalid email')) {
+          errorMessage = 'Please enter a valid email address.'
+        } else if (error.message.includes('Password should be at least')) {
+          errorMessage = 'Password must be at least 6 characters long.'
+        } else if (error.message.includes('User already registered')) {
+          errorMessage = 'An account with this email already exists. Please try signing in instead.'
+        }
+        
+        return { 
+          error: { ...error, message: errorMessage }, 
+          success: false, 
+          message: null 
+        }
       }
 
       // User profile will be created automatically by the database trigger
@@ -153,13 +172,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { 
           error: null, 
           success: true, 
-          message: 'Registration successful! Please check your email to verify your account before logging in.' 
+          message: 'Registration successful! Please check your email (including spam folder) to verify your account before logging in.' 
         }
       }
 
       return { error: null, success: true, message: 'Registration completed successfully.' }
-    } catch (error) {
-      return { error, success: false, message: null }
+    } catch (error: any) {
+      let errorMessage = 'An unexpected error occurred. Please try again.'
+      
+      if (error.message.includes('rate limit') || error.message.includes('Rate limit')) {
+        errorMessage = 'Email sending is temporarily limited. Please try again in a few minutes or contact support if the issue persists.'
+      } else if (error.message.includes('network') || error.message.includes('fetch')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.'
+      }
+      
+      return { 
+        error: { message: errorMessage }, 
+        success: false, 
+        message: null 
+      }
     } finally {
       setIsLoading(false)
     }
