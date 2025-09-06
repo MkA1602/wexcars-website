@@ -165,7 +165,7 @@ export default function SignInForm() {
           <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <Link href="/sign-up" className="font-medium text-primary-light hover:underline">
+              <Link href="/sign-up" className="font-medium text-primary-light hover:underline hover:text-primary-dark transition-colors">
                 Sign up
               </Link>
             </p>
