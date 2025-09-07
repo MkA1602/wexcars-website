@@ -3,8 +3,8 @@
 import dynamic from "next/dynamic"
 import { Suspense } from "react"
 
-// Optimized dynamic import with better loading state
-const OptimizedCarListingPage = dynamic(() => import("@/components/car-listing/optimized-car-listing-page"), {
+// Simple, reliable car listing page
+const SimpleCarListingPage = dynamic(() => import("@/components/car-listing/simple-car-listing-page"), {
   loading: () => (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -62,7 +62,7 @@ export default function CollectionsPage() {
         </div>
       </div>
     }>
-      <OptimizedCarListingPage />
+      <SimpleCarListingPage />
     </Suspense>
   )
 }
