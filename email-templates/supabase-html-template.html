@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Your WexCars Account</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .logo {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .message {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .confirm-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(30, 64, 175, 0.3);
+            transition: all 0.3s ease;
+        }
+        .confirm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(30, 64, 175, 0.4);
+        }
+        .features {
+            background-color: #f8fafc;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        .features h3 {
+            color: #1f2937;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            color: #4b5563;
+            position: relative;
+            padding-left: 30px;
+        }
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .support-section {
+            background-color: #eff6ff;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .support-section h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+        .contact-info {
+            color: #4b5563;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .footer {
+            background-color: #1f2937;
+            color: #d1d5db;
+            padding: 30px;
+            text-align: center;
+        }
+        .footer-logo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+        .unsubscribe {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 20px;
+        }
+        .security-note {
+            background-color: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #92400e;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+            }
+            .header, .content, .footer {
+                padding: 20px;
+            }
+            .title {
+                font-size: 24px;
+            }
+            .confirm-button {
+                padding: 14px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Logo -->
+        <div class="header">
+            <img src="https://wexcars.com/wexcars-logo-new.png" alt="WexCars" class="logo">
+            <div style="color: white; font-size: 14px; margin-top: 10px;">Premium Luxury Vehicle Platform</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <h1 class="title">Welcome to WexCars!</h1>
+            <p class="subtitle">Your account is almost ready</p>
+            
+            <p class="message">
+                Thank you for joining WexCars, the premier destination for luxury vehicles. 
+                To complete your registration and start exploring our exclusive collection, 
+                please confirm your email address by clicking the button below.
+            </p>
+
+            <!-- Confirm Button -->
+            <div class="button-container">
+                <a href="{{ .ConfirmationURL }}" class="confirm-button">
+                    Confirm Your Account
+                </a>
+            </div>
+
+            <!-- Security Note -->
+            <div class="security-note">
+                <strong>Security Notice:</strong> This confirmation link will expire in 24 hours for your security. 
+                If you didn't create an account with WexCars, please ignore this email.
+            </div>
+
+            <!-- Features Section -->
+            <div class="features">
+                <h3>What you'll get with your WexCars account:</h3>
+                <ul class="feature-list">
+                    <li>Access to exclusive luxury vehicle listings</li>
+                    <li>Personalized recommendations based on your preferences</li>
+                    <li>Direct communication with our expert team</li>
+                    <li>Priority access to new arrivals and special offers</li>
+                    <li>Secure document management for transactions</li>
+                    <li>24/7 customer support from our luxury specialists</li>
+                </ul>
+            </div>
+
+            <!-- Support Section -->
+            <div class="support-section">
+                <h3>Need Help?</h3>
+                <p class="contact-info">
+                    Our WexCars support team is here to assist you with any questions or concerns.
+                </p>
+                <p style="color: #1e40af; font-weight: 600;">
+                    📧 support@wexcars.com<br>
+                    📞 +1 (555) 123-4567<br>
+                    💬 Live Chat Available 24/7
+                </p>
+            </div>
+
+            <!-- Alternative Link -->
+            <div style="text-align: center; margin: 30px 0; padding: 20px; background-color: #f9fafb; border-radius: 6px;">
+                <p style="font-size: 14px; color: #6b7280; margin-bottom: 10px;">
+                    Button not working? Copy and paste this link into your browser:
+                </p>
+                <p style="font-size: 12px; color: #1e40af; word-break: break-all;">
+                    {{ .ConfirmationURL }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <img src="https://wexcars.com/logo-white.png" alt="WexCars" class="footer-logo">
+            
+            <p style="margin: 0 0 20px 0;">
+                WexCars - Your Gateway to Luxury Automotive Excellence
+            </p>
+            
+            <div class="social-links">
+                <a href="https://wexcars.com">Website</a> |
+                <a href="https://wexcars.com/about">About Us</a> |
+                <a href="https://wexcars.com/contact">Contact</a> |
+                <a href="https://wexcars.com/privacy">Privacy Policy</a>
+            </div>
+            
+            <p class="unsubscribe">
+                © 2024 WexCars. All rights reserved.<br>
+                This email was sent to {{ .Email }} because you signed up for a WexCars account.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
