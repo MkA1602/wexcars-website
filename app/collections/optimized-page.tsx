@@ -4,7 +4,7 @@ import dynamic from "next/dynamic"
 import { Suspense } from "react"
 
 // Dynamic import with optimized loading state
-const OptimizedCarListingPage = dynamic(() => import("@/components/car-listing/car-listing-page"), {
+const OptimizedCarListingPage = dynamic(() => import("@/components/car-listing/optimized-car-listing-page"), {
   loading: () => (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">

@@ -14,25 +14,17 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import ErrorBoundary from "@/components/error-boundary"
 
-// Performance constants
-const ITEMS_PER_PAGE = 12
-const INITIAL_LOAD_SIZE = 24 // Load more initially for better UX
-const DEBOUNCE_DELAY = 300
-
-export default function OptimizedCarListingPage() {
+export default function CarListingPage() {
   // Basic state
   const [cars, setCars] = useState<Car[]>([])
-  const [allCars, setAllCars] = useState<Car[]>([]) // Store all cars for filtering
   const [isLoading, setIsLoading] = useState(true)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [vatDisplay, setVatDisplay] = useState<"include" | "exclude" | "both">("both")
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE)
+  const [itemsPerPage, setItemsPerPage] = useState(12)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [hasMore, setHasMore] = useState(true)
 
   // Filter state - single source of truth
   const [filters, setFilters] = useState<FilterOptions>({
@@ -52,51 +44,17 @@ export default function OptimizedCarListingPage() {
     setIsMounted(true)
   }, [])
 
-  // Optimized fetch with pagination and selective fields
+  // Fetch cars from Supabase database
   useEffect(() => {
     const fetchCars = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
-        // Only fetch essential fields initially
         const { data: carsData, error: carsError } = await supabaseClient
           .from('cars')
-          .select(`
-            id,
-            name,
-            brand,
-            category,
-            year,
-            price,
-            price_excl_vat,
-            vat_rate,
-            vat_amount,
-            currency,
-            image,
-            transmission,
-            color,
-            description,
-            user_id,
-            seller_type,
-            dealership_name,
-            created_at,
-            updated_at,
-            mileage,
-            fuel_type,
-            horsepower,
-            gearbox,
-            car_type,
-            engine_size,
-            drivetrain,
-            availability,
-            availability_days,
-            availability_date,
-            chassis_number,
-            location
-          `)
+          .select('*')
           .order('created_at', { ascending: false })
-          .limit(INITIAL_LOAD_SIZE) // Limit initial load
 
         if (carsError) {
           throw carsError
@@ -114,22 +72,22 @@ export default function OptimizedCarListingPage() {
           vat_rate: car.vat_rate,
           vat_amount: car.vat_amount,
           currency: car.currency || 'AED',
-          priceWithVat: car.price,
+          priceWithVat: car.price, // price already includes VAT
           image: car.image,
-          images: [], // Don't load all images initially
-          rating: 4.5,
+          images: car.images,
+          rating: 4.5, // Default rating since not in DB
           transmission: car.transmission || 'Automatic',
           color: car.color || 'Black',
-          featured: false,
+          featured: false, // Default featured status
           description: car.description,
-          features: [], // Don't load features initially
-          specifications: {
-            engine: car.engine_size || 'Not specified',
-            power: car.horsepower ? `${car.horsepower} HP` : 'Not specified',
+          features: car.features,
+          specifications: car.specifications || {
+            engine: 'Not specified',
+            power: 'Not specified',
             acceleration: 'Not specified',
             topSpeed: 'Not specified',
             transmission: car.transmission || 'Automatic',
-            drivetrain: car.drivetrain || 'Not specified',
+            drivetrain: 'Not specified',
             fuelEconomy: 'Not specified',
             seating: 'Not specified'
           },
@@ -138,6 +96,7 @@ export default function OptimizedCarListingPage() {
           dealership_name: car.dealership_name,
           created_at: car.created_at,
           updated_at: car.updated_at,
+          // Add the new fields that exist in database but not in Car interface
           mileage: car.mileage,
           fuel_type: car.fuel_type,
           horsepower: car.horsepower,
@@ -153,13 +112,10 @@ export default function OptimizedCarListingPage() {
         }))
 
         setCars(transformedCars)
-        setAllCars(transformedCars)
-        setHasMore(carsData.length === INITIAL_LOAD_SIZE)
       } catch (err: any) {
         console.error('Error fetching cars:', err)
         setError('Failed to load cars. Please try again.')
-        setCars([])
-        setAllCars([])
+        setCars([]) // Set empty array on error
       } finally {
         setIsLoading(false)
       }
@@ -170,122 +126,11 @@ export default function OptimizedCarListingPage() {
     }
   }, [isMounted])
 
-  // Load more cars function
-  const loadMoreCars = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return
-
-    try {
-      setIsLoadingMore(true)
-      
-      const { data: moreCarsData, error: moreCarsError } = await supabaseClient
-        .from('cars')
-        .select(`
-          id,
-          name,
-          brand,
-          category,
-          year,
-          price,
-          price_excl_vat,
-          vat_rate,
-          vat_amount,
-          currency,
-          image,
-          transmission,
-          color,
-          description,
-          user_id,
-          seller_type,
-          dealership_name,
-          created_at,
-          updated_at,
-          mileage,
-          fuel_type,
-          horsepower,
-          gearbox,
-          car_type,
-          engine_size,
-          drivetrain,
-          availability,
-          availability_days,
-          availability_date,
-          chassis_number,
-          location
-        `)
-        .order('created_at', { ascending: false })
-        .range(allCars.length, allCars.length + INITIAL_LOAD_SIZE - 1)
-
-      if (moreCarsError) {
-        throw moreCarsError
-      }
-
-      if (moreCarsData && moreCarsData.length > 0) {
-        const transformedMoreCars: Car[] = moreCarsData.map((car: any) => ({
-          id: car.id,
-          name: car.name,
-          brand: car.brand,
-          category: car.category,
-          year: car.year,
-          price: car.price,
-          price_excl_vat: car.price_excl_vat,
-          vat_rate: car.vat_rate,
-          vat_amount: car.vat_amount,
-          currency: car.currency || 'AED',
-          priceWithVat: car.price,
-          image: car.image,
-          images: [],
-          rating: 4.5,
-          transmission: car.transmission || 'Automatic',
-          color: car.color || 'Black',
-          featured: false,
-          description: car.description,
-          features: [],
-          specifications: {
-            engine: car.engine_size || 'Not specified',
-            power: car.horsepower ? `${car.horsepower} HP` : 'Not specified',
-            acceleration: 'Not specified',
-            topSpeed: 'Not specified',
-            transmission: car.transmission || 'Automatic',
-            drivetrain: car.drivetrain || 'Not specified',
-            fuelEconomy: 'Not specified',
-            seating: 'Not specified'
-          },
-          user_id: car.user_id,
-          seller_type: car.seller_type || 'individual',
-          dealership_name: car.dealership_name,
-          created_at: car.created_at,
-          updated_at: car.updated_at,
-          mileage: car.mileage,
-          fuel_type: car.fuel_type,
-          horsepower: car.horsepower,
-          gearbox: car.gearbox,
-          car_type: car.car_type,
-          engine_size: car.engine_size,
-          drivetrain: car.drivetrain,
-          availability: car.availability,
-          availability_days: car.availability_days,
-          availability_date: car.availability_date,
-          chassis_number: car.chassis_number,
-          location: car.location
-        }))
-
-        setAllCars(prev => [...prev, ...transformedMoreCars])
-        setHasMore(moreCarsData.length === INITIAL_LOAD_SIZE)
-      } else {
-        setHasMore(false)
-      }
-    } catch (err: any) {
-      console.error('Error loading more cars:', err)
-    } finally {
-      setIsLoadingMore(false)
-    }
-  }, [isLoadingMore, hasMore, allCars.length])
-
-  // Optimized filtering with debouncing
+  // Apply filters and search to get filtered cars
   const filteredCars = useMemo(() => {
-    if (!isMounted || allCars.length === 0) return []
+    if (!isMounted || cars.length === 0) return []
 
-    let result = [...allCars]
+    let result = [...cars]
 
     // Apply search query
     if (searchQuery) {
@@ -295,7 +140,7 @@ export default function OptimizedCarListingPage() {
           car.name.toLowerCase().includes(query) ||
           car.brand.toLowerCase().includes(query) ||
           car.category.toLowerCase().includes(query) ||
-          (car.description && car.description.toLowerCase().includes(query)),
+          car.description.toLowerCase().includes(query),
       )
     }
 
@@ -351,7 +196,7 @@ export default function OptimizedCarListingPage() {
     }
 
     return result
-  }, [searchQuery, filters, isMounted, allCars])
+  }, [searchQuery, filters, isMounted, cars])
 
   // Get current page of cars
   const currentCars = useMemo(() => {
@@ -364,28 +209,28 @@ export default function OptimizedCarListingPage() {
   // Calculate pagination values
   const totalPages = Math.ceil(filteredCars.length / itemsPerPage)
 
-  // Memoized filter options to prevent unnecessary recalculations
-  const availableBrands = useMemo(() => [...new Set(allCars.map((car) => car.brand))], [allCars])
-  const availableCategories = useMemo(() => [...new Set(allCars.map((car) => car.category))], [allCars])
-  const availableYears = useMemo(() => [...new Set(allCars.map((car) => car.year.toString()))], [allCars])
-  const availableColors = useMemo(() => [...new Set(allCars.map((car) => car.color))], [allCars])
+  // Get all available brands, categories, etc. from the data
+  const availableBrands = useMemo(() => [...new Set(cars.map((car) => car.brand))], [cars])
+  const availableCategories = useMemo(() => [...new Set(cars.map((car) => car.category))], [cars])
+  const availableYears = useMemo(() => [...new Set(cars.map((car) => car.year.toString()))], [cars])
+  const availableColors = useMemo(() => [...new Set(cars.map((car) => car.color))], [cars])
 
-  // Memoized counts
+  // Get counts for each filter value
   const brandCounts = useMemo(() => {
     const counts: Record<string, number> = {}
-    allCars.forEach((car) => {
+    cars.forEach((car) => {
       counts[car.brand] = (counts[car.brand] || 0) + 1
     })
     return counts
-  }, [allCars])
+  }, [cars])
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {}
-    allCars.forEach((car) => {
+    cars.forEach((car) => {
       counts[car.category] = (counts[car.category] || 0) + 1
     })
     return counts
-  }, [allCars])
+  }, [cars])
 
   // Calculate active filter count
   const activeFilterCount = useMemo(() => {
@@ -406,7 +251,7 @@ export default function OptimizedCarListingPage() {
     return count
   }, [filters])
 
-  // Memoized handlers
+  // Simple handler functions - memoized to prevent unnecessary re-renders
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query)
     setCurrentPage(1)
@@ -650,29 +495,8 @@ export default function OptimizedCarListingPage() {
               <CarGrid cars={currentCars} vatDisplay={vatDisplay} />
             )}
 
-            {/* Load More Button */}
-            {!isLoading && hasMore && filteredCars.length >= allCars.length && (
-              <div className="text-center mt-8">
-                <Button 
-                  onClick={loadMoreCars}
-                  disabled={isLoadingMore}
-                  variant="outline"
-                  className="px-8"
-                >
-                  {isLoadingMore ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Loading more cars...
-                    </>
-                  ) : (
-                    'Load More Cars'
-                  )}
-                </Button>
-              </div>
-            )}
-
             {/* No results message */}
-            {!isLoading && filteredCars.length === 0 && allCars.length > 0 && (
+            {!isLoading && filteredCars.length === 0 && cars.length > 0 && (
               <div className="text-center py-12">
                 <h3 className="text-xl font-medium text-gray-600">No cars match your criteria</h3>
                 <p className="text-gray-500 mt-2">Try adjusting your filters or search terms</p>
@@ -685,7 +509,7 @@ export default function OptimizedCarListingPage() {
             )}
 
             {/* Empty state when no cars in database */}
-            {!isLoading && allCars.length === 0 && (
+            {!isLoading && cars.length === 0 && (
               <div className="text-center py-12">
                 <h3 className="text-xl font-medium text-gray-600">No cars available</h3>
                 <p className="text-gray-500 mt-2">Cars will appear here once they are added to the database</p>
