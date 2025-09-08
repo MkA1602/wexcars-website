@@ -82,10 +82,11 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* Favicon and app icons for better search result appearance */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/wexcars-logo-new.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/wexcars-logo-new.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/wexcars-logo-new.png" />
-        <link rel="shortcut icon" href="/wexcars-logo-new.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="manifest" href="/site.webmanifest" />
         
         {/* Critical resource preloading for performance */}
