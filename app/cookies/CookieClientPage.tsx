@@ -4,12 +4,101 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Download, Printer, ExternalLink, Cookie } from "lucide-react"
 import Link from "next/link"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 export default function CookieClientPage() {
+  const [cookiePreferences, setCookiePreferences] = useState({
+    functional: true,
+    analytics: true,
+    marketing: true
+  })
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+
   useEffect(() => {
-    // Client-side code can go here
+    // Load saved cookie preferences from localStorage
+    const savedPreferences = localStorage.getItem('wexcars-cookie-preferences')
+    if (savedPreferences) {
+      setCookiePreferences(JSON.parse(savedPreferences))
+    }
   }, [])
+
+  const handleToggle = (cookieType: keyof typeof cookiePreferences) => {
+    setCookiePreferences(prev => ({
+      ...prev,
+      [cookieType]: !prev[cookieType]
+    }))
+  }
+
+  const savePreferences = () => {
+    localStorage.setItem('wexcars-cookie-preferences', JSON.stringify(cookiePreferences))
+    setShowSuccessMessage(true)
+    setTimeout(() => setShowSuccessMessage(false), 3000)
+    
+    // Apply cookie settings
+    applyCookieSettings()
+  }
+
+  const acceptAll = () => {
+    const allAccepted = {
+      functional: true,
+      analytics: true,
+      marketing: true
+    }
+    setCookiePreferences(allAccepted)
+    localStorage.setItem('wexcars-cookie-preferences', JSON.stringify(allAccepted))
+    setShowSuccessMessage(true)
+    setTimeout(() => setShowSuccessMessage(false), 3000)
+    
+    // Apply cookie settings
+    applyCookieSettings()
+  }
+
+  const rejectAll = () => {
+    const allRejected = {
+      functional: false,
+      analytics: false,
+      marketing: false
+    }
+    setCookiePreferences(allRejected)
+    localStorage.setItem('wexcars-cookie-preferences', JSON.stringify(allRejected))
+    setShowSuccessMessage(true)
+    setTimeout(() => setShowSuccessMessage(false), 3000)
+    
+    // Apply cookie settings
+    applyCookieSettings()
+  }
+
+  const applyCookieSettings = () => {
+    // This is where you would integrate with your analytics and marketing tools
+    // For example:
+    
+    // Google Analytics
+    if (cookiePreferences.analytics) {
+      // Enable Google Analytics
+      console.log('Analytics cookies enabled')
+    } else {
+      // Disable Google Analytics
+      console.log('Analytics cookies disabled')
+    }
+    
+    // Marketing cookies
+    if (cookiePreferences.marketing) {
+      // Enable marketing tracking
+      console.log('Marketing cookies enabled')
+    } else {
+      // Disable marketing tracking
+      console.log('Marketing cookies disabled')
+    }
+    
+    // Functional cookies
+    if (cookiePreferences.functional) {
+      // Enable enhanced functionality
+      console.log('Functional cookies enabled')
+    } else {
+      // Disable enhanced functionality
+      console.log('Functional cookies disabled')
+    }
+  }
 
   return (
     <main className="flex-grow py-12 bg-gray-50">
@@ -420,6 +509,13 @@ export default function CookieClientPage() {
               You can adjust your cookie preferences at any time. Please note that disabling certain cookies may
               impact the functionality of our website.
             </p>
+            
+            {showSuccessMessage && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800 font-medium">✅ Cookie preferences saved successfully!</p>
+              </div>
+            )}
+            
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
@@ -428,43 +524,75 @@ export default function CookieClientPage() {
                 </div>
                 <div className="bg-gray-200 px-3 py-1 rounded text-sm">Always Active</div>
               </div>
+              
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
                   <h3 className="font-bold">Functional Cookies</h3>
                   <p className="text-sm text-gray-600">Enable enhanced functionality and personalization</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <input 
+                    type="checkbox" 
+                    checked={cookiePreferences.functional}
+                    onChange={() => handleToggle('functional')}
+                    className="sr-only peer" 
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-light/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-light"></div>
                 </label>
               </div>
+              
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
                   <h3 className="font-bold">Analytics Cookies</h3>
                   <p className="text-sm text-gray-600">Help us improve our website by collecting anonymous data</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <input 
+                    type="checkbox" 
+                    checked={cookiePreferences.analytics}
+                    onChange={() => handleToggle('analytics')}
+                    className="sr-only peer" 
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-light/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-light"></div>
                 </label>
               </div>
+              
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
                   <h3 className="font-bold">Marketing Cookies</h3>
                   <p className="text-sm text-gray-600">Used to deliver relevant ads and marketing campaigns</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
+                  <input 
+                    type="checkbox" 
+                    checked={cookiePreferences.marketing}
+                    onChange={() => handleToggle('marketing')}
+                    className="sr-only peer" 
+                  />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-light/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-light"></div>
                 </label>
               </div>
             </div>
+            
             <div className="mt-6 flex flex-wrap gap-3">
-              <Button className="bg-primary-light hover:bg-primary-dark text-white">Save Preferences</Button>
-              <Button variant="outline" className="border-gray-300">
+              <Button 
+                onClick={savePreferences}
+                className="bg-primary-light hover:bg-primary-dark text-white"
+              >
+                Save Preferences
+              </Button>
+              <Button 
+                onClick={acceptAll}
+                variant="outline" 
+                className="border-gray-300 hover:bg-gray-50"
+              >
                 Accept All
               </Button>
-              <Button variant="outline" className="border-gray-300">
+              <Button 
+                onClick={rejectAll}
+                variant="outline" 
+                className="border-gray-300 hover:bg-gray-50"
+              >
                 Reject All
               </Button>
             </div>
