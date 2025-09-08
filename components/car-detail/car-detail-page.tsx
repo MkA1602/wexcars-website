@@ -544,8 +544,8 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                   <div className="mt-6 pt-6 border-t border-primary-light/20">
                     <p className="text-sm text-gray-500 mb-2">Need immediate assistance?</p>
                     <div className="flex flex-wrap gap-4 text-sm">
-                      <a href="tel:+46737200588" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
-                        📞 +46 737 200 588
+                      <a href="tel:+46737200581" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
+                        📞 +46 737 200 581
                       </a>
                       <a href="mailto:info@wexcars.com" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
                         ✉️ info@wexcars.com

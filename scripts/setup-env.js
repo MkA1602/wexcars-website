@@ -17,8 +17,8 @@ NEXT_PUBLIC_SUPABASE_URL=https://ocephfiwzejvmwfzvwas.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZXBoZml3emVqdm13Znp2d2FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUxNzA1ODksImV4cCI6MjA1MDc0NjU4OX0.P_iUHhRLFxcFZrBKWXGRdW_i48J8ksLYs8g5H02QL60
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZXBoZml3emVqdm13Znp2d2FzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNTE3MDU4OSwiZXhwIjoyMDUwNzQ2NTg5fQ.Zz_5lZJHjJ4HLjrGgJ8KQBYhLxLZ6YXNr3j0jYQXqNE
 
-# Google Maps Configuration (Optional - Comment out to disable Google Maps)
-# NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+# Maps Configuration (OpenStreetMap - No API key required)
+# OpenStreetMap is used for maps functionality - no configuration needed
 
 # Site Configuration
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -31,22 +31,8 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 let envContent = fs.readFileSync(envPath, 'utf8')
 console.log('✅ .env.local file found')
 
-// Check for Google Maps API key
-const hasGoogleMapsKey = envContent.includes('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=') && 
-                        !envContent.includes('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here') &&
-                        !envContent.includes('#NEXT_PUBLIC_GOOGLE_MAPS_API_KEY')
-
-if (hasGoogleMapsKey) {
-  console.log('✅ Google Maps API key is configured')
-} else {
-  console.log('⚠️  Google Maps API key not configured')
-  console.log('\n🗺️  Google Maps Configuration:')
-  console.log('   • Maps will show an error message instead of loading')
-  console.log('   • To enable Google Maps:')
-  console.log('     1. Get API key from: https://console.cloud.google.com/apis/credentials')
-  console.log('     2. Add to .env.local: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key')
-  console.log('     3. Enable "Maps JavaScript API" in Google Cloud Console')
-}
+// OpenStreetMap configuration (no API key needed)
+console.log('✅ OpenStreetMap is configured (no API key required)')
 
 // Check Supabase configuration
 const hasSupabaseUrl = envContent.includes('NEXT_PUBLIC_SUPABASE_URL=https://ocephfiwzejvmwfzvwas.supabase.co')
@@ -57,15 +43,13 @@ console.log('\n📊 Configuration Status:')
 console.log('   • Supabase URL:', hasSupabaseUrl ? '✅ Configured' : '❌ Missing')
 console.log('   • Supabase Anon Key:', hasSupabaseKey ? '✅ Configured' : '❌ Missing')
 console.log('   • Supabase Service Key:', hasServiceKey ? '✅ Configured' : '❌ Missing')
-console.log('   • Google Maps API:', hasGoogleMapsKey ? '✅ Configured' : '⚠️  Optional (not configured)')
+console.log('   • OpenStreetMap:', '✅ Configured (no API key needed)')
 
 if (hasSupabaseUrl && hasSupabaseKey && hasServiceKey) {
   console.log('\n🎉 Core configuration is complete!')
   console.log('✅ Your application should work properly')
   
-  if (!hasGoogleMapsKey) {
-    console.log('\n💡 Note: Google Maps is disabled. Contact page will show placeholder instead of map.')
-  }
+  console.log('\n💡 Note: OpenStreetMap is enabled. Contact page will show interactive map.')
 } else {
   console.log('\n❌ Missing required configuration!')
   console.log('Please ensure all Supabase environment variables are set correctly.')

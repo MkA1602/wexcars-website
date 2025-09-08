@@ -247,7 +247,7 @@ export default function HelpPage() {
                     <Phone className="w-6 h-6 text-primary-light" />
                   </div>
                   <h3 className="font-semibold mb-2">Phone Support</h3>
-                  <p className="text-gray-600">+46 737 200588</p>
+                  <p className="text-gray-600">+46 737 200581</p>
                   <p className="text-sm text-gray-500">Mon-Fri 9AM-6PM CET</p>
                 </div>
                 <div className="text-center">

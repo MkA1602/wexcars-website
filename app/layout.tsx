@@ -97,30 +97,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://imgur.com" />
         
-        {/* Clean up any duplicate Google Maps scripts */}
-        <Script
-          id="cleanup-google-maps"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                // Remove duplicate Google Maps scripts
-                const scripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
-                if (scripts.length > 1) {
-                  console.log('Removing duplicate Google Maps scripts:', scripts.length);
-                  for (let i = 1; i < scripts.length; i++) {
-                    scripts[i].remove();
-                  }
-                }
-                
-                // Reset global loading state
-                if (window.googleMapsLoading) {
-                  window.googleMapsLoading = false;
-                }
-              })();
-            `
-          }}
-        />
       </head>
       <body className={inter.className}>
         <AuthProvider>

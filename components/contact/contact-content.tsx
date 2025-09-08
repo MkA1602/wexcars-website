@@ -9,8 +9,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Check, MapPin, Phone, Mail, Clock } from "lucide-react"
 import dynamic from "next/dynamic"
 
-// Dynamically import GoogleMap to avoid SSR issues and chunk loading problems
-const GoogleMap = dynamic(() => import("@/components/google-map"), {
+// Dynamically import OpenStreetMap to avoid SSR issues and chunk loading problems
+const OpenStreetMap = dynamic(() => import("@/components/openstreet-map"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-96 bg-gray-100 rounded-xl overflow-hidden shadow-lg flex items-center justify-center">
@@ -269,7 +269,7 @@ Sweden</p>
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-12 text-center">Our Location</h2>
           <div className="max-w-6xl mx-auto">
-            <GoogleMap height="500px" className="shadow-lg" />
+            <OpenStreetMap height="500px" className="shadow-lg" />
 
           </div>
         </div>

@@ -261,8 +261,8 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center space-x-3 text-gray-medium">
                   <Phone className="w-5 h-5 text-red-500" />
-                  <a href="tel:+1234567890" className="text-sm hover:text-white transition-colors duration-200">
-                    +46 737 200588
+                  <a href="tel:+46737200581" className="text-sm hover:text-white transition-colors duration-200">
+                    +46 737 200581
                   </a>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-medium">
@@ -287,7 +287,7 @@ const Footer = () => {
                   {[
                     { icon: Facebook, href: "#", label: "Facebook" },
                     { icon: Twitter, href: "#", label: "Twitter" },
-                    { icon: Instagram, href: "#", label: "Instagram" },
+                    { icon: Instagram, href: "https://www.instagram.com/wexcars1/", label: "Instagram" },
                     { icon: Linkedin, href: "#", label: "LinkedIn" },
                     { icon: Youtube, href: "#", label: "YouTube" },
                   ].map((social) => (

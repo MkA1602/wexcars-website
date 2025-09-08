@@ -10,8 +10,7 @@ console.log('=' .repeat(60))
 const requiredVars = [
   'NEXT_PUBLIC_SUPABASE_URL',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY', 
-  'SUPABASE_SERVICE_ROLE_KEY',
-  'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY'
+  'SUPABASE_SERVICE_ROLE_KEY'
 ]
 
 const optionalVars = [
