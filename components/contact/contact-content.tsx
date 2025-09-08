@@ -110,7 +110,7 @@ Sweden</p>
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900">Email Us</h3>
-                    <p className="text-gray-600">info@wexcars.com</p>
+                    <p className="text-gray-600">support@wexcars.com</p>
                     <p className="text-gray-600">sales@wexcars.com</p>
                   </div>
                 </div>

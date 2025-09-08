@@ -267,8 +267,8 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center space-x-3 text-gray-medium">
                   <Mail className="w-5 h-5 text-red-500" />
-                  <a href="mailto:info@wexcars.com" className="text-sm hover:text-white transition-colors duration-200">
-                    info@wexcars.com
+                  <a href="mailto:support@wexcars.com" className="text-sm hover:text-white transition-colors duration-200">
+                    support@wexcars.com
                   </a>
                 </div>
               </div>

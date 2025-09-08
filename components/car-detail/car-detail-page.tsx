@@ -547,8 +547,8 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                       <a href="tel:+46737200581" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
                         📞 +46 737 200 581
                       </a>
-                      <a href="mailto:info@wexcars.com" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
-                        ✉️ info@wexcars.com
+                      <a href="mailto:support@wexcars.com" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
+                        ✉️ support@wexcars.com
                       </a>
                     </div>
                   </div>

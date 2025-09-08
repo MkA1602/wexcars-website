@@ -114,8 +114,8 @@ const FooterMobile = () => {
             </div>
             <div className="flex items-center justify-center space-x-2">
               <Mail className="w-4 h-4 text-red-500" />
-              <a href="mailto:info@wexcars.com" className="hover:text-white transition-colors duration-200">
-                info@wexcars.com
+              <a href="mailto:support@wexcars.com" className="hover:text-white transition-colors duration-200">
+                support@wexcars.com
               </a>
             </div>
           </div>

@@ -39,7 +39,7 @@ export default function OpenStreetMap({ className = "", height = "400px" }: Open
             <h4 className="font-semibold text-gray-800 mb-2">📍 WexCars Location</h4>
             <p className="text-sm text-gray-600 mb-1">215 52 Malmö, Sweden</p>
             <p className="text-sm text-gray-600 mb-1">📞 +46 737 200581</p>
-            <p className="text-sm text-gray-600">✉️ info@wexcars.com</p>
+            <p className="text-sm text-gray-600">✉️ support@wexcars.com</p>
           </div>
         </div>
       </div>
