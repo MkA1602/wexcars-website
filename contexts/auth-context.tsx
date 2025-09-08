@@ -25,6 +25,7 @@ type AuthContextType = {
   signIn: (
     email: string,
     password: string,
+    rememberMe?: boolean,
   ) => Promise<{
     error: any | null
     success: boolean
@@ -65,6 +66,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.error("Error getting session:", error)
+      }
+
+      // Check if user has remember me enabled and session is expired
+      const isRemembered = localStorage.getItem('wexcars-remember-me') === 'true'
+      if (!session && isRemembered) {
+        // Try to refresh the session
+        try {
+          const { data: refreshData, error: refreshError } = await supabaseClient.auth.refreshSession()
+          if (!refreshError && refreshData.session) {
+            setSession(refreshData.session)
+            setUser(refreshData.session.user)
+            setIsLoading(false)
+            return
+          }
+        } catch (refreshErr) {
+          console.error("Error refreshing session:", refreshErr)
+          // Clear remember me if refresh fails
+          localStorage.removeItem('wexcars-remember-me')
+          localStorage.removeItem('wexcars-user-email')
+        }
       }
 
       setSession(session)
@@ -196,7 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
     setIsLoading(true)
 
     try {
@@ -207,6 +228,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         return { error, success: false }
+      }
+
+      // Handle remember me functionality
+      if (data.user && rememberMe) {
+        // Set session to persist for 30 days when remember me is checked
+        await supabaseClient.auth.setSession({
+          access_token: data.session?.access_token || '',
+          refresh_token: data.session?.refresh_token || ''
+        })
+        
+        // Store remember me preference in localStorage
+        localStorage.setItem('wexcars-remember-me', 'true')
+        localStorage.setItem('wexcars-user-email', email)
+      } else if (data.user && !rememberMe) {
+        // Clear remember me preference
+        localStorage.removeItem('wexcars-remember-me')
+        localStorage.removeItem('wexcars-user-email')
       }
 
       // Add user context to Sentry when user logs in

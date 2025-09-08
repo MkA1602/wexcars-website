@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/auth-context"
 export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -31,13 +32,24 @@ export default function LoginForm() {
     }
   }, [])
 
+  // Check for remembered email on component mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem('wexcars-user-email')
+    const isRemembered = localStorage.getItem('wexcars-remember-me')
+    
+    if (rememberedEmail && isRemembered === 'true') {
+      setEmail(rememberedEmail)
+      setRememberMe(true)
+    }
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
 
     try {
-      const { error, success } = await signIn(email, password)
+      const { error, success } = await signIn(email, password, rememberMe)
 
       if (error) {
         setError(error.message)
@@ -106,7 +118,13 @@ export default function LoginForm() {
         </div>
 
         <div className="flex items-center">
-          <input id="rememberMe" type="checkbox" className="h-4 w-4 text-primary-light border-gray-300 rounded" />
+          <input 
+            id="rememberMe" 
+            type="checkbox" 
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="h-4 w-4 text-primary-light border-gray-300 rounded" 
+          />
           <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-600">
             Remember me
           </label>
