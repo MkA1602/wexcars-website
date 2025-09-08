@@ -144,7 +144,7 @@ export default function PrivacyPage() {
             <p>If you have any questions about this Privacy Policy, please contact us at:</p>
             <div className="bg-gray-50 p-6 rounded-lg mt-4">
               <p className="mb-1">
-                <strong>Email:</strong> privacy@wexcars.com
+                <strong>Email:</strong> support@wexcars.com
               </p>
               <p className="mb-1">
                 <strong>Phone:</strong> +1 (555) 123-4567

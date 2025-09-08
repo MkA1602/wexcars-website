@@ -87,7 +87,7 @@ export default function TermsPage() {
             <h2 className="text-2xl font-bold mt-8 mb-4">10. Contact Us</h2>
             <p>If you have any questions about these Terms, please contact us at:</p>
             <p className="mt-2">
-              Email: legal@wexcars.com
+              Email: support@wexcars.com
               <br />
               Phone: +1 (555) 123-4567
               <br />
