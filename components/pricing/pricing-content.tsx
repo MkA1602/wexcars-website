@@ -133,7 +133,8 @@ export default function PricingContent() {
         </div>
       </section>
 
-      {/* Additional Services */}
+      {/* Additional Services - Hidden for now */}
+      {/* 
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-12 text-center">Additional Services</h2>
@@ -212,6 +213,7 @@ export default function PricingContent() {
           </div>
         </div>
       </section>
+      */}
 
       {/* FAQ Section */}
       <section className="py-16 bg-gray-50">
