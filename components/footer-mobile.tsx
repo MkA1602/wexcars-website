@@ -29,7 +29,6 @@ const FooterMobile = () => {
         { href: "/about", label: "About Us" },
         { href: "/contact", label: "Contact" },
         { href: "/pricing", label: "Pricing" },
-        { href: "/careers", label: "Careers" },
       ],
     },
     {

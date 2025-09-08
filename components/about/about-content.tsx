@@ -96,7 +96,7 @@ export default function AboutContent() {
             <div className="md:w-1/2">
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <p className="text-gray-700 mb-4">
-                Founded in 2015, WexCars was born from a passion for exceptional automobiles and a vision to transform
+                Founded in 2022, WexCars was born from a passion for exceptional automobiles and a vision to transform
                 how discerning clients discover, experience, and acquire luxury vehicles.
               </p>
               <p className="text-gray-700 mb-4">
@@ -105,7 +105,7 @@ export default function AboutContent() {
                 esteemed manufacturers.
               </p>
               <p className="text-gray-700 mb-4">
-                Our founder, Alexander Mitchell, recognized a gap in the market for a truly personalized, transparent,
+                Our founder, MK Sulaiman, recognized a gap in the market for a truly personalized, transparent,
                 and exceptional car buying journey. Today, that vision has expanded into a global operation that
                 maintains the same dedication to quality and client satisfaction that defined our beginnings.
               </p>
