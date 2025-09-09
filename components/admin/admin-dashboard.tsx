@@ -187,7 +187,7 @@ export default function AdminDashboard() {
   }
 
   const deleteCar = async (carId: string) => {
-    if (!window.confirm('هل أنت متأكد من حذف هذه السيارة؟ / Are you sure you want to delete this car?')) {
+    if (!window.confirm('Are you sure you want to delete this car?')) {
       return
     }
 
@@ -200,15 +200,15 @@ export default function AdminDashboard() {
       if (error) throw error
 
       setCars(cars.filter(car => car.id !== carId))
-      alert('تم حذف السيارة بنجاح / Car deleted successfully')
+      alert('Car deleted successfully')
     } catch (error) {
       console.error('Error deleting car:', error)
-      alert('خطأ في حذف السيارة / Error deleting car')
+      alert('Error deleting car')
     }
   }
 
   const updateUserRole = async (userId: string, newRole: string) => {
-    if (!window.confirm(`هل أنت متأكد من تغيير دور المستخدم إلى ${newRole}؟ / Are you sure you want to change user role to ${newRole}?`)) {
+    if (!window.confirm(`Are you sure you want to change user role to ${newRole}?`)) {
       return
     }
 
@@ -225,10 +225,10 @@ export default function AdminDashboard() {
           ? { ...user, role: newRole, updated_at: new Date().toISOString() }
           : user
       ))
-      alert('تم تحديث دور المستخدم بنجاح / User role updated successfully')
+      alert('User role updated successfully')
     } catch (error) {
       console.error('Error updating user role:', error)
-      alert('خطأ في تحديث دور المستخدم / Error updating user role')
+      alert('Error updating user role')
     }
   }
 
@@ -260,10 +260,10 @@ export default function AdminDashboard() {
       
       setShowEditModal(false)
       setEditingUser(null)
-      alert('تم تحديث بيانات المستخدم بنجاح / User profile updated successfully')
+      alert('User profile updated successfully')
     } catch (error) {
       console.error('Error updating user:', error)
-      alert('خطأ في تحديث بيانات المستخدم / Error updating user profile')
+      alert('Error updating user profile')
     }
   }
 
@@ -300,10 +300,10 @@ export default function AdminDashboard() {
       
       setShowDeleteConfirm(false)
       setUserToDelete(null)
-      alert('تم حذف المستخدم و جميع سياراته بنجاح / User and all their cars deleted successfully')
+      alert('User and all their cars deleted successfully')
     } catch (error) {
       console.error('Error deleting user:', error)
-      alert('خطأ في حذف المستخدم / Error deleting user')
+      alert('Error deleting user')
     }
   }
 
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
     const action = user.is_suspended ? 'reactivate' : 'suspend'
     const actionText = user.is_suspended ? 'إعادة تفعيل' : 'تعطيل'
     
-    if (!window.confirm(`هل أنت متأكد من ${actionText} هذا المستخدم؟ / Are you sure you want to ${action} this user?`)) {
+    if (!window.confirm(`Are you sure you want to ${action} this user?`)) {
       return
     }
 
@@ -339,10 +339,10 @@ export default function AdminDashboard() {
         user.id
       )
 
-      alert(`تم ${actionText} المستخدم بنجاح / User ${action}d successfully`)
+      alert(`User ${action}d successfully`)
     } catch (error) {
       console.error(`Error ${action}ing user:`, error)
-      alert(`خطأ في ${actionText} المستخدم / Error ${action}ing user`)
+      alert(`Error ${action}ing user`)
     }
   }
 
