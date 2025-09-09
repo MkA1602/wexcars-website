@@ -21,9 +21,80 @@ import {
   AlertCircle,
   Shield,
   Calendar,
-  DollarSign
+  DollarSign,
+  UserX,
+  UserCheck,
+  MoreVertical
 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
+
+// User Edit Form Component
+function UserEditForm({ user, onSave, onCancel }: {
+  user: UserData
+  onSave: (user: UserData) => void
+  onCancel: () => void
+}) {
+  const [formData, setFormData] = useState({
+    full_name: user.full_name,
+    email: user.email,
+    phone_number: user.phone_number || '',
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave({
+      ...user,
+      ...formData
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Full Name
+        </label>
+        <Input
+          value={formData.full_name}
+          onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+          required
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Email
+        </label>
+        <Input
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          required
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Phone Number
+        </label>
+        <Input
+          value={formData.phone_number}
+          onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+          placeholder="Optional"
+        />
+      </div>
+
+      <div className="flex gap-3 justify-end pt-4">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" className="bg-primary-light hover:bg-primary-dark">
+          Save Changes
+        </Button>
+      </div>
+    </form>
+  )
+}
 
 interface CarData {
   id: string
@@ -57,6 +128,7 @@ interface UserData {
   role: string
   phone_number?: string
   avatar_url?: string
+  is_suspended?: boolean
   created_at: string
   updated_at: string
 }
@@ -68,6 +140,10 @@ export default function AdminDashboard() {
   const [isLoadingData, setIsLoadingData] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("overview")
+  const [editingUser, setEditingUser] = useState<UserData | null>(null)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [userToDelete, setUserToDelete] = useState<UserData | null>(null)
 
   useEffect(() => {
     if (!isLoading && canAccessAdmin) {
@@ -153,6 +229,141 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error updating user role:', error)
       alert('خطأ في تحديث دور المستخدم / Error updating user role')
+    }
+  }
+
+  const editUser = (user: UserData) => {
+    setEditingUser(user)
+    setShowEditModal(true)
+  }
+
+  const updateUser = async (updatedUser: UserData) => {
+    try {
+      const { error } = await supabaseClient
+        .from('users')
+        .update({
+          full_name: updatedUser.full_name,
+          email: updatedUser.email,
+          phone_number: updatedUser.phone_number,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', updatedUser.id)
+
+      if (error) throw error
+
+      setUsers(users.map(user => 
+        user.id === updatedUser.id ? updatedUser : user
+      ))
+      
+      // Log activity
+      await logActivity('user_edited', `User ${updatedUser.full_name} profile updated`, updatedUser.id)
+      
+      setShowEditModal(false)
+      setEditingUser(null)
+      alert('تم تحديث بيانات المستخدم بنجاح / User profile updated successfully')
+    } catch (error) {
+      console.error('Error updating user:', error)
+      alert('خطأ في تحديث بيانات المستخدم / Error updating user profile')
+    }
+  }
+
+  const deleteUser = async (user: UserData) => {
+    setUserToDelete(user)
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return
+
+    try {
+      // First delete all cars belonging to this user
+      const { error: carsError } = await supabaseClient
+        .from('cars')
+        .delete()
+        .eq('user_id', userToDelete.id)
+
+      if (carsError) throw carsError
+
+      // Then delete the user
+      const { error: userError } = await supabaseClient
+        .from('users')
+        .delete()
+        .eq('id', userToDelete.id)
+
+      if (userError) throw userError
+
+      // Log activity
+      await logActivity('user_deleted', `User ${userToDelete.full_name} and all their cars deleted`, userToDelete.id)
+
+      setUsers(users.filter(user => user.id !== userToDelete.id))
+      setCars(cars.filter(car => car.user_id !== userToDelete.id))
+      
+      setShowDeleteConfirm(false)
+      setUserToDelete(null)
+      alert('تم حذف المستخدم و جميع سياراته بنجاح / User and all their cars deleted successfully')
+    } catch (error) {
+      console.error('Error deleting user:', error)
+      alert('خطأ في حذف المستخدم / Error deleting user')
+    }
+  }
+
+  const toggleUserSuspension = async (user: UserData) => {
+    const action = user.is_suspended ? 'reactivate' : 'suspend'
+    const actionText = user.is_suspended ? 'إعادة تفعيل' : 'تعطيل'
+    
+    if (!window.confirm(`هل أنت متأكد من ${actionText} هذا المستخدم؟ / Are you sure you want to ${action} this user?`)) {
+      return
+    }
+
+    try {
+      const { error } = await supabaseClient
+        .from('users')
+        .update({ 
+          is_suspended: !user.is_suspended,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
+
+      if (error) throw error
+
+      setUsers(users.map(u => 
+        u.id === user.id 
+          ? { ...u, is_suspended: !user.is_suspended, updated_at: new Date().toISOString() }
+          : u
+      ))
+
+      // Log activity
+      await logActivity(
+        user.is_suspended ? 'user_reactivated' : 'user_suspended',
+        `User ${user.full_name} ${user.is_suspended ? 'reactivated' : 'suspended'}`,
+        user.id
+      )
+
+      alert(`تم ${actionText} المستخدم بنجاح / User ${action}d successfully`)
+    } catch (error) {
+      console.error(`Error ${action}ing user:`, error)
+      alert(`خطأ في ${actionText} المستخدم / Error ${action}ing user`)
+    }
+  }
+
+  const logActivity = async (action: string, description: string, targetUserId?: string) => {
+    try {
+      const { error } = await supabaseClient
+        .from('admin_activity_log')
+        .insert({
+          admin_id: profile?.id,
+          admin_name: profile?.full_name,
+          action,
+          description,
+          target_user_id: targetUserId,
+          created_at: new Date().toISOString()
+        })
+
+      if (error) {
+        console.error('Error logging activity:', error)
+      }
+    } catch (error) {
+      console.error('Error logging activity:', error)
     }
   }
 
@@ -523,6 +734,48 @@ export default function AdminDashboard() {
                         >
                           {user.role}
                         </Badge>
+                        {user.is_suspended && (
+                          <Badge variant="destructive" className="bg-red-500">
+                            Suspended
+                          </Badge>
+                        )}
+                        
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => editUser(user)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => toggleUserSuspension(user)}
+                            className="h-8 w-8 p-0"
+                            title={user.is_suspended ? 'Reactivate User' : 'Suspend User'}
+                          >
+                            {user.is_suspended ? (
+                              <UserCheck className="h-4 w-4 text-green-600" />
+                            ) : (
+                              <UserX className="h-4 w-4 text-orange-600" />
+                            )}
+                          </Button>
+                          
+                          {user.id !== profile?.id && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => deleteUser(user)}
+                              className="h-8 w-8 p-0 text-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                        
                         {user.role !== 'admin' && profile?.role === 'super_admin' && (
                           <Button
                             size="sm"
@@ -603,6 +856,68 @@ export default function AdminDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* User Edit Modal */}
+      {showEditModal && editingUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-bold mb-4">Edit User Profile</h2>
+            <UserEditForm 
+              user={editingUser}
+              onSave={updateUser}
+              onCancel={() => {
+                setShowEditModal(false)
+                setEditingUser(null)
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && userToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">Delete User</h2>
+                <p className="text-gray-600">This action cannot be undone</p>
+              </div>
+            </div>
+            
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-800 font-medium mb-2">Warning:</p>
+              <ul className="text-red-700 text-sm space-y-1">
+                <li>• User "{userToDelete.full_name}" will be permanently deleted</li>
+                <li>• All cars posted by this user will be deleted</li>
+                <li>• This action cannot be undone</li>
+              </ul>
+            </div>
+
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowDeleteConfirm(false)
+                  setUserToDelete(null)
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDeleteUser}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Delete User
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 
