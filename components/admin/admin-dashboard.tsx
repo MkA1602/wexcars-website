@@ -23,6 +23,7 @@ import {
   Calendar,
   DollarSign
 } from "lucide-react"
+import { formatCurrency } from "@/lib/utils"
 
 interface CarData {
   id: string
@@ -277,8 +278,11 @@ export default function AdminDashboard() {
               <CardContent>
                 <div className="text-2xl font-bold">
                   {cars.length > 0 
-                    ? `$${Math.round(cars.reduce((sum, car) => sum + car.price, 0) / cars.length).toLocaleString()}`
-                    : '$0'
+                    ? formatCurrency(
+                        Math.round(cars.reduce((sum, car) => sum + car.price, 0) / cars.length),
+                        cars[0]?.currency || 'EUR'
+                      )
+                    : formatCurrency(0, 'EUR')
                   }
                 </div>
                 <p className="text-xs text-muted-foreground">All cars</p>
@@ -304,7 +308,7 @@ export default function AdminDashboard() {
                           <p className="font-medium">{car.brand} {car.name}</p>
                           <p className="text-sm text-gray-500">{car.users?.full_name || 'Unknown'}</p>
                         </div>
-                        <Badge variant="outline">${car.price.toLocaleString()}</Badge>
+                        <Badge variant="outline">{formatCurrency(car.price, car.currency)}</Badge>
                       </div>
                     ))}
                   </div>
