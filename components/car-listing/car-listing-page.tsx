@@ -59,7 +59,7 @@ export default function OptimizedCarListingPage() {
         setIsLoading(true)
         setError(null)
 
-        // Only fetch essential fields initially
+        // Only fetch essential fields initially, excluding sold cars
         const { data: carsData, error: carsError } = await supabaseClient
           .from('cars')
           .select(`
@@ -93,8 +93,11 @@ export default function OptimizedCarListingPage() {
             availability_days,
             availability_date,
             chassis_number,
-            location
+            location,
+            is_sold,
+            sold_at
           `)
+          .eq('is_sold', false) // Only fetch non-sold cars
           .order('created_at', { ascending: false })
           .limit(INITIAL_LOAD_SIZE) // Limit initial load
 
@@ -149,7 +152,9 @@ export default function OptimizedCarListingPage() {
           availability_days: car.availability_days,
           availability_date: car.availability_date,
           chassis_number: car.chassis_number,
-          location: car.location
+          location: car.location,
+          is_sold: car.is_sold || false,
+          sold_at: car.sold_at
         }))
 
         setCars(transformedCars)
@@ -210,8 +215,11 @@ export default function OptimizedCarListingPage() {
           availability_days,
           availability_date,
           chassis_number,
-          location
+          location,
+          is_sold,
+          sold_at
         `)
+        .eq('is_sold', false) // Only fetch non-sold cars
         .order('created_at', { ascending: false })
         .range(allCars.length, allCars.length + INITIAL_LOAD_SIZE - 1)
 
@@ -266,7 +274,9 @@ export default function OptimizedCarListingPage() {
           availability_days: car.availability_days,
           availability_date: car.availability_date,
           chassis_number: car.chassis_number,
-          location: car.location
+          location: car.location,
+          is_sold: car.is_sold || false,
+          sold_at: car.sold_at
         }))
 
         setAllCars(prev => [...prev, ...transformedMoreCars])

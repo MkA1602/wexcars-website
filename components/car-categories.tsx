@@ -69,6 +69,7 @@ export default function CarCategories() {
         const { data: carsData, error } = await supabaseClient
           .from('cars')
           .select('*')
+          .eq('is_sold', false) // Only fetch non-sold cars
           .order('created_at', { ascending: false })
 
         if (error) {

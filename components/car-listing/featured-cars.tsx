@@ -52,6 +52,7 @@ const FeaturedCars = () => {
         const { data: carsData, error } = await supabaseClient
           .from('cars')
           .select('*')
+          .eq('is_sold', false) // Only fetch non-sold cars
           .limit(6) // Only load 6 featured cars
           .order('created_at', { ascending: false })
 
