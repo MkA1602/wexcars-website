@@ -64,6 +64,8 @@ export interface Car {
   emission_class?: string | null // Emission class (Euro 1-6)
   first_registration?: string | null // First registration date of the car
   crash_history?: string | null // Crash/accident history of the car
+  is_sold?: boolean // Indicates if the car has been sold
+  sold_at?: string | null // Timestamp when the car was marked as sold
 }
 
 export interface FilterOptions {

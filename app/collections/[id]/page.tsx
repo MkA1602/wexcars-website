@@ -41,6 +41,40 @@ export default function CarDetail() {
           return
         }
 
+        // Check if car is sold
+        if (carData.is_sold) {
+          setCar({
+            id: carData.id,
+            name: carData.name,
+            brand: carData.brand,
+            category: carData.category,
+            year: carData.year,
+            price: carData.price,
+            currency: carData.currency || 'AED',
+            priceWithVat: carData.price,
+            image: carData.image,
+            rating: 4.5,
+            transmission: carData.transmission || 'Automatic',
+            color: carData.color || 'Black',
+            featured: false,
+            description: carData.description,
+            specifications: {
+              engine: 'Not specified',
+              power: 'Not specified',
+              acceleration: 'Not specified',
+              topSpeed: 'Not specified',
+              transmission: carData.transmission || 'Automatic',
+              drivetrain: 'Not specified',
+              fuelEconomy: 'Not specified',
+              seating: 'Not specified'
+            },
+            is_sold: true,
+            sold_at: carData.sold_at
+          } as Car)
+          setIsLoading(false)
+          return
+        }
+
         // Transform database data to match Car interface
         const transformedCar: Car = {
           id: carData.id,
@@ -88,7 +122,9 @@ export default function CarDetail() {
           availability_days: carData.availability_days,
           availability_date: carData.availability_date,
           chassis_number: carData.chassis_number,
-          location: carData.location
+          location: carData.location,
+          is_sold: carData.is_sold || false,
+          sold_at: carData.sold_at
         }
 
         setCar(transformedCar)

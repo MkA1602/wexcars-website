@@ -28,6 +28,47 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   console.log('Car mileage type:', typeof car.mileage)
   console.log('Car fuel_type:', car.fuel_type)
   console.log('Car horsepower:', car.horsepower)
+
+  // Show sold message if car is sold
+  if (car.is_sold) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center p-8">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CarIcon className="w-8 h-8 text-green-600" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">This Car Has Been Sold</h1>
+            <p className="text-gray-600 mb-6">
+              The {car.brand} {car.name} you're looking for has already been sold. 
+              Don't worry, we have many other amazing vehicles for you to explore!
+            </p>
+            {car.sold_at && (
+              <p className="text-sm text-gray-500 mb-6">
+                Sold on {new Date(car.sold_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </p>
+            )}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/collections">
+                <Button className="bg-primary-light hover:bg-primary-dark text-white">
+                  Browse Available Cars
+                </Button>
+              </Link>
+              <Link href="/">
+                <Button variant="outline">
+                  Back to Home
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
   console.log('Car location:', car.location)
   console.log('Car location type:', typeof car.location)
   

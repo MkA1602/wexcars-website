@@ -59,7 +59,7 @@ export default function OptimizedCarListingPage() {
         setIsLoading(true)
         setError(null)
 
-        // Only fetch essential fields initially
+        // Only fetch essential fields initially, excluding sold cars
         const { data: carsData, error: carsError } = await supabaseClient
           .from('cars')
           .select(`
@@ -93,8 +93,11 @@ export default function OptimizedCarListingPage() {
             availability_days,
             availability_date,
             chassis_number,
-            location
+            location,
+            is_sold,
+            sold_at
           `)
+          .eq('is_sold', false) // Only fetch non-sold cars
           .order('created_at', { ascending: false })
           .limit(INITIAL_LOAD_SIZE) // Limit initial load
 
