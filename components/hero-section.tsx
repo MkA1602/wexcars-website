@@ -76,7 +76,7 @@ export default function HeroSection() {
       >
         {!imageError ? (
           <Image
-            src={"https://i.imgur.com/67e2udd.png"}
+            src={"https://i.imgur.com/porsche-911-turbo-s.jpg"}
             alt="Porsche 911 Turbo S Cabriolet - Global Luxury Car Export"
             fill
             priority
