@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { User, Car, Settings, LogOut, Plus } from "lucide-react"
+import { User, Car, Settings, LogOut, Plus, Calculator } from "lucide-react"
 import UserCars from "@/components/dashboard/user-cars"
 import UserProfile from "@/components/dashboard/user-profile"
 import UserSettings from "@/components/dashboard/user-settings"
@@ -58,6 +58,12 @@ export default function DashboardContent({ user, profile, cars }: DashboardConte
               <Button className="bg-primary-light hover:bg-primary-dark text-white flex items-center gap-2">
                 <Plus size={16} />
                 Add New Car
+              </Button>
+            </Link>
+            <Link href="/service-fee-demo">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Calculator size={16} />
+                Fee Calculator Demo
               </Button>
             </Link>
             <Button variant="outline" onClick={handleSignOut} className="flex items-center gap-2">

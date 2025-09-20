@@ -1,26 +1,18 @@
 "use client"
 
 import React, { useState, useEffect, useRef, useCallback } from "react"
-import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Heart, Star, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import PriceDisplay from "@/components/ui/price-display"
+import OptimizedCarGrid from "./car-grid"
 import type { Car } from "@/lib/types"
 import { supabaseClient } from "@/lib/supabase/client"
-import { useAuth } from "@/contexts/auth-context"
 
 const FeaturedCars = () => {
   const [cars, setCars] = useState<Car[]>([])
-  const [favorites, setFavorites] = useState<Record<string, boolean>>({})
   const [isLoading, setIsLoading] = useState(true)
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
-  const router = useRouter()
-  const { user } = useAuth()
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -116,43 +108,8 @@ const FeaturedCars = () => {
       }
     }
 
-    // Load favorites from localStorage
-    try {
-      const savedFavorites = localStorage.getItem("carFavorites")
-      if (savedFavorites) {
-        setFavorites(JSON.parse(savedFavorites))
-      }
-    } catch (error) {
-      console.error("Error loading favorites:", error)
-    }
-
     fetchFeaturedCars()
   }, [isVisible])
-
-  const toggleFavorite = useCallback((id: string, e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    
-    // Check if user is authenticated
-    if (!user) {
-      // Store the car ID to add to favorites after sign-in
-      localStorage.setItem("pendingFavorite", id)
-      // Redirect to sign-in page
-      router.push("/auth/login")
-      return
-    }
-    
-    // User is authenticated, proceed with favorite toggle
-    setFavorites((prev) => {
-      const newFavorites = { ...prev, [id]: !prev[id] }
-      try {
-        localStorage.setItem("carFavorites", JSON.stringify(newFavorites))
-      } catch (error) {
-        console.error("Error saving favorites:", error)
-      }
-      return newFavorites
-    })
-  }, [user, router])
 
   return (
     <section ref={sectionRef} className="py-12 md:py-16 bg-white">
@@ -168,106 +125,21 @@ const FeaturedCars = () => {
 
         {!isVisible ? (
           // Placeholder while not visible
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="h-80 bg-gray-100 rounded-lg animate-pulse"></div>
+              <div key={index} className="h-72 bg-gray-200 animate-pulse rounded-lg"></div>
             ))}
           </div>
         ) : isLoading ? (
           // Loading state
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
-              <Card key={index} className="overflow-hidden h-full animate-pulse">
-                <div className="h-48 bg-gray-200"></div>
-                <CardContent className="p-4">
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded mb-4 w-3/4"></div>
-                  <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-                </CardContent>
-              </Card>
+              <div key={index} className="h-72 bg-gray-200 animate-pulse rounded-lg"></div>
             ))}
           </div>
         ) : (
-          // Actual content
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cars.map((car, index) => (
-              <Card key={car.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl h-full flex flex-col group">
-                <div className="relative">
-                  <Link href={`/collections/${car.id}`}>
-                    <div className="relative h-48 overflow-hidden">
-                      <Image
-                        src={car.image || "/placeholder.svg"}
-                        alt={`${car.brand} ${car.name}`}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        priority={index < 3} // Priority for first 3 cars
-                        loading={index < 3 ? "eager" : "lazy"}
-                        placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                      />
-                    </div>
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full"
-                    onClick={(e) => toggleFavorite(car.id, e)}
-                    aria-label={favorites[car.id] ? "Remove from favorites" : "Add to favorites"}
-                  >
-                    <Heart size={18} className={favorites[car.id] ? "fill-red-500 text-red-500" : "text-gray-600"} />
-                  </Button>
-                  <Badge className="absolute top-2 left-2 bg-primary-light hover:bg-primary-dark">
-                    Featured
-                  </Badge>
-                </div>
-                
-                <CardContent className="p-4 flex-grow">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg line-clamp-1">
-                        <Link href={`/collections/${car.id}`} className="hover:text-primary-light">
-                          {car.brand} {car.name}
-                        </Link>
-                      </h3>
-                      <p className="text-gray-500 text-sm">
-                        {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
-                          <span className="text-red-500 font-medium">📍 {car.location}</span>
-                        ) : (
-                          <span className="text-gray-400">Location N/A</span>
-                        )} • <span className="text-xs">{car.created_at ? new Date(car.created_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric'
-                        }) : 'Date N/A'}</span>
-                      </p>
-                    </div>
-                    <div className="flex items-center ml-2">
-                      <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                      <span className="text-sm font-medium ml-1">{car.rating}</span>
-                    </div>
-                  </div>
-
-                  <Badge variant="outline" className="text-xs bg-gray-50 mb-3">
-                    {car.category}
-                  </Badge>
-                </CardContent>
-                
-                <CardFooter className="p-4 pt-0 border-t mt-auto">
-                  <PriceDisplay
-                    key={`featured-price-${car.id}`}
-                    price={car.price}
-                    priceExclVat={car.price_excl_vat}
-                    vatRate={car.vat_rate}
-                    vatAmount={car.vat_amount}
-                    currency={car.currency}
-                    enableToggle={true}
-                    carId={car.id}
-                    size="sm"
-                  />
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+          // Use the same grid component as collections page
+          <OptimizedCarGrid cars={cars} vatDisplay="both" />
         )}
 
         <div className="text-center mt-8">

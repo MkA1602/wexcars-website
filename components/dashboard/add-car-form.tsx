@@ -15,6 +15,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus, Check } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import ServiceFeeCalculator from "./service-fee-calculator"
+import type { FeeCalculationResult } from "@/lib/fee-calculator"
 
 // Common car features for selection
 const CAR_FEATURES = [
@@ -75,6 +77,11 @@ export default function AddCarForm() {
   const [isDragging, setIsDragging] = useState(false)
   const [customFeature, setCustomFeature] = useState("")
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Service fee states
+  const [isFeePaid, setIsFeePaid] = useState(false)
+  const [feeCalculation, setFeeCalculation] = useState<FeeCalculationResult | null>(null)
+  const [showFeeCalculator, setShowFeeCalculator] = useState(false)
 
   const { user } = useAuth()
   const router = useRouter()
@@ -168,6 +175,11 @@ export default function AddCarForm() {
     // Validate dealership name if seller type is dealership
     if (formData.seller_type === 'dealership' && !formData.dealership_name.trim()) {
       newErrors.dealership_name = "Dealership name is required when selling as a dealership"
+    }
+
+    // Validate service fee payment
+    if (!isFeePaid) {
+      newErrors.feePayment = "Service fee must be paid before publishing the car ad"
     }
 
     setErrors(newErrors)
@@ -1116,6 +1128,49 @@ export default function AddCarForm() {
             </div>
           </div>
 
+          {/* Service Fee Section */}
+          <div className="space-y-4 p-4 border rounded-lg bg-blue-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  Service Fee Payment
+                  {isFeePaid && <span className="h-5 w-5 text-green-600">✔️</span>}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {isFeePaid 
+                    ? "Service fee paid! Your car ad is ready to publish." 
+                    : "A service fee is required to publish your car ad"
+                  }
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowFeeCalculator(!showFeeCalculator)}
+                className="flex items-center gap-2"
+              >
+                {showFeeCalculator ? 'Hide Calculator' : 'Show Calculator'}
+              </Button>
+            </div>
+            
+            {showFeeCalculator && (
+              <ServiceFeeCalculator
+                onFeePaid={setIsFeePaid}
+                onFeeCalculated={setFeeCalculation}
+                initialPrice={formData.priceExclVat ? parseFloat(formData.priceExclVat) : 0}
+                initialCurrency={formData.currency}
+                initialVatRate={formData.vatRate ? parseFloat(formData.vatRate) : 25}
+              />
+            )}
+            
+            {errors.feePayment && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{errors.feePayment}</AlertDescription>
+              </Alert>
+            )}
+          </div>
+
           {/* Car Features Section */}
           <div className="space-y-4">
             <Label>Car Features</Label>
@@ -1393,9 +1448,9 @@ export default function AddCarForm() {
             <Button 
               type="submit" 
               className="bg-primary-light hover:bg-primary-dark text-white" 
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isFeePaid}
             >
-              {isSubmitting ? "Adding Car..." : "Add Car"}
+              {isSubmitting ? "Adding Car..." : isFeePaid ? "Publish Car Ad" : "Pay Fee to Publish"}
             </Button>
           </div>
         </form>

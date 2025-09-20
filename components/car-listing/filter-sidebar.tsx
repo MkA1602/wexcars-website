@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import type { FilterOptions } from "@/lib/types"
 import { ChevronDown, ChevronUp, Info } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { CAR_COLORS } from "@/lib/car-colors"
 
 interface FilterSidebarProps {
   filters: FilterOptions
@@ -388,14 +389,25 @@ export default function FilterSidebar({
   })
 
   // Filter colors based on search term with safety checks
+  // Only show colors that have actual cars, plus allow searching for all colors
+  const baseColors = availableColors.length > 0 ? availableColors : []
+  const searchableColors = searchTerms.colors.trim() ? [...CAR_COLORS] : baseColors
+  
   const filteredColors = safeFilter(
-    availableColors.length > 0 ? availableColors : ["Black", "White", "Silver", "Red", "Blue", "Green", "Yellow"],
+    searchableColors,
     searchTerms.colors,
   ).sort((a, b) => {
-    // Sort by selected first, then alphabetically
+    // Sort by selected first, then by availability (colors with cars first), then alphabetically
     const currentColors = filters?.colors || []
     if (currentColors.includes(a) && !currentColors.includes(b)) return -1
     if (!currentColors.includes(a) && currentColors.includes(b)) return 1
+    
+    // Prioritize colors that actually have cars
+    const aHasCars = baseColors.includes(a)
+    const bHasCars = baseColors.includes(b)
+    if (aHasCars && !bHasCars) return -1
+    if (!aHasCars && bHasCars) return 1
+    
     return a.localeCompare(b)
   })
 
@@ -707,31 +719,43 @@ export default function FilterSidebar({
               />
             </div>
             <div className="max-h-48 overflow-y-auto pr-2 space-y-2">
-              {filteredColors.map((color) => (
-                <div key={color} className="flex items-center">
-                  <Checkbox
-                    id={`color-${color}`}
-                    checked={(filters.colors || []).includes(color)}
-                    onCheckedChange={(checked) => handleColorChange(color, checked === true)}
-                    className="mr-2"
-                  />
-                  <label htmlFor={`color-${color}`} className="text-sm cursor-pointer">
-                    <div className="flex items-center">
-                      <div
-                        className="w-4 h-4 rounded-full mr-2"
-                        style={{
-                          backgroundColor: color.toLowerCase(),
-                          border: color.toLowerCase() === "white" ? "1px solid #ddd" : "none",
-                        }}
-                      ></div>
-                      {color}
-                    </div>
-                  </label>
-                </div>
-              ))}
+              {filteredColors.map((color) => {
+                const hasCars = baseColors.includes(color)
+                return (
+                  <div key={color} className="flex items-center">
+                    <Checkbox
+                      id={`color-${color}`}
+                      checked={(filters.colors || []).includes(color)}
+                      onCheckedChange={(checked) => handleColorChange(color, checked === true)}
+                      className="mr-2"
+                    />
+                    <label htmlFor={`color-${color}`} className="text-sm cursor-pointer">
+                      <div className="flex items-center">
+                        <div
+                          className="w-4 h-4 rounded-full mr-2"
+                          style={{
+                            backgroundColor: color.toLowerCase(),
+                            border: color.toLowerCase() === "white" ? "1px solid #ddd" : "none",
+                          }}
+                        ></div>
+                        <span className={hasCars ? "" : "text-gray-400"}>
+                          {color}
+                          {!hasCars && " (No cars)"}
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                )
+              })}
 
               {filteredColors.length === 0 && (
                 <p className="text-sm text-gray-500 italic">No colors match your search</p>
+              )}
+              
+              {!searchTerms.colors.trim() && baseColors.length > 0 && (
+                <p className="text-xs text-gray-500 mt-2 italic">
+                  💡 Tip: Type to search all available colors
+                </p>
               )}
             </div>
           </div>

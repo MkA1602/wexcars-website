@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Check } from "lucide-react"
 import { CheckCircle, Star, Crown, Zap } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -9,7 +10,7 @@ const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-websi
 const pricingPlans = [
   {
     name: "Standard",
-    price: 199,
+    price: 0,
     description: "Perfect for first-time luxury car buyers",
     features: [
       "Access to standard inventory",
@@ -19,11 +20,11 @@ const pricingPlans = [
       "Financing options available",
     ],
     popular: false,
-    buttonText: "Get Started",
+    buttonText: "Get Free",
   },
   {
     name: "Premium",
-    price: 399,
+    price: 200,
     description: "Our most popular package for enthusiasts",
     features: [
       "Access to premium inventory",
@@ -39,7 +40,7 @@ const pricingPlans = [
   },
   {
     name: "Exclusive",
-    price: 899,
+    price: 300,
     description: "The ultimate luxury experience",
     features: [
       "Access to exclusive & limited edition models",
@@ -102,19 +103,23 @@ export default function PricingContent() {
                 <div className="p-6">
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <div className="flex items-baseline mb-4">
-                    <span className="text-4xl font-bold">${plan.price}</span>
-                    <span className="text-gray-500 ml-2">/month</span>
+                    <span className="text-4xl font-bold">
+                      {plan.price === 0 ? "Free" : `$${plan.price}`}
+                    </span>
+                    {plan.price > 0 && <span className="text-gray-500 ml-2">/month</span>}
                   </div>
                   <p className="text-gray-600 mb-6">{plan.description}</p>
-                  <Button
-                    className={`w-full ${
-                      plan.popular
-                        ? "bg-primary-light hover:bg-primary-dark text-white"
-                        : "bg-gray-100 hover:bg-gray-200 text-gray-800"
-                    }`}
-                  >
-                    {plan.buttonText}
-                  </Button>
+                  <Link href={plan.price === 0 ? "/dashboard" : `/payment/${plan.name.toLowerCase()}`}>
+                    <Button
+                      className={`w-full ${
+                        plan.popular
+                          ? "bg-primary-light hover:bg-primary-dark text-white"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+                      }`}
+                    >
+                      {plan.buttonText}
+                    </Button>
+                  </Link>
                 </div>
                 <div className="bg-gray-50 p-6">
                   <h4 className="font-medium mb-4">What's included:</h4>

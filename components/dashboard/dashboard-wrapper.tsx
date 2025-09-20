@@ -124,6 +124,167 @@ const mockCars = [
       fuelEconomy: "15/22 mpg",
       seating: "2 passengers"
     }
+  },
+  {
+    id: "6",
+    brand: "Porsche",
+    name: "911 Turbo S",
+    year: 2024,
+    category: "Sports Car",
+    price: 220000,
+    currency: "USD",
+    color: "Black",
+    transmission: "Automatic",
+    image: "/placeholder.svg?height=400&width=600&text=Porsche+911+Turbo+S",
+    description: "The ultimate 911 with blistering performance and everyday usability.",
+    specifications: {
+      engine: "3.8L Flat-6 Turbo",
+      power: "640 HP",
+      acceleration: "0-60 mph in 2.6s",
+      topSpeed: "205 mph",
+      transmission: "8-Speed PDK",
+      drivetrain: "AWD",
+      fuelEconomy: "15/20 mpg",
+      seating: "4 passengers"
+    }
+  },
+  {
+    id: "7",
+    brand: "BMW",
+    name: "M8 Competition",
+    year: 2024,
+    category: "Luxury",
+    price: 140000,
+    currency: "USD",
+    color: "White",
+    transmission: "Automatic",
+    image: "/placeholder.svg?height=400&width=600&text=BMW+M8+Competition",
+    description: "Luxury meets performance in BMW's flagship coupe.",
+    specifications: {
+      engine: "4.4L V8 Twin-Turbo",
+      power: "617 HP",
+      acceleration: "0-60 mph in 3.0s",
+      topSpeed: "190 mph",
+      transmission: "8-Speed Automatic",
+      drivetrain: "AWD",
+      fuelEconomy: "15/21 mpg",
+      seating: "4 passengers"
+    }
+  },
+  {
+    id: "8",
+    brand: "Mercedes-Benz",
+    name: "AMG GT 63 S",
+    year: 2024,
+    category: "Sports Car",
+    price: 180000,
+    currency: "USD",
+    color: "Silver",
+    transmission: "Automatic",
+    image: "/placeholder.svg?height=400&width=600&text=Mercedes+AMG+GT+63+S",
+    description: "Four-door sports car with AMG performance and Mercedes luxury.",
+    specifications: {
+      engine: "4.0L V8 Twin-Turbo",
+      power: "630 HP",
+      acceleration: "0-60 mph in 3.1s",
+      topSpeed: "195 mph",
+      transmission: "9-Speed AMG Speedshift",
+      drivetrain: "AWD",
+      fuelEconomy: "16/22 mpg",
+      seating: "4 passengers"
+    }
+  },
+  {
+    id: "9",
+    brand: "Audi",
+    name: "R8 V10 Plus",
+    year: 2024,
+    category: "Supercar",
+    price: 200000,
+    currency: "USD",
+    color: "Blue",
+    transmission: "Automatic",
+    image: "/placeholder.svg?height=400&width=600&text=Audi+R8+V10+Plus",
+    description: "Audi's flagship supercar with naturally aspirated V10 power.",
+    specifications: {
+      engine: "5.2L V10",
+      power: "602 HP",
+      acceleration: "0-60 mph in 3.2s",
+      topSpeed: "205 mph",
+      transmission: "7-Speed S Tronic",
+      drivetrain: "AWD",
+      fuelEconomy: "13/20 mpg",
+      seating: "2 passengers"
+    }
+  },
+  {
+    id: "10",
+    brand: "Bentley",
+    name: "Continental GT",
+    year: 2024,
+    category: "Luxury",
+    price: 250000,
+    currency: "USD",
+    color: "Green",
+    transmission: "Automatic",
+    image: "/placeholder.svg?height=400&width=600&text=Bentley+Continental+GT",
+    description: "Luxury grand tourer with exceptional craftsmanship and performance.",
+    specifications: {
+      engine: "6.0L W12 Twin-Turbo",
+      power: "626 HP",
+      acceleration: "0-60 mph in 3.6s",
+      topSpeed: "207 mph",
+      transmission: "8-Speed Dual-Clutch",
+      drivetrain: "AWD",
+      fuelEconomy: "12/19 mpg",
+      seating: "4 passengers"
+    }
+  },
+  {
+    id: "11",
+    brand: "Rolls-Royce",
+    name: "Ghost",
+    year: 2024,
+    category: "Luxury",
+    price: 350000,
+    currency: "USD",
+    color: "Gold",
+    transmission: "Automatic",
+    image: "/placeholder.svg?height=400&width=600&text=Rolls-Royce+Ghost",
+    description: "The most technologically advanced Rolls-Royce ever built.",
+    specifications: {
+      engine: "6.75L V12 Twin-Turbo",
+      power: "563 HP",
+      acceleration: "0-60 mph in 4.6s",
+      topSpeed: "155 mph",
+      transmission: "8-Speed Automatic",
+      drivetrain: "RWD",
+      fuelEconomy: "12/18 mpg",
+      seating: "5 passengers"
+    }
+  },
+  {
+    id: "12",
+    brand: "Maserati",
+    name: "MC20",
+    year: 2024,
+    category: "Supercar",
+    price: 220000,
+    currency: "USD",
+    color: "Yellow",
+    transmission: "Automatic",
+    image: "/placeholder.svg?height=400&width=600&text=Maserati+MC20",
+    description: "Maserati's return to supercar excellence with cutting-edge technology.",
+    specifications: {
+      engine: "3.0L V6 Twin-Turbo",
+      power: "621 HP",
+      acceleration: "0-60 mph in 2.9s",
+      topSpeed: "202 mph",
+      transmission: "8-Speed Dual-Clutch",
+      drivetrain: "RWD",
+      fuelEconomy: "15/22 mpg",
+      seating: "2 passengers"
+    }
   }
 ]
 

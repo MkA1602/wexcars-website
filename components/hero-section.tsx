@@ -102,7 +102,7 @@ export default function HeroSection() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic mb-4 leading-tight text-black">
             Global Luxury Car
             <br />
-            <span className="text-black">Export, Simplified.</span>
+            <span className="text-black">Export - Simplified.</span>
           </h1>
           <p className="text-black/80 mb-8 max-w-md">
             Discover our exclusive collection of premium vehicles for an unparalleled driving experience.

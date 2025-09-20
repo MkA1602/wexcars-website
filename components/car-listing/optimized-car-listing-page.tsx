@@ -7,6 +7,7 @@ import CarGrid from "./car-grid"
 import { Pagination } from "@/components/ui/pagination"
 import { supabaseClient } from "@/lib/supabase/client"
 import type { FilterOptions, Car } from "@/lib/types"
+import { CAR_COLORS } from "@/lib/car-colors"
 import { Button } from "@/components/ui/button"
 import { Loader2, SlidersHorizontal, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -376,7 +377,11 @@ export default function OptimizedCarListingPage() {
   const availableBrands = useMemo(() => [...new Set(allCars.map((car) => car.brand))], [allCars])
   const availableCategories = useMemo(() => [...new Set(allCars.map((car) => car.category))], [allCars])
   const availableYears = useMemo(() => [...new Set(allCars.map((car) => car.year.toString()))], [allCars])
-  const availableColors = useMemo(() => [...new Set(allCars.map((car) => car.color))], [allCars])
+  const availableColors = useMemo(() => {
+    const carColors = [...new Set(allCars.map((car) => car.color))]
+    // Combine car colors with comprehensive list, removing duplicates
+    return [...new Set([...carColors, ...CAR_COLORS])]
+  }, [allCars])
 
   // Memoized counts
   const brandCounts = useMemo(() => {

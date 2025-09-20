@@ -7,9 +7,8 @@ import { supabaseClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Pencil, Trash2, AlertCircle, Eye, Calendar, DollarSign, Tag, CheckCircle, RotateCcw, Car as CarIcon } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
-import PriceDisplay from "@/components/ui/price-display"
+import { AlertCircle, CheckCircle, Car as CarIcon } from "lucide-react"
+import DashboardCarCard from "./dashboard-car-card"
 import type { Car } from "@/lib/types"
 
 interface UserCarsProps {
@@ -100,130 +99,6 @@ export default function UserCars({ cars }: UserCarsProps) {
     }
   }
 
-  // Car Card Component
-  const CarCard = ({ car, isSold = false }: { car: any, isSold?: boolean }) => (
-    <Card key={car.id} className={`overflow-hidden ${isSold ? 'opacity-75' : ''}`}>
-      <div className="relative h-48 overflow-hidden">
-        <img
-          src={car.image || "/placeholder.svg?height=200&width=300&query=luxury+car"}
-          alt={`${car.brand} ${car.name}`}
-          className="w-full h-full object-cover"
-        />
-        {isSold && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-              <CheckCircle size={14} />
-              SOLD
-            </div>
-          </div>
-        )}
-      </div>
-      <CardContent className="p-4">
-        <h3 className="font-bold text-lg mb-1">
-          {car.brand} {car.name}
-        </h3>
-        <div className="flex flex-wrap gap-2 mb-3">
-          <div className="flex items-center text-xs bg-gray-100 px-2 py-1 rounded-full">
-            <Tag size={12} className="mr-1" />
-            <span>{car.category}</span>
-          </div>
-          <div className="flex items-center text-xs bg-gray-100 px-2 py-1 rounded-full">
-            <Calendar size={12} className="mr-1" />
-            <span>{car.year}</span>
-          </div>
-          {car.location && (
-            <div className="flex items-center text-xs bg-green-100 px-2 py-1 rounded-full">
-              <span className="text-green-700">📍 {car.location}</span>
-            </div>
-          )}
-          <div className="bg-gray-50 px-3 py-2 rounded-lg">
-            <PriceDisplay
-              key={`user-price-${car.id}`}
-              price={car.price}
-              priceExclVat={car.price_excl_vat}
-              vatRate={car.vat_rate}
-              vatAmount={car.vat_amount}
-              currency={car.currency}
-              enableToggle={true}
-              carId={car.id}
-              size="sm"
-            />
-          </div>
-          {car.chassis_number && (
-            <div className="flex items-center text-xs bg-blue-100 px-2 py-1 rounded-full">
-              <span className="text-blue-700">VIN: {car.chassis_number}</span>
-            </div>
-          )}
-          {car.created_at && (
-            <div className="flex items-center text-[10px] bg-purple-100 px-2 py-1 rounded-full">
-              <Calendar size={10} className="mr-1" />
-              <span className="text-purple-700">{new Date(car.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })}</span>
-            </div>
-          )}
-          {isSold && car.sold_at && (
-            <div className="flex items-center text-[10px] bg-green-100 px-2 py-1 rounded-full">
-              <CheckCircle size={10} className="mr-1" />
-              <span className="text-green-700">Sold: {new Date(car.sold_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })}</span>
-            </div>
-          )}
-        </div>
-        <p className="text-gray-600 text-sm line-clamp-2">{car.description}</p>
-      </CardContent>
-      <CardFooter className="p-4 pt-0 flex justify-between">
-        <div className="flex gap-2">
-          <Link href={`/dashboard/edit-car/${car.id}`}>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <Pencil size={14} />
-              <span>Edit</span>
-            </Button>
-          </Link>
-        </div>
-        <div className="flex gap-2">
-          {!isSold ? (
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 flex items-center gap-1"
-              onClick={() => handleMarkAsSold(car.id)}
-              disabled={isMarkingSold === car.id}
-            >
-              <CheckCircle size={14} />
-              <span>{isMarkingSold === car.id ? "Marking..." : "Mark as Sold"}</span>
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-1"
-              onClick={() => handleMarkAsUnsold(car.id)}
-              disabled={isMarkingSold === car.id}
-            >
-              <RotateCcw size={14} />
-              <span>{isMarkingSold === car.id ? "Updating..." : "Mark as Unsold"}</span>
-            </Button>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 flex items-center gap-1"
-            onClick={() => handleDelete(car.id)}
-            disabled={isDeleting === car.id}
-          >
-            <Trash2 size={14} />
-            <span>{isDeleting === car.id ? "Deleting..." : "Delete"}</span>
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
-  )
 
   return (
     <div className="space-y-6">
@@ -245,9 +120,17 @@ export default function UserCars({ cars }: UserCarsProps) {
         </CardHeader>
         <CardContent>
           {activeCars.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {activeCars.map((car) => (
-                <CarCard key={car.id} car={car} isSold={false} />
+                <DashboardCarCard 
+                  key={car.id} 
+                  car={car} 
+                  isSold={false}
+                  onDelete={handleDelete}
+                  onMarkAsSold={handleMarkAsSold}
+                  isDeleting={isDeleting === car.id}
+                  isMarkingSold={isMarkingSold === car.id}
+                />
               ))}
             </div>
           ) : (
@@ -281,9 +164,17 @@ export default function UserCars({ cars }: UserCarsProps) {
             <CardDescription>Your previously sold vehicles</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {soldCars.map((car) => (
-                <CarCard key={car.id} car={car} isSold={true} />
+                <DashboardCarCard 
+                  key={car.id} 
+                  car={car} 
+                  isSold={true}
+                  onDelete={handleDelete}
+                  onMarkAsUnsold={handleMarkAsUnsold}
+                  isDeleting={isDeleting === car.id}
+                  isMarkingSold={isMarkingSold === car.id}
+                />
               ))}
             </div>
           </CardContent>
