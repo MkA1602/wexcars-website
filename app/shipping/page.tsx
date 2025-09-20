@@ -266,12 +266,20 @@ export default function ShippingPage() {
                   <p className="text-sm text-gray-500">24/7 Response</p>
                 </div>
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-primary-light/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <MapPin className="w-6 h-6 text-primary-light" />
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary-light/10 to-primary-dark/10 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <MapPin className="w-8 h-8 text-primary-light" />
                   </div>
-                  <h3 className="font-semibold mb-2">Location</h3>
-                  <p className="text-gray-600">215 52 Malmö, Sweden</p>
-                  <p className="text-sm text-gray-500">European Hub</p>
+                  <h3 className="font-bold text-xl mb-3 text-gray-900">Our Location</h3>
+                  <div className="space-y-2">
+                    <p className="text-gray-800 font-semibold text-lg">Malmö, Sweden</p>
+                    <p className="text-gray-600">European Headquarters</p>
+                    <p className="text-sm text-gray-500">Postal Code: 215 52</p>
+                    <div className="mt-3 inline-block bg-primary-light/5 border border-primary-light/20 rounded-lg px-3 py-2">
+                      <p className="text-xs text-primary-light font-medium">
+                        🏢 Premium Automotive Hub
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

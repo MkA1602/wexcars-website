@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Phone } from "lucide-react"
 
 interface OpenStreetMapProps {
   className?: string
@@ -81,10 +82,22 @@ export default function OpenStreetMap({ className = "", height = "400px" }: Open
       </div>
       
       {/* Location info overlay */}
-      <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-lg p-3 shadow-lg max-w-xs">
-        <h4 className="font-semibold text-gray-800 text-sm mb-1">📍 WexCars</h4>
-        <p className="text-xs text-gray-600">215 52 Malmö, Sweden</p>
-        <p className="text-xs text-gray-600">📞 +46 737 200581</p>
+      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-xl max-w-sm border border-gray-200/50">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-2 h-2 bg-primary-light rounded-full"></div>
+          <h4 className="font-bold text-gray-900 text-sm">WexCars Headquarters</h4>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-gray-800">Malmö, Sweden</p>
+          <p className="text-xs text-gray-600">European Automotive Hub</p>
+          <p className="text-xs text-gray-500">Postal Code: 215 52</p>
+          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-200">
+            <Phone className="w-3 h-3 text-primary-light" />
+            <a href="tel:+46737200581" className="text-xs text-primary-light hover:text-primary-dark font-medium">
+              +46 737 200581
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   )

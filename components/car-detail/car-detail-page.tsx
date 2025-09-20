@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Home, Car as CarIcon, Edit, Trash2, User, Shield, MessageCircle, Heart, Sofa, Car as CarIcon2, ShieldCheck, Monitor, Star, Settings } from "lucide-react"
+import { Home, Car as CarIcon, Edit, Trash2, User, Shield, MessageCircle, Heart, Sofa, Car as CarIcon2, ShieldCheck, Monitor, Star, Settings, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
 import CarGallery from "./car-gallery"
@@ -260,8 +260,9 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                         </span>
                       )}
                       {car.location && (
-                        <span className="bg-red-500/20 text-red-700 px-2 py-1 rounded-md font-medium text-xs flex items-center gap-1">
-                          📍 {car.location}
+                        <span className="bg-primary-light/10 text-primary-light border border-primary-light/20 px-3 py-1 rounded-lg font-medium text-xs flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {car.location}
                         </span>
                       )}
                     </div>

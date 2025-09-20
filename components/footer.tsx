@@ -255,7 +255,9 @@ const Footer = () => {
                 <div className="flex items-start space-x-3 text-gray-medium">
                   <MapPin className="w-5 h-5 mt-0.5 text-red-500" />
                   <div>
-                    <p className="text-sm">215 52 Malmo. Sweden</p>
+                    <p className="text-sm font-medium text-white">Malmö, Sweden</p>
+                    <p className="text-xs text-gray-400">European Headquarters</p>
+                    <p className="text-xs text-gray-500">Postal Code: 215 52</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-medium">

@@ -82,14 +82,19 @@ export default function ContactContent() {
 
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <div className="w-10 h-10 rounded-full bg-primary-light/10 flex items-center justify-center mr-4 flex-shrink-0">
-                    <MapPin className="h-5 w-5 text-primary-light" />
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-light/10 to-primary-dark/10 flex items-center justify-center mr-4 flex-shrink-0 shadow-sm">
+                    <MapPin className="h-6 w-6 text-primary-light" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">Visit Us</h3>
-                    <p className="text-gray-600">215 52
-Malmo
-Sweden</p>
+                    <h3 className="font-bold text-gray-900 text-lg mb-2">Visit Our Showroom</h3>
+                    <div className="space-y-1">
+                      <p className="text-gray-800 font-medium">Malmö, Sweden</p>
+                      <p className="text-sm text-gray-600">European Headquarters</p>
+                      <p className="text-sm text-gray-500">Postal Code: 215 52</p>
+                      <p className="text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-md inline-block mt-2">
+                        📍 Premium Location in Southern Sweden
+                      </p>
+                    </div>
                   </div>
                 </div>
 

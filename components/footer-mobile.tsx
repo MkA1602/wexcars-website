@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useState } from "react"
-import { ChevronDown, ChevronUp, Mail, Phone } from "lucide-react"
+import { ChevronDown, ChevronUp, Mail, Phone, MapPin } from "lucide-react"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -102,13 +102,20 @@ const FooterMobile = () => {
         </div>
 
         {/* Contact Info */}
-        <div className="text-center space-y-3 mb-8">
+        <div className="text-center space-y-4 mb-8">
           <h5 className="font-semibold text-white mb-4">Contact Us</h5>
-          <div className="space-y-2 text-sm text-gray-medium">
+          <div className="space-y-3 text-sm text-gray-medium">
+            <div className="flex items-center justify-center space-x-2">
+              <MapPin className="w-4 h-4 text-red-500" />
+              <div className="text-center">
+                <p className="text-white font-medium">Malmö, Sweden</p>
+                <p className="text-xs text-gray-400">European Headquarters</p>
+              </div>
+            </div>
             <div className="flex items-center justify-center space-x-2">
               <Phone className="w-4 h-4 text-red-500" />
-              <a href="tel:+1234567890" className="hover:text-white transition-colors duration-200">
-                +1 (234) 567-8900
+              <a href="tel:+46737200581" className="hover:text-white transition-colors duration-200">
+                +46 737 200581
               </a>
             </div>
             <div className="flex items-center justify-center space-x-2">
