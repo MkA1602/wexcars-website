@@ -3,6 +3,7 @@ import { Check } from "lucide-react"
 import { CheckCircle, Star, Crown, Zap } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import "@/styles/pricing-animations.css"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -91,33 +92,81 @@ export default function PricingContent() {
             {pricingPlans.map((plan) => (
               <div
                 key={plan.name}
-                className={`bg-white rounded-xl shadow-md overflow-hidden transition-transform hover:-translate-y-2 hover:shadow-xl ${
-                  plan.popular ? "border-2 border-primary-light relative" : ""
+                className={`pricing-card bg-white rounded-xl shadow-md overflow-hidden ${
+                  plan.popular 
+                    ? "premium-card border-2 border-primary-light relative ring-2 ring-primary-light/20 hover:ring-primary-light/40" 
+                    : plan.name === "Exclusive"
+                    ? "border-2 border-yellow-200 relative ring-2 ring-yellow-200/20 hover:ring-yellow-300/40"
+                    : "border border-gray-200 hover:border-gray-300"
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-primary-light text-white px-4 py-1 text-sm font-medium">
-                    Most Popular
+                  <div className="pricing-badge premium-badge absolute top-0 right-0 bg-gradient-to-r from-primary-light to-primary-dark text-white px-4 py-1 text-sm font-medium rounded-bl-lg shadow-lg">
+                    ⭐ Most Popular
+                  </div>
+                )}
+                {plan.name === "Exclusive" && !plan.popular && (
+                  <div className="pricing-badge absolute top-0 right-0 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 text-sm font-medium rounded-bl-lg shadow-lg">
+                    👑 Exclusive
+                  </div>
+                )}
+                {plan.name === "Standard" && (
+                  <div className="pricing-badge absolute top-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-1 text-sm font-medium rounded-bl-lg shadow-lg">
+                    🆓 Free
                   </div>
                 )}
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                  <h3 className={`text-2xl font-bold mb-2 transition-colors duration-300 ${
+                    plan.popular ? "text-primary-light" : plan.name === "Exclusive" ? "text-yellow-600" : "text-gray-900"
+                  }`}>
+                    {plan.name}
+                  </h3>
                   <div className="flex items-baseline mb-4">
-                    <span className="text-4xl font-bold">
+                    <span className={`text-4xl font-bold transition-colors duration-300 ${
+                      plan.popular ? "text-primary-light" : plan.name === "Exclusive" ? "text-yellow-600" : "text-gray-900"
+                    }`}>
                       {plan.price === 0 ? "Free" : `$${plan.price}`}
                     </span>
                     {plan.price > 0 && <span className="text-gray-500 ml-2">/month</span>}
                   </div>
-                  <p className="text-gray-600 mb-6">{plan.description}</p>
+                  <p className="text-gray-600 mb-6 group-hover:text-gray-700 transition-colors duration-300">{plan.description}</p>
                   <Link href={plan.price === 0 ? "/dashboard" : `/payment/${plan.name.toLowerCase()}`}>
                     <Button
-                      className={`w-full ${
+                      className={`pricing-button w-full relative overflow-hidden group ${
                         plan.popular
-                          ? "bg-primary-light hover:bg-primary-dark text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-800"
+                          ? "premium-button bg-gradient-to-r from-primary-light to-primary-dark hover:from-primary-dark hover:to-primary-darker text-white shadow-lg"
+                          : plan.name === "Exclusive"
+                          ? "exclusive-button text-white shadow-lg"
+                          : "standard-button text-white shadow-lg"
                       }`}
                     >
-                      {plan.buttonText}
+                      {/* Animated background effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+                      
+                      {/* Button content */}
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        {plan.name === "Standard" && (
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        {plan.name === "Premium" && (
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        )}
+                        {plan.name === "Exclusive" && (
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        {plan.buttonText}
+                      </span>
+                      
+                      {/* Pulse animation for Premium */}
+                      {plan.popular && (
+                        <div className="absolute inset-0 rounded-md bg-primary-light/20 animate-ping"></div>
+                      )}
                     </Button>
                   </Link>
                 </div>
