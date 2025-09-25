@@ -35,14 +35,14 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon-globe-simple.svg', sizes: 'any', type: 'image/svg+xml' },
-      { url: '/favicon-globe-simple.svg', sizes: '32x32', type: 'image/svg+xml' },
-      { url: '/favicon-globe-simple.svg', sizes: '16x16', type: 'image/svg+xml' },
+      { url: '/wexcars-logo-favicon.png', sizes: 'any', type: 'image/png' },
+      { url: '/wexcars-logo-favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/wexcars-logo-favicon.png', sizes: '16x16', type: 'image/png' },
     ],
     apple: [
-      { url: '/favicon-globe-simple.svg', sizes: '180x180', type: 'image/svg+xml' },
+      { url: '/wexcars-logo-favicon.png', sizes: '180x180', type: 'image/png' },
     ],
-    shortcut: '/favicon-globe-simple.svg',
+    shortcut: '/wexcars-logo-favicon.png',
   },
   manifest: '/site.webmanifest',
   openGraph: {
