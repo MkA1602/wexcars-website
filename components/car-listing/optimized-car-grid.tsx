@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import PriceDisplay from "@/components/ui/price-display"
+import CarImageCarousel from "./car-image-carousel"
 import type { Car } from "@/lib/types"
 import ErrorBoundary from "@/components/error-boundary"
 import { useAuth } from "@/contexts/auth-context"
@@ -42,34 +43,12 @@ const CarCard = memo(({ car, vatDisplay, favorites, onToggleFavorite }: {
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col group">
       <div className="relative">
         <Link href={`/collections/${car.id}`}>
-          <div className="relative h-48 overflow-hidden bg-gray-100">
-            {!imageError ? (
-              <Image
-                src={car.image || "/placeholder.svg?height=400&width=600&query=luxury+car"}
-                alt={`${car.brand} ${car.name}`}
-                fill
-                className={`object-cover transition-all duration-500 group-hover:scale-105 ${
-                  imageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                priority={false} // Let Next.js handle priority
-                loading="lazy"
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                onLoad={handleImageLoad}
-                onError={handleImageError}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                <span className="text-gray-500 text-sm">Image not available</span>
-              </div>
-            )}
-            {!imageLoaded && !imageError && (
-              <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-                <div className="w-8 h-8 border-2 border-gray-300 border-t-primary-light rounded-full animate-spin"></div>
-              </div>
-            )}
-          </div>
+          <CarImageCarousel
+            car={car}
+            className="h-48"
+            onImageLoad={handleImageLoad}
+            onImageError={handleImageError}
+          />
         </Link>
         <Button
           variant="ghost"
