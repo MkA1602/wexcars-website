@@ -15,15 +15,15 @@ interface CarImageCarouselProps {
 const generateCarImages = (car: Car): string[] => {
   const baseImage = car.image || "/placeholder.svg?height=400&width=600&query=luxury+car"
   
-  // If it's a placeholder, create variations with different angles/views
-  if (baseImage.includes("placeholder.svg")) {
+  // If it's a placeholder or empty, create variations with different angles/views
+  if (baseImage.includes("placeholder.svg") || !baseImage || baseImage === "") {
     const carName = `${car.brand}+${car.name}`.replace(/\s+/g, '+')
     return [
-      `${baseImage}&text=${carName}+Front`,
-      `${baseImage}&text=${carName}+Side`,
-      `${baseImage}&text=${carName}+Rear`,
-      `${baseImage}&text=${carName}+Interior`,
-      `${baseImage}&text=${carName}+Engine`
+      `/placeholder.svg?height=400&width=600&text=${carName}+Front`,
+      `/placeholder.svg?height=400&width=600&text=${carName}+Side`,
+      `/placeholder.svg?height=400&width=600&text=${carName}+Rear`,
+      `/placeholder.svg?height=400&width=600&text=${carName}+Interior`,
+      `/placeholder.svg?height=400&width=600&text=${carName}+Engine`
     ]
   }
   
@@ -49,6 +49,12 @@ export default function CarImageCarousel({
   const [isHovering, setIsHovering] = useState(false)
   
   const images = generateCarImages(car)
+  
+  // Debug logging
+  console.log(`Car ${car.brand} ${car.name}:`, {
+    originalImage: car.image,
+    generatedImages: images
+  })
   
   const handleImageLoad = useCallback(() => {
     setImageLoaded(true)
@@ -89,8 +95,10 @@ export default function CarImageCarousel({
   
   if (imageError) {
     return (
-      <div className={`w-full h-full flex items-center justify-center bg-gray-200 ${className}`}>
-        <span className="text-gray-500 text-sm">Image not available</span>
+      <div className={`w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 ${className}`}>
+        <div className="text-4xl mb-2">🚗</div>
+        <span className="text-gray-600 text-sm font-medium">{car.brand} {car.name}</span>
+        <span className="text-gray-500 text-xs">Image not available</span>
       </div>
     )
   }
