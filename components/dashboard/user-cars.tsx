@@ -26,6 +26,15 @@ export default function UserCars({ cars }: UserCarsProps) {
   const soldCars = cars.filter(car => car.is_sold)
 
   const handleDelete = async (carId: string) => {
+    // Show confirmation dialog
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this car? This action cannot be undone."
+    )
+    
+    if (!confirmed) {
+      return
+    }
+
     setIsDeleting(carId)
     setError(null)
 
@@ -33,13 +42,18 @@ export default function UserCars({ cars }: UserCarsProps) {
       const { error } = await supabaseClient.from("cars").delete().eq("id", carId)
 
       if (error) {
+        console.error("Delete error:", error)
         throw error
       }
 
+      // Show success message
+      alert("Car deleted successfully!")
+      
       // Refresh the page to update the car list
       router.refresh()
     } catch (err: any) {
-      setError(err.message || "Failed to delete car")
+      console.error("Failed to delete car:", err)
+      setError(err.message || "Failed to delete car. Please check your permissions.")
     } finally {
       setIsDeleting(null)
     }

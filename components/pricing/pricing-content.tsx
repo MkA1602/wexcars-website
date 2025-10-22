@@ -62,98 +62,115 @@ export default function PricingContent() {
             alt="Luxury Hypercar"
             className="w-full h-full object-cover object-center opacity-14"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-light/90 to-primary-dark/90"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-gray-900/95"></div>
         </div>
         <div className="container mx-auto px-4 text-center relative z-10 hero-content-animate">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 hero-title-animate">Pricing & Membership</h1>
-          <p className="text-white/80 max-w-2xl mx-auto text-lg hero-text-animate">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 hero-title-animate tracking-tight">
+            Pricing & Membership
+          </h1>
+          <p className="text-gray-200 max-w-2xl mx-auto text-lg md:text-xl hero-text-animate leading-relaxed">
             Choose the perfect plan that suits your luxury vehicle needs. All plans include access to our exclusive
             collection of premium vehicles.
           </p>
-          <div className="mt-8 inline-block bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg text-white border border-white/20 hero-cta-animate">
-            <span className="font-bold"> Free Trial: Enjoy 3 Months on Us:</span>  – Absolutely Free! No credit card required. 
-            Unlimited access. Cancel anytime.
+          <div className="mt-8 inline-block bg-gradient-to-r from-red-600/20 to-red-700/20 backdrop-blur-md px-6 py-3 rounded-xl text-white border border-red-400/30 hero-cta-animate shadow-xl">
+            <span className="font-bold text-red-300">Free Trial: Enjoy 3 Months on Us</span>
+            <span className="text-gray-200"> – Absolutely Free! No credit card required. Unlimited access. Cancel anytime.</span>
           </div>
         </div>
       </section>
 
       {/* Pricing Plans */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {pricingPlans.map((plan) => (
               <div
                 key={plan.name}
-                className={`pricing-card bg-white rounded-xl shadow-md overflow-hidden ${
+                className={`pricing-card bg-white rounded-2xl shadow-lg overflow-hidden relative transform transition-all duration-300 ${
                   plan.popular 
-                    ? "premium-card border-2 border-primary-light relative ring-2 ring-primary-light/20 hover:ring-primary-light/40" 
+                    ? "premium-card border-2 border-red-600 ring-4 ring-red-600/20 hover:ring-red-600/40 md:scale-105" 
                     : plan.name === "Exclusive"
-                    ? "border-2 border-yellow-200 relative ring-2 ring-yellow-200/20 hover:ring-yellow-300/40"
-                    : "border border-gray-200 hover:border-gray-300"
+                    ? "exclusive-card-border border-2 border-red-900 ring-4 ring-red-900/20 hover:ring-red-900/40"
+                    : "standard-card-border border-2 ring-2 ring-slate-200/50 hover:ring-slate-300"
                 }`}
               >
                 {plan.popular && (
-                  <div className="pricing-badge premium-badge absolute top-0 right-0 bg-gradient-to-r from-primary-light to-primary-dark text-white px-4 py-1 text-sm font-medium rounded-bl-lg shadow-lg">
+                  <div className="pricing-badge premium-badge absolute top-0 right-0 bg-gradient-to-r from-red-600 via-red-500 to-red-600 text-white px-5 py-2 text-xs font-bold tracking-wide uppercase rounded-bl-xl shadow-xl">
                     Most Popular
                   </div>
                 )}
                 {plan.name === "Exclusive" && !plan.popular && (
-                  <div className="pricing-badge absolute top-0 right-0 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 text-sm font-medium rounded-bl-lg shadow-lg">
+                  <div className="pricing-badge absolute top-0 right-0 bg-gradient-to-r from-red-900 via-red-800 to-red-950 text-white px-5 py-2 text-xs font-bold tracking-wide uppercase rounded-bl-xl shadow-xl">
                     Exclusive
                   </div>
                 )}
                 {plan.name === "Standard" && (
-                  <div className="pricing-badge absolute top-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-1 text-sm font-medium rounded-bl-lg shadow-lg">
-                    Free
+                  <div className="pricing-badge absolute top-0 right-0 bg-gradient-to-r from-slate-600 via-slate-500 to-gray-600 text-white px-5 py-2 text-xs font-bold tracking-wide uppercase rounded-bl-xl shadow-xl">
+                    Free Plan
                   </div>
                 )}
-                <div className="p-6">
-                  <h3 className={`text-2xl font-bold mb-2 transition-colors duration-300 ${
-                    plan.popular ? "text-primary-light" : plan.name === "Exclusive" ? "text-yellow-600" : "text-gray-900"
+                <div className={`p-8 ${
+                  plan.popular 
+                    ? "bg-gradient-to-br from-red-50 to-white" 
+                    : plan.name === "Exclusive"
+                    ? "bg-gradient-to-br from-red-950/10 to-white"
+                    : "bg-white"
+                }`}>
+                  <h3 className={`text-3xl font-bold mb-3 transition-colors duration-300 ${
+                    plan.popular ? "text-red-600" : plan.name === "Exclusive" ? "text-red-900" : "text-slate-800"
                   }`}>
                     {plan.name}
                   </h3>
-                  <div className="flex items-baseline mb-4">
-                    <span className={`text-4xl font-bold transition-colors duration-300 ${
-                      plan.popular ? "text-primary-light" : plan.name === "Exclusive" ? "text-yellow-600" : "text-gray-900"
+                  <div className="flex items-baseline mb-5">
+                    <span className={`text-5xl font-bold transition-colors duration-300 ${
+                      plan.popular ? "text-red-600" : plan.name === "Exclusive" ? "text-red-900" : "text-slate-800"
                     }`}>
                       {plan.price === 0 ? "Free" : `$${plan.price}`}
                     </span>
-                    {plan.price > 0 && <span className="text-gray-500 ml-2">/month</span>}
+                    {plan.price > 0 && <span className="text-gray-500 ml-2 text-lg">/month</span>}
                   </div>
-                  <p className="text-gray-600 mb-6 group-hover:text-gray-700 transition-colors duration-300">{plan.description}</p>
+                  <p className="text-gray-600 mb-8 text-base leading-relaxed">{plan.description}</p>
                   <Link href={plan.price === 0 ? "/dashboard" : `/payment/${plan.name.toLowerCase()}`}>
                     <Button
-                      className={`pricing-button w-full relative overflow-hidden group ${
+                      className={`pricing-button w-full relative overflow-hidden group font-semibold text-base py-6 ${
                         plan.popular
-                          ? "premium-button bg-gradient-to-r from-primary-light to-primary-dark hover:from-primary-dark hover:to-primary-darker text-white shadow-lg"
+                          ? "premium-button bg-gradient-to-r from-red-600 via-red-500 to-red-600 hover:from-red-700 hover:via-red-600 hover:to-red-700 text-white shadow-xl hover:shadow-2xl"
                           : plan.name === "Exclusive"
-                          ? "exclusive-button text-white shadow-lg"
-                          : "standard-button text-white shadow-lg"
+                          ? "exclusive-button bg-gradient-to-r from-red-900 via-red-800 to-red-950 hover:from-red-950 hover:via-red-900 hover:to-red-950 text-white shadow-xl hover:shadow-2xl"
+                          : "standard-button bg-gradient-to-r from-slate-700 via-slate-600 to-gray-700 hover:from-slate-800 hover:via-slate-700 hover:to-gray-800 text-white shadow-lg hover:shadow-xl"
                       }`}
                     >
                       {/* Animated background effect */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
                       
                       {/* Button content */}
-                      <span className="relative z-10 flex items-center justify-center">
+                      <span className="relative z-10 flex items-center justify-center gap-2">
                         {plan.buttonText}
+                        {plan.popular && <span className="text-lg">→</span>}
                       </span>
                       
-                      {/* Pulse animation for Premium */}
-                      {plan.popular && (
-                        <div className="absolute inset-0 rounded-md bg-primary-light/20 animate-ping"></div>
-                      )}
                     </Button>
                   </Link>
                 </div>
-                <div className="bg-gray-50 p-6">
-                  <h4 className="font-medium mb-4">What's included:</h4>
-                  <ul className="space-y-3">
+                <div className={`p-8 ${
+                  plan.popular 
+                    ? "bg-gradient-to-br from-red-50/50 to-gray-50" 
+                    : plan.name === "Exclusive"
+                    ? "bg-gradient-to-br from-red-950/10 to-gray-50"
+                    : "bg-gray-50"
+                }`}>
+                  <h4 className="font-semibold mb-5 text-gray-900 text-lg">What's included:</h4>
+                  <ul className="space-y-4">
                     {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-start">
-                        <Check className="h-5 w-5 text-primary-light flex-shrink-0 mr-2" />
-                        <span className="text-gray-600">{feature}</span>
+                      <li key={index} className="flex items-start group/item">
+                        <Check className={`h-5 w-5 flex-shrink-0 mr-3 mt-0.5 transition-colors ${
+                          plan.popular 
+                            ? "text-red-600 group-hover/item:text-red-500" 
+                            : plan.name === "Exclusive"
+                            ? "text-red-900 group-hover/item:text-red-800"
+                            : "text-slate-600 group-hover/item:text-slate-500"
+                        }`} />
+                        <span className="text-gray-700 leading-relaxed">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -247,33 +264,43 @@ export default function PricingContent() {
       */}
 
       {/* FAQ Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center">Frequently Asked Questions</h2>
-          <div className="max-w-3xl mx-auto space-y-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <h3 className="text-xl font-bold mb-2">Can I upgrade my plan later?</h3>
-              <p className="text-gray-600">
+          <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center text-gray-900 tracking-tight">
+            Frequently Asked Questions
+          </h2>
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-red-200 group">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-red-600 transition-colors">
+                Can I upgrade my plan later?
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
                 Yes, you can upgrade your plan at any time. The price difference will be prorated for the remainder of
                 your billing cycle.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <h3 className="text-xl font-bold mb-2">Is there a minimum commitment period?</h3>
-              <p className="text-gray-600">
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-red-300 group">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-red-900 transition-colors">
+                Is there a minimum commitment period?
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
                 Our Standard and Premium plans require a 3-month minimum commitment. The Exclusive plan requires a
                 6-month minimum commitment.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <h3 className="text-xl font-bold mb-2">What payment methods do you accept?</h3>
-              <p className="text-gray-600">
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-slate-300 group">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-slate-700 transition-colors">
+                What payment methods do you accept?
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
                 We accept all major credit cards, bank transfers, and cryptocurrency payments for select plans.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <h3 className="text-xl font-bold mb-2">Can I cancel my subscription?</h3>
-              <p className="text-gray-600">
+            <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-red-200 group">
+              <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-red-600 transition-colors">
+                Can I cancel my subscription?
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
                 Yes, you can cancel your subscription at any time after the minimum commitment period. No refunds are
                 provided for the current billing cycle.
               </p>
@@ -283,19 +310,29 @@ export default function PricingContent() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary-light">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Experience Luxury?</h2>
-          <p className="text-white/80 max-w-2xl mx-auto mb-8">
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800"></div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-red-900/20 to-red-600/20 animate-pulse"></div>
+        </div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+            Ready to Experience Luxury?
+          </h2>
+          <p className="text-gray-300 max-w-2xl mx-auto mb-10 text-lg leading-relaxed">
             Join thousands of satisfied customers who have elevated their driving experience with WexCars.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button className="bg-white hover:bg-gray-100 text-primary-light transition-all duration-300 hover:scale-105 hover:shadow-lg">
-              Get Started Today
-            </Button>
-            <Button className="bg-white hover:bg-gray-100 text-primary-light transition-all duration-300 hover:scale-105 hover:shadow-lg">
-              Contact Us
-            </Button>
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
+            <Link href="/dashboard">
+              <Button className="bg-gradient-to-r from-red-600 via-red-500 to-red-600 hover:from-red-700 hover:via-red-600 hover:to-red-700 text-white font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl px-8 py-6 text-base">
+                Get Started Today
+              </Button>
+            </Link>
+            <Link href="/contact">
+              <Button className="bg-white/10 hover:bg-white/20 text-white border-2 border-white/30 hover:border-white/50 backdrop-blur-sm font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl px-8 py-6 text-base">
+                Contact Us
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
