@@ -64,6 +64,9 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     // Seller information
     seller_type: car.seller_type || "individual",
     dealership_name: car.dealership_name || "",
+    // New pricing and admin features
+    is_netto_price: car.is_netto_price || false,
+    is_new_car: car.is_new_car || false,
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -422,7 +425,7 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         availability: formData.availability,
         fuel_type: formData.fuel_type,
         gearbox: formData.gearbox,
-        mileage: formData.mileage ? Number(formData.mileage) : null,
+        mileage: formData.is_new_car ? null : (formData.mileage ? Number(formData.mileage) : null),
         car_type: formData.car_type,
         horsepower: formData.horsepower ? Number(formData.horsepower) : null,
         engine_size: formData.engine_size,
@@ -438,6 +441,9 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         crash_history: formData.crash_history,
         seller_type: formData.seller_type,
         dealership_name: formData.seller_type === 'dealership' ? formData.dealership_name : null,
+        // New pricing and admin features
+        is_netto_price: formData.is_netto_price,
+        is_new_car: formData.is_new_car,
         updated_at: new Date().toISOString(),
       }
 
@@ -630,6 +636,81 @@ export default function EditCarForm({ car }: EditCarFormProps) {
             </div>
           </div>
 
+          {/* New Car and Pricing Options */}
+          <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+            <h3 className="font-semibold text-lg">Car Status & Pricing Options</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* New Car Option */}
+              <div className="space-y-3">
+                <Label>Car Status</Label>
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="car_status"
+                      value="used"
+                      checked={!formData.is_new_car}
+                      onChange={() => setFormData(prev => ({ ...prev, is_new_car: false }))}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Used Car (with mileage)</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="car_status"
+                      value="new"
+                      checked={formData.is_new_car}
+                      onChange={() => setFormData(prev => ({ ...prev, is_new_car: true, mileage: "" }))}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>New Car (no mileage required)</span>
+                  </label>
+                </div>
+                {formData.is_new_car && (
+                  <p className="text-xs text-green-600 bg-green-50 p-2 rounded">
+                    ✓ New car selected - mileage field will be hidden
+                  </p>
+                )}
+              </div>
+
+              {/* Netto Price Option */}
+              <div className="space-y-3">
+                <Label>Pricing Type</Label>
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="pricing_type"
+                      value="standard"
+                      checked={!formData.is_netto_price}
+                      onChange={() => setFormData(prev => ({ ...prev, is_netto_price: false }))}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Standard Pricing (with service fee)</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="pricing_type"
+                      value="netto"
+                      checked={formData.is_netto_price}
+                      onChange={() => setFormData(prev => ({ ...prev, is_netto_price: true }))}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Netto Price (no service fee calculation)</span>
+                  </label>
+                </div>
+                {formData.is_netto_price && (
+                  <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                    ℹ️ Netto pricing selected - service fee calculation will be skipped
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Car Details Section */}
           <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
             <h3 className="font-semibold text-lg">Car Details</h3>
@@ -707,20 +788,22 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                 </select>
               </div>
 
-              {/* Mileage */}
-              <div className="space-y-2">
-                <Label htmlFor="mileage">Mileage (km)</Label>
-                <Input
-                  id="mileage"
-                  name="mileage"
-                  type="number"
-                  value={formData.mileage}
-                  onChange={handleChange}
-                  placeholder="e.g. 10000"
-                  className={errors.mileage ? "border-red-500" : ""}
-                />
-                {errors.mileage && <p className="text-red-500 text-sm">{errors.mileage}</p>}
-              </div>
+              {/* Mileage - Only show for used cars */}
+              {!formData.is_new_car && (
+                <div className="space-y-2">
+                  <Label htmlFor="mileage">Mileage (km)</Label>
+                  <Input
+                    id="mileage"
+                    name="mileage"
+                    type="number"
+                    value={formData.mileage}
+                    onChange={handleChange}
+                    placeholder="e.g. 10000"
+                    className={errors.mileage ? "border-red-500" : ""}
+                  />
+                  {errors.mileage && <p className="text-red-500 text-sm">{errors.mileage}</p>}
+                </div>
+              )}
 
               {/* Car Type */}
               <div className="space-y-2">

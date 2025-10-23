@@ -66,6 +66,16 @@ export interface Car {
   crash_history?: string | null // Crash/accident history of the car
   is_sold?: boolean // Indicates if the car has been sold
   sold_at?: string | null // Timestamp when the car was marked as sold
+  // New pricing and admin features
+  is_netto_price?: boolean // If true, price is netto (excluding VAT) and no service fee calculation needed
+  is_new_car?: boolean // If true, car is new (no mileage required)
+  admin_fee_waived?: boolean // If true, admin has waived the service fee requirement
+  fee_paid?: boolean // If true, service fee has been paid
+  service_fee_amount?: number // Amount of service fee charged
+  service_fee_currency?: string // Currency of service fee
+  fee_model?: string // Fee model used for calculation
+  is_published?: boolean // If true, car ad is published and visible to public
+  published_at?: string | null // Timestamp when car was published
 }
 
 export interface FilterOptions {

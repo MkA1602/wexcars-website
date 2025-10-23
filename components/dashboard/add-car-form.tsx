@@ -67,6 +67,9 @@ export default function AddCarForm() {
     // Seller information
     seller_type: "individual" as "individual" | "dealership",
     dealership_name: "",
+    // New pricing and admin features
+    is_netto_price: false,
+    is_new_car: false,
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -177,8 +180,8 @@ export default function AddCarForm() {
       newErrors.dealership_name = "Dealership name is required when selling as a dealership"
     }
 
-    // Validate service fee payment
-    if (!isFeePaid) {
+    // Validate service fee payment (only if not netto pricing)
+    if (!formData.is_netto_price && !isFeePaid) {
       newErrors.feePayment = "Service fee must be paid before publishing the car ad"
     }
 
@@ -467,7 +470,7 @@ export default function AddCarForm() {
         color: formData.color,
         fuel_type: formData.fuel_type,
         gearbox: formData.gearbox,
-        mileage: formData.mileage ? Number(formData.mileage) : null,
+        mileage: formData.is_new_car ? null : (formData.mileage ? Number(formData.mileage) : null),
         car_type: formData.car_type,
         horsepower: formData.horsepower ? Number(formData.horsepower) : null,
         engine_size: formData.engine_size,
@@ -486,6 +489,15 @@ export default function AddCarForm() {
         availability: formData.availability_type,
         availability_days: formData.availability_type === 'available_soon' ? Number(formData.availability_days) : null,
         availability_date: formData.availability_type === 'available_date' ? formData.availability_date : null,
+        // New pricing and admin features
+        is_netto_price: formData.is_netto_price,
+        is_new_car: formData.is_new_car,
+        fee_paid: formData.is_netto_price ? true : isFeePaid, // Skip fee payment for netto pricing
+        service_fee_amount: formData.is_netto_price ? 0 : (feeCalculation?.totalCustomerPays || 0),
+        service_fee_currency: formData.currency,
+        fee_model: formData.is_netto_price ? 'netto_pricing' : (feeCalculation?.feeModel || 'vat_on_top'),
+        is_published: true, // Auto-publish after successful submission
+        published_at: new Date().toISOString(),
       }
 
       console.log('Inserting car data:', carData)
@@ -692,20 +704,22 @@ export default function AddCarForm() {
                 </select>
               </div>
 
-              {/* Mileage */}
-              <div className="space-y-2">
-                <Label htmlFor="mileage">Mileage (km)</Label>
-                <Input
-                  id="mileage"
-                  name="mileage"
-                  type="number"
-                  value={formData.mileage}
-                  onChange={handleChange}
-                  placeholder="e.g. 10000"
-                  className={errors.mileage ? "border-red-500" : ""}
-                />
-                {errors.mileage && <p className="text-red-500 text-sm">{errors.mileage}</p>}
-              </div>
+              {/* Mileage - Only show for used cars */}
+              {!formData.is_new_car && (
+                <div className="space-y-2">
+                  <Label htmlFor="mileage">Mileage (km)</Label>
+                  <Input
+                    id="mileage"
+                    name="mileage"
+                    type="number"
+                    value={formData.mileage}
+                    onChange={handleChange}
+                    placeholder="e.g. 10000"
+                    className={errors.mileage ? "border-red-500" : ""}
+                  />
+                  {errors.mileage && <p className="text-red-500 text-sm">{errors.mileage}</p>}
+                </div>
+              )}
 
               {/* Car Type */}
               <div className="space-y-2">
@@ -1128,48 +1142,139 @@ export default function AddCarForm() {
             </div>
           </div>
 
-          {/* Service Fee Section */}
-          <div className="space-y-4 p-4 border rounded-lg bg-blue-50">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-lg flex items-center gap-2">
-                  Service Fee Payment
-                  {isFeePaid && <span className="h-5 w-5 text-green-600">✔️</span>}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {isFeePaid 
-                    ? "Service fee paid! Your car ad is ready to publish." 
-                    : "A service fee is required to publish your car ad"
-                  }
-                </p>
+          {/* New Car and Pricing Options */}
+          <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+            <h3 className="font-semibold text-lg">Car Status & Pricing Options</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* New Car Option */}
+              <div className="space-y-3">
+                <Label>Car Status</Label>
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="car_status"
+                      value="used"
+                      checked={!formData.is_new_car}
+                      onChange={() => setFormData(prev => ({ ...prev, is_new_car: false }))}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Used Car (with mileage)</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="car_status"
+                      value="new"
+                      checked={formData.is_new_car}
+                      onChange={() => setFormData(prev => ({ ...prev, is_new_car: true, mileage: "" }))}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>New Car (no mileage required)</span>
+                  </label>
+                </div>
+                {formData.is_new_car && (
+                  <p className="text-xs text-green-600 bg-green-50 p-2 rounded">
+                    ✓ New car selected - mileage field will be hidden
+                  </p>
+                )}
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowFeeCalculator(!showFeeCalculator)}
-                className="flex items-center gap-2"
-              >
-                {showFeeCalculator ? 'Hide Calculator' : 'Show Calculator'}
-              </Button>
+
+              {/* Netto Price Option */}
+              <div className="space-y-3">
+                <Label>Pricing Type</Label>
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="pricing_type"
+                      value="standard"
+                      checked={!formData.is_netto_price}
+                      onChange={() => setFormData(prev => ({ ...prev, is_netto_price: false }))}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Standard Pricing (with service fee)</span>
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="pricing_type"
+                      value="netto"
+                      checked={formData.is_netto_price}
+                      onChange={() => setFormData(prev => ({ ...prev, is_netto_price: true }))}
+                      className="text-primary-light focus:ring-primary-light"
+                    />
+                    <span>Netto Price (no service fee calculation)</span>
+                  </label>
+                </div>
+                {formData.is_netto_price && (
+                  <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                    ℹ️ Netto pricing selected - service fee calculation will be skipped
+                  </p>
+                )}
+              </div>
             </div>
-            
-            {showFeeCalculator && (
-              <ServiceFeeCalculator
-                onFeePaid={setIsFeePaid}
-                onFeeCalculated={setFeeCalculation}
-                initialPrice={formData.priceExclVat ? parseFloat(formData.priceExclVat) : 0}
-                initialCurrency={formData.currency}
-                initialVatRate={formData.vatRate ? parseFloat(formData.vatRate) : 25}
-              />
-            )}
-            
-            {errors.feePayment && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{errors.feePayment}</AlertDescription>
-              </Alert>
-            )}
           </div>
+
+          {/* Service Fee Section - Only show if not netto pricing */}
+          {!formData.is_netto_price && (
+            <div className="space-y-4 p-4 border rounded-lg bg-blue-50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    Service Fee Payment
+                    {isFeePaid && <span className="h-5 w-5 text-green-600">✔️</span>}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {isFeePaid 
+                      ? "Service fee paid! Your car ad is ready to publish." 
+                      : "A service fee is required to publish your car ad"
+                    }
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowFeeCalculator(!showFeeCalculator)}
+                  className="flex items-center gap-2"
+                >
+                  {showFeeCalculator ? 'Hide Calculator' : 'Show Calculator'}
+                </Button>
+              </div>
+              
+              {showFeeCalculator && (
+                <ServiceFeeCalculator
+                  onFeePaid={setIsFeePaid}
+                  onFeeCalculated={setFeeCalculation}
+                  initialPrice={formData.priceExclVat ? parseFloat(formData.priceExclVat) : 0}
+                  initialCurrency={formData.currency}
+                  initialVatRate={formData.vatRate ? parseFloat(formData.vatRate) : 25}
+                />
+              )}
+              
+              {errors.feePayment && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{errors.feePayment}</AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+
+          {/* Netto Pricing Info */}
+          {formData.is_netto_price && (
+            <div className="space-y-4 p-4 border rounded-lg bg-green-50">
+              <div className="flex items-center gap-2 text-green-700">
+                <Check className="h-5 w-5" />
+                <h3 className="font-semibold text-lg">Netto Pricing Selected</h3>
+              </div>
+              <p className="text-sm text-green-600">
+                You have selected netto pricing. No service fee calculation is required. 
+                Your car will be published with the netto price as displayed.
+              </p>
+            </div>
+          )}
 
           {/* Car Features Section */}
           <div className="space-y-4">
@@ -1448,9 +1553,16 @@ export default function AddCarForm() {
             <Button 
               type="submit" 
               className="bg-primary-light hover:bg-primary-dark text-white" 
-              disabled={isSubmitting || !isFeePaid}
+              disabled={isSubmitting || (!formData.is_netto_price && !isFeePaid)}
             >
-              {isSubmitting ? "Adding Car..." : isFeePaid ? "Publish Car Ad" : "Pay Fee to Publish"}
+              {isSubmitting 
+                ? "Adding Car..." 
+                : formData.is_netto_price 
+                  ? "Publish Car Ad (Netto Pricing)" 
+                  : isFeePaid 
+                    ? "Publish Car Ad" 
+                    : "Pay Fee to Publish"
+              }
             </Button>
           </div>
         </form>

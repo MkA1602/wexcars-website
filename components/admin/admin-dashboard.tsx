@@ -115,6 +115,16 @@ interface CarData {
   location?: string
   created_at: string
   updated_at: string
+  // New pricing and admin features
+  is_netto_price?: boolean
+  is_new_car?: boolean
+  admin_fee_waived?: boolean
+  fee_paid?: boolean
+  service_fee_amount?: number
+  service_fee_currency?: string
+  fee_model?: string
+  is_published?: boolean
+  published_at?: string | null
   users?: {
     full_name: string
     email: string
@@ -367,6 +377,133 @@ export default function AdminDashboard() {
     }
   }
 
+  const waiveFee = async (carId: string) => {
+    if (!window.confirm('Are you sure you want to waive the service fee for this car?')) {
+      return
+    }
+
+    try {
+      const { error } = await supabaseClient
+        .from('cars')
+        .update({ 
+          admin_fee_waived: true,
+          fee_paid: true,
+          service_fee_amount: 0,
+          is_published: true,
+          published_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', carId)
+
+      if (error) throw error
+
+      // Update local state
+      setCars(cars.map(car => 
+        car.id === carId 
+          ? { 
+              ...car, 
+              admin_fee_waived: true,
+              fee_paid: true,
+              service_fee_amount: 0,
+              is_published: true,
+              published_at: new Date().toISOString()
+            }
+          : car
+      ))
+
+      // Log activity
+      const car = cars.find(c => c.id === carId)
+      await logActivity('fee_waived', `Service fee waived for ${car?.brand} ${car?.name}`, car?.user_id)
+
+      alert('Service fee waived successfully. Car is now published.')
+    } catch (error) {
+      console.error('Error waiving fee:', error)
+      alert('Error waiving service fee')
+    }
+  }
+
+  const restoreFee = async (carId: string) => {
+    if (!window.confirm('Are you sure you want to restore the service fee for this car?')) {
+      return
+    }
+
+    try {
+      const { error } = await supabaseClient
+        .from('cars')
+        .update({ 
+          admin_fee_waived: false,
+          fee_paid: false,
+          is_published: false,
+          published_at: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', carId)
+
+      if (error) throw error
+
+      // Update local state
+      setCars(cars.map(car => 
+        car.id === carId 
+          ? { 
+              ...car, 
+              admin_fee_waived: false,
+              fee_paid: false,
+              is_published: false,
+              published_at: null
+            }
+          : car
+      ))
+
+      // Log activity
+      const car = cars.find(c => c.id === carId)
+      await logActivity('fee_restored', `Service fee restored for ${car?.brand} ${car?.name}`, car?.user_id)
+
+      alert('Service fee restored. Car is now unpublished.')
+    } catch (error) {
+      console.error('Error restoring fee:', error)
+      alert('Error restoring service fee')
+    }
+  }
+
+  const publishCar = async (carId: string) => {
+    if (!window.confirm('Are you sure you want to publish this car?')) {
+      return
+    }
+
+    try {
+      const { error } = await supabaseClient
+        .from('cars')
+        .update({ 
+          is_published: true,
+          published_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', carId)
+
+      if (error) throw error
+
+      // Update local state
+      setCars(cars.map(car => 
+        car.id === carId 
+          ? { 
+              ...car, 
+              is_published: true,
+              published_at: new Date().toISOString()
+            }
+          : car
+      ))
+
+      // Log activity
+      const car = cars.find(c => c.id === carId)
+      await logActivity('car_published', `Car ${car?.brand} ${car?.name} published by admin`, car?.user_id)
+
+      alert('Car published successfully.')
+    } catch (error) {
+      console.error('Error publishing car:', error)
+      alert('Error publishing car')
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -423,7 +560,7 @@ export default function AdminDashboard() {
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-        <TabsList className="grid grid-cols-4 w-full max-w-2xl">
+        <TabsList className="grid grid-cols-5 w-full max-w-3xl">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Settings size={16} />
             Overview
@@ -435,6 +572,10 @@ export default function AdminDashboard() {
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users size={16} />
             Users ({stats.totalUsers})
+          </TabsTrigger>
+          <TabsTrigger value="fees" className="flex items-center gap-2">
+            <DollarSign size={16} />
+            Fee Management
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings size={16} />
@@ -679,6 +820,129 @@ export default function AdminDashboard() {
               ) : (
                 <div className="text-center py-8">
                   <Car className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No cars found</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="fees">
+          <Card>
+            <CardHeader>
+              <CardTitle>Fee Management</CardTitle>
+              <CardDescription>
+                Manage service fees and fee waivers for car listings
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Search cars by name, brand, or owner..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
+              {isLoadingData ? (
+                <div className="flex justify-center p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-light"></div>
+                </div>
+              ) : filteredCars.length > 0 ? (
+                <div className="space-y-4">
+                  {filteredCars.map((car) => (
+                    <div key={car.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                          {car.image ? (
+                            <img 
+                              src={car.image} 
+                              alt={`${car.brand} ${car.name}`}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Car className="h-6 w-6 text-gray-400" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">{car.brand} {car.name}</h3>
+                          <p className="text-sm text-gray-500">{car.year} • {car.category}</p>
+                          <p className="text-sm text-gray-500">Owner: {car.users?.full_name || 'Unknown'}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant={car.is_netto_price ? 'default' : 'outline'}>
+                              {car.is_netto_price ? 'Netto Pricing' : 'Standard Pricing'}
+                            </Badge>
+                            <Badge variant={car.is_new_car ? 'default' : 'outline'}>
+                              {car.is_new_car ? 'New Car' : 'Used Car'}
+                            </Badge>
+                            {car.admin_fee_waived && (
+                              <Badge variant="destructive" className="bg-green-600">
+                                Fee Waived
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-right">
+                          <PriceDisplay
+                            key={`admin-fee-price-${car.id}`}
+                            price={car.price}
+                            priceExclVat={car.price_excl_vat}
+                            vatRate={car.vat_rate}
+                            vatAmount={car.vat_amount}
+                            currency={car.currency}
+                            enableToggle={true}
+                            carId={car.id}
+                            size="sm"
+                          />
+                          {car.service_fee_amount && car.service_fee_amount > 0 && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Fee: {formatCurrency(car.service_fee_amount, car.service_fee_currency || car.currency)}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          {!car.admin_fee_waived && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => waiveFee(car.id)}
+                              className="text-green-600 hover:bg-green-50"
+                            >
+                              Waive Fee
+                            </Button>
+                          )}
+                          {car.admin_fee_waived && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => restoreFee(car.id)}
+                              className="text-orange-600 hover:bg-orange-50"
+                            >
+                              Restore Fee
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => publishCar(car.id)}
+                            className="text-blue-600 hover:bg-blue-50"
+                          >
+                            Publish
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500">No cars found</p>
                 </div>
               )}
