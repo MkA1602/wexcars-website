@@ -62,8 +62,12 @@ COMMENT ON COLUMN public.cars.is_published IS 'If true, car ad is published and 
 COMMENT ON COLUMN public.cars.published_at IS 'Timestamp when car was published';
 
 -- Update RLS policies to allow admins to waive fees
+-- Drop existing policies if they exist, then create new ones
+DROP POLICY IF EXISTS "Admins can manage fee settings" ON public.cars;
+DROP POLICY IF EXISTS "Admins can insert with waived fees" ON public.cars;
+
 -- This policy allows admins to update fee-related fields
-CREATE POLICY IF NOT EXISTS "Admins can manage fee settings" ON public.cars
+CREATE POLICY "Admins can manage fee settings" ON public.cars
     FOR UPDATE USING (
         EXISTS (
             SELECT 1 FROM public.users 
@@ -73,7 +77,7 @@ CREATE POLICY IF NOT EXISTS "Admins can manage fee settings" ON public.cars
     );
 
 -- This policy allows admins to insert cars with waived fees
-CREATE POLICY IF NOT EXISTS "Admins can insert with waived fees" ON public.cars
+CREATE POLICY "Admins can insert with waived fees" ON public.cars
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.users 
