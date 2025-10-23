@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { supabaseClient } from "@/lib/supabase/client"
 import { useAuth } from "@/contexts/auth-context"
@@ -88,6 +88,32 @@ export default function AddCarForm() {
 
   const { user } = useAuth()
   const router = useRouter()
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user?.id) return
+      
+      try {
+        const { data } = await supabaseClient
+          .from('users')
+          .select('role, email')
+          .eq('id', user.id)
+          .single()
+        
+        if (data && (data.role === 'admin' || data.role === 'super_admin' || data.email === 'mohammedlk27@gmail.com')) {
+          setIsAdmin(true)
+          // Auto-set fee as paid for admins
+          setIsFeePaid(true)
+        }
+      } catch (error) {
+        console.error('Error checking admin status:', error)
+      }
+    }
+    
+    checkAdminStatus()
+  }, [user])
 
   // Calculate prices based on VAT
   const calculatePrices = (priceExclVat: string, vatRate: string) => {
@@ -180,8 +206,8 @@ export default function AddCarForm() {
       newErrors.dealership_name = "Dealership name is required when selling as a dealership"
     }
 
-    // Validate service fee payment (only if not netto pricing)
-    if (!formData.is_netto_price && !isFeePaid) {
+    // Validate service fee payment (only if not netto pricing and not admin)
+    if (!formData.is_netto_price && !isFeePaid && !isAdmin) {
       newErrors.feePayment = "Service fee must be paid before publishing the car ad"
     }
 
@@ -492,10 +518,11 @@ export default function AddCarForm() {
         // New pricing and admin features
         is_netto_price: formData.is_netto_price,
         is_new_car: formData.is_new_car,
-        fee_paid: formData.is_netto_price ? true : isFeePaid, // Skip fee payment for netto pricing
-        service_fee_amount: formData.is_netto_price ? 0 : (feeCalculation?.totalCustomerPays || 0),
+        admin_fee_waived: isAdmin, // Mark as admin waived for admins
+        fee_paid: formData.is_netto_price || isAdmin ? true : isFeePaid, // Skip fee payment for netto pricing or admins
+        service_fee_amount: formData.is_netto_price || isAdmin ? 0 : (feeCalculation?.totalCustomerPays || 0),
         service_fee_currency: formData.currency,
-        fee_model: formData.is_netto_price ? 'netto_pricing' : (feeCalculation?.feeModel || 'vat_on_top'),
+        fee_model: formData.is_netto_price ? 'netto_pricing' : (isAdmin ? 'admin_waived' : (feeCalculation?.feeModel || 'vat_on_top')),
         is_published: true, // Auto-publish after successful submission
         published_at: new Date().toISOString(),
       }
@@ -1262,6 +1289,20 @@ export default function AddCarForm() {
             </div>
           )}
 
+          {/* Admin Notice */}
+          {isAdmin && (
+            <div className="space-y-4 p-4 border rounded-lg bg-purple-50">
+              <div className="flex items-center gap-2 text-purple-700">
+                <Check className="h-5 w-5" />
+                <h3 className="font-semibold text-lg">Admin Privileges Active</h3>
+              </div>
+              <p className="text-sm text-purple-600">
+                You are logged in as an administrator. Service fees are automatically waived for you. 
+                You can publish cars directly without payment.
+              </p>
+            </div>
+          )}
+
           {/* Netto Pricing Info */}
           {formData.is_netto_price && (
             <div className="space-y-4 p-4 border rounded-lg bg-green-50">
@@ -1553,15 +1594,17 @@ export default function AddCarForm() {
             <Button 
               type="submit" 
               className="bg-primary-light hover:bg-primary-dark text-white" 
-              disabled={isSubmitting || (!formData.is_netto_price && !isFeePaid)}
+              disabled={isSubmitting || (!formData.is_netto_price && !isFeePaid && !isAdmin)}
             >
               {isSubmitting 
                 ? "Adding Car..." 
-                : formData.is_netto_price 
-                  ? "Publish Car Ad (Netto Pricing)" 
-                  : isFeePaid 
-                    ? "Publish Car Ad" 
-                    : "Pay Fee to Publish"
+                : isAdmin
+                  ? "Publish Car Ad (Admin)"
+                  : formData.is_netto_price 
+                    ? "Publish Car Ad (Netto Pricing)" 
+                    : isFeePaid 
+                      ? "Publish Car Ad" 
+                      : "Pay Fee to Publish"
               }
             </Button>
           </div>
