@@ -245,6 +245,7 @@ export default function DashboardCarCard({
             enableToggle={true}
             carId={car.id}
             size="sm"
+            isNettoPrice={car.is_netto_price}
           />
           
           {/* Action Buttons */}

@@ -164,6 +164,7 @@ const CarCard = memo(({ car, vatDisplay, favorites, onToggleFavorite }: {
           enableToggle={true}
           carId={car.id}
           size="sm"
+          isNettoPrice={car.is_netto_price}
         />
       </CardFooter>
     </Card>

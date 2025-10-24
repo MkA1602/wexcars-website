@@ -40,6 +40,7 @@ interface PriceDisplayProps {
   className?: string
   enableToggle?: boolean // New prop to enable the More Details functionality
   carId?: string // Unique identifier to ensure component isolation
+  isNettoPrice?: boolean // If true, show only netto price without VAT breakdown
 }
 
 function PriceDisplay({
@@ -52,7 +53,8 @@ function PriceDisplay({
   size = "md",
   className = "",
   enableToggle = false,
-  carId = ""
+  carId = "",
+  isNettoPrice = false
 }: PriceDisplayProps) {
   // Force re-render when component mounts/unmounts
   const [, forceUpdate] = useState({})
@@ -119,6 +121,22 @@ function PriceDisplay({
     return showCurrency 
       ? `${getCurrencySymbol(currency)} ${formatted}`
       : formatted
+  }
+
+  // If netto price, show only netto price
+  if (isNettoPrice && priceExclVat) {
+    return (
+      <div className={`space-y-1 ${className}`}>
+        <div className="flex items-baseline gap-2">
+          <span className={`text-primary-light ${sizeClasses[size].main}`}>
+            {formatPrice(priceExclVat)}
+          </span>
+          <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+            Netto Price
+          </Badge>
+        </div>
+      </div>
+    )
   }
 
   // If toggle is enabled, show compact view with expandable details
