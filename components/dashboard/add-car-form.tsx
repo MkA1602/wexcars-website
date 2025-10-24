@@ -1100,11 +1100,15 @@ export default function AddCarForm() {
 
           {/* Pricing Section */}
           <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-            <h3 className="font-semibold text-lg">Pricing Information</h3>
+            <h3 className="font-semibold text-lg">
+              {formData.is_netto_price ? "Netto Price Information" : "Pricing Information"}
+            </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="priceExclVat">Price (excl. VAT)</Label>
+                <Label htmlFor="priceExclVat">
+                  {formData.is_netto_price ? "Netto Price" : "Price (excl. VAT)"}
+                </Label>
                 <div className="flex gap-2">
                   <select
                     id="currency"
@@ -1126,12 +1130,18 @@ export default function AddCarForm() {
                     min="0"
                     value={formData.priceExclVat}
                     onChange={handleChange}
-                    placeholder="e.g. 257240 (full amount)"
+                    placeholder="e.g. 257240"
                     className={`flex-1 ${errors.priceExclVat ? "border-red-500" : ""}`}
                   />
                 </div>
                 {errors.priceExclVat && <p className="text-red-500 text-sm">{errors.priceExclVat}</p>}
-                <p className="text-xs text-gray-500">Enter the full price amount (e.g., 257240 for €257,240)</p>
+                {formData.is_netto_price ? (
+                  <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                    ℹ️ This is your netto price. No service fee will be calculated on this amount.
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-500">Enter the price excluding VAT (e.g., 257240 for €257,240)</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -1150,20 +1160,31 @@ export default function AddCarForm() {
               </div>
 
               <div className="space-y-2">
-                <Label>Price Summary</Label>
+                <Label>
+                  {formData.is_netto_price ? "Netto Price Summary" : "Price Summary"}
+                </Label>
                 <div className="bg-white p-3 border rounded-md space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span>Price (excl. VAT):</span>
+                    <span>{formData.is_netto_price ? "Netto Price:" : "Price (excl. VAT):"}</span>
                     <span>{formData.priceExclVat ? `${formData.currency} ${formData.priceExclVat}` : '-'}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span>VAT ({formData.vatRate}%):</span>
-                    <span>{vatAmount ? `${formData.currency} ${vatAmount}` : '-'}</span>
-                  </div>
-                  <div className="flex justify-between font-semibold border-t pt-1">
-                    <span>Total (incl. VAT):</span>
-                    <span>{priceWithVat ? `${formData.currency} ${priceWithVat}` : '-'}</span>
-                  </div>
+                  {!formData.is_netto_price && (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span>VAT ({formData.vatRate}%):</span>
+                        <span>{vatAmount ? `${formData.currency} ${vatAmount}` : '-'}</span>
+                      </div>
+                      <div className="flex justify-between font-semibold border-t pt-1">
+                        <span>Total (incl. VAT):</span>
+                        <span>{priceWithVat ? `${formData.currency} ${priceWithVat}` : '-'}</span>
+                      </div>
+                    </>
+                  )}
+                  {formData.is_netto_price && (
+                    <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded mt-2">
+                      ✓ No service fee will be charged on this netto price
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
