@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { supabaseClient } from "@/lib/supabase/client"
 import { useAuth } from "@/contexts/auth-context"
@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus, Check } from "lucide-react"
+import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus, Check, Search } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import ServiceFeeCalculator from "./service-fee-calculator"
@@ -79,6 +79,8 @@ export default function AddCarForm() {
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [customFeature, setCustomFeature] = useState("")
+  const [featureSearch, setFeatureSearch] = useState("")
+  const [availableFeatures, setAvailableFeatures] = useState<string[]>(CAR_FEATURES)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Service fee states
@@ -114,6 +116,32 @@ export default function AddCarForm() {
     
     checkAdminStatus()
   }, [user])
+
+  // Load car features from database
+  useEffect(() => {
+    const loadFeatures = async () => {
+      try {
+        const { data, error } = await supabaseClient
+          .from('car_features')
+          .select('feature_name')
+          .order('usage_count', { ascending: false })
+        
+        if (error) throw error
+        
+        if (data && data.length > 0) {
+          const featureNames = data.map(f => f.feature_name)
+          // Merge with default features, removing duplicates
+          const mergedFeatures = [...new Set([...CAR_FEATURES, ...featureNames])]
+          setAvailableFeatures(mergedFeatures)
+        }
+      } catch (error) {
+        console.error('Error loading features:', error)
+        // Keep default features if database fetch fails
+      }
+    }
+    
+    loadFeatures()
+  }, [])
 
   // Calculate prices based on VAT
   const calculatePrices = (priceExclVat: string, vatRate: string) => {
@@ -283,12 +311,41 @@ export default function AddCarForm() {
     }))
   }
 
-  const addCustomFeature = () => {
-    if (customFeature.trim() && !formData.features.includes(customFeature.trim())) {
+  const addCustomFeature = async () => {
+    const feature = customFeature.trim()
+    if (feature && !formData.features.includes(feature)) {
+      // Add to form
       setFormData((prev) => ({
         ...prev,
-        features: [...prev.features, customFeature.trim()]
+        features: [...prev.features, feature]
       }))
+      
+      // Save to database
+      try {
+        const { error } = await supabaseClient
+          .from('car_features')
+          .upsert(
+            { 
+              feature_name: feature,
+              feature_category: 'custom',
+              usage_count: 1
+            },
+            { 
+              onConflict: 'feature_name',
+              ignoreDuplicates: false
+            }
+          )
+        
+        if (error) throw error
+        
+        // Add to available features list
+        if (!availableFeatures.includes(feature)) {
+          setAvailableFeatures([...availableFeatures, feature])
+        }
+      } catch (error) {
+        console.error('Error saving feature:', error)
+      }
+      
       setCustomFeature("")
     }
   }
@@ -299,6 +356,14 @@ export default function AddCarForm() {
       addCustomFeature()
     }
   }
+
+  // Filter features based on search
+  const filteredFeatures = useMemo(() => {
+    if (!featureSearch.trim()) return availableFeatures
+    return availableFeatures.filter(feature =>
+      feature.toLowerCase().includes(featureSearch.toLowerCase())
+    )
+  }, [availableFeatures, featureSearch])
 
   const handleFilesSelect = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
@@ -1340,24 +1405,47 @@ export default function AddCarForm() {
 
           {/* Car Features Section */}
           <div className="space-y-4">
-            <Label>Car Features</Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-              {CAR_FEATURES.map((feature) => (
-                <div key={feature} className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => toggleFeature(feature)}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
-                      formData.features.includes(feature)
-                        ? 'bg-primary-light text-white border-primary-light'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-primary-light'
-                    }`}
-                  >
-                    {formData.features.includes(feature) && <Check size={14} />}
-                    <span>{feature}</span>
-                  </button>
+            <div className="flex items-center justify-between">
+              <Label>Car Features</Label>
+              <span className="text-sm text-gray-500">{filteredFeatures.length} features available</span>
+            </div>
+            
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Search features..."
+                value={featureSearch}
+                onChange={(e) => setFeatureSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            {/* Features Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-96 overflow-y-auto p-2 border rounded-lg">
+              {filteredFeatures.length > 0 ? (
+                filteredFeatures.map((feature) => (
+                  <div key={feature} className="flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => toggleFeature(feature)}
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-lg border text-sm transition-colors w-full ${
+                        formData.features.includes(feature)
+                          ? 'bg-primary-light text-white border-primary-light'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-primary-light'
+                      }`}
+                    >
+                      {formData.features.includes(feature) && <Check size={14} />}
+                      <span className="truncate">{feature}</span>
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8 text-gray-500">
+                  No features found matching "{featureSearch}"
                 </div>
-              ))}
+              )}
             </div>
             
             {/* Custom Feature Input */}
