@@ -235,9 +235,12 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                 {/* Car Name and Year */}
                 <div className="mb-6">
                   <h1 className="text-4xl font-bold text-gray-900 mb-3">
-                    {car.brand} {car.name}, {car.year}
+                    {car.brand} {car.name}
                   </h1>
                   <div className="flex items-center gap-4">
+                    <p className="text-lg text-gray-600">
+                      {car.year}
+                    </p>
                     
                     {/* Specification Tags - Smaller and beside mileage */}
                     <div className="flex items-center gap-2 flex-wrap">
@@ -340,14 +343,16 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                       <span className="font-medium text-gray-400">First registration</span>
                       <span className="text-gray-900 font-semibold">{car.created_at ? new Date(car.created_at).toLocaleDateString() : 'Not specified'}</span>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Engine</span>
-                      <span className="text-gray-900 font-semibold">
-                        {[car.engine_size, car.specifications?.power, car.specifications?.drivetrain]
-                          .filter(Boolean)
-                          .join(', ') || 'Not specified'}
-                      </span>
-                    </div>
+                    {[car.engine_size, car.specifications?.power, car.specifications?.drivetrain].filter(Boolean).length > 0 && (
+                      <div className="flex justify-between py-4 border-b border-primary-light/20">
+                        <span className="font-medium text-gray-400">Engine</span>
+                        <span className="text-gray-900 font-semibold">
+                          {[car.engine_size, car.specifications?.power, car.specifications?.drivetrain]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </span>
+                      </div>
+                    )}
                     {!car.is_new_car && (
                       <div className="flex justify-between py-4 border-b border-primary-light/20">
                         <span className="font-medium text-gray-400">Odometer</span>
@@ -379,7 +384,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     </div>
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Seats</span>
-                      <span className="text-gray-900 font-semibold">{car.specifications?.seating || 'Not specified'}</span>
+                      <span className="text-gray-900 font-semibold">{car.seats || 'Not specified'}</span>
                     </div>
 
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
