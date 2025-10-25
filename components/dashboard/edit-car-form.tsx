@@ -47,7 +47,6 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     fuel_type: car.fuel_type || "",
     gearbox: car.gearbox || "",
     mileage: car.mileage || "",
-    car_type: car.car_type || "",
     horsepower: car.horsepower || "",
     engine_size: car.engine_size || "",
     drivetrain: car.drivetrain || "",
@@ -426,7 +425,6 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         fuel_type: formData.fuel_type,
         gearbox: formData.gearbox,
         mileage: formData.is_new_car ? null : (formData.mileage ? Number(formData.mileage) : null),
-        car_type: formData.car_type,
         horsepower: formData.horsepower ? Number(formData.horsepower) : null,
         engine_size: formData.engine_size,
         drivetrain: formData.drivetrain,
@@ -812,29 +810,6 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                 </div>
               )}
 
-              {/* Car Type */}
-              <div className="space-y-2">
-                <Label htmlFor="car_type">Car Type</Label>
-                <select
-                  id="car_type"
-                  name="car_type"
-                  value={formData.car_type}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-md border-gray-300"
-                >
-                  <option value="">Select Car Type</option>
-                  <option value="Hatchback">Hatchback</option>
-                  <option value="Sedan">Sedan</option>
-                  <option value="SUV">SUV</option>
-                  <option value="Crossover">Crossover</option>
-                  <option value="Coupe">Coupe</option>
-                  <option value="Convertible">Convertible</option>
-                  <option value="Wagon">Wagon</option>
-                  <option value="Pickup">Pickup</option>
-                  <option value="Sports Car">Sports Car</option>
-                  <option value="Supercar">Supercar</option>
-                </select>
-              </div>
 
               {/* Horsepower */}
               <div className="space-y-2">

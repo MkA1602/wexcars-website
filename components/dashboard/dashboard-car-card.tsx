@@ -175,6 +175,11 @@ export default function DashboardCarCard({
           <Badge variant="outline" className="text-xs bg-gray-50">
             {car.category}
           </Badge>
+          {car.is_new_car && (
+            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+              ✨ New Car
+            </Badge>
+          )}
           <Badge variant="outline" className="text-xs bg-gray-50">
             {car.transmission || 'Manual'}
           </Badge>
