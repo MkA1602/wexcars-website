@@ -89,7 +89,7 @@ export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
               </Link>
             </h3>
             <p className="text-gray-600 text-sm mb-2">
-              {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
+              {car.year}{!car.is_new_car && (car.mileage ? ` • ${car.mileage.toLocaleString()} km` : ' • Mileage N/A')} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
                 <span className="text-red-500 font-medium">📍 {car.location}</span>
               ) : (
                 <span className="text-gray-400">Location N/A</span>

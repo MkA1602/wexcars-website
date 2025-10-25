@@ -86,6 +86,11 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   })
 
   const getMileageDisplay = (car: Car) => {
+    // For new cars, don't show mileage at all
+    if (car.is_new_car) {
+      return null
+    }
+    
     const mileage = car.mileage
     console.log('getMileageDisplay called with:', mileage)
     console.log('Mileage type:', typeof mileage)
@@ -234,7 +239,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                   </h1>
                   <div className="flex items-center gap-4">
                     <p className="text-lg text-gray-600">
-                      {car.year} • {getMileageDisplay(car)}
+                      {car.year}{getMileageDisplay(car) ? ` • ${getMileageDisplay(car)}` : ''}
                     </p>
                     
                     {/* Specification Tags - Smaller and beside mileage */}
@@ -344,10 +349,12 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                         {car.engine_size || 'Not specified'}, {car.specifications?.power || 'Not specified'}, {car.specifications?.drivetrain || 'Not specified'}
                       </span>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Odometer</span>
-                      <span className="text-gray-900 font-semibold">{getMileageDisplay(car)}</span>
-                    </div>
+                    {!car.is_new_car && (
+                      <div className="flex justify-between py-4 border-b border-primary-light/20">
+                        <span className="font-medium text-gray-400">Odometer</span>
+                        <span className="text-gray-900 font-semibold">{getMileageDisplay(car)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Transmission</span>
                       <span className="text-gray-900 font-semibold">{car.transmission || 'Not specified'}</span>

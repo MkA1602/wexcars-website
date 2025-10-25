@@ -152,7 +152,7 @@ export default function DashboardCarCard({
               </Link>
             </h3>
             <p className="text-gray-500 text-sm">
-              {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
+              {car.year}{!car.is_new_car && (car.mileage ? ` • ${car.mileage.toLocaleString()} km` : ' • Mileage N/A')} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
                 <span className="text-red-500 font-medium">📍 {car.location}</span>
               ) : (
                 <span className="text-gray-400">Location N/A</span>

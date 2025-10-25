@@ -62,8 +62,16 @@ export default function CarGallery({ car }: CarGalleryProps) {
               onClick={openLightbox}
             />
             
+            {/* New Car Label - Professional Design */}
+            {car.is_new_car && (
+              <div className="absolute top-4 left-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg flex items-center gap-2 z-10">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                NEW CAR
+              </div>
+            )}
+            
             {/* Availability Banner */}
-            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-lg font-semibold text-sm flex items-center gap-2">
+            <div className={`absolute ${car.is_new_car ? 'top-4 right-4' : 'top-4 left-4'} bg-red-600 text-white px-3 py-1 rounded-lg font-semibold text-sm flex items-center gap-2`}>
               <Calendar className="w-4 h-4" />
               {car.availability === 'available_now' ? 'AVAILABLE NOW' : 
                car.availability === 'available_soon' ? `AVAILABLE IN ${car.availability_days || 12} DAYS` :
