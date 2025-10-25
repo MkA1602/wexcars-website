@@ -238,9 +238,6 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     {car.brand} {car.name}, {car.year}
                   </h1>
                   <div className="flex items-center gap-4">
-                    <p className="text-lg text-gray-600">
-                      {car.year}
-                    </p>
                     
                     {/* Specification Tags - Smaller and beside mileage */}
                     <div className="flex items-center gap-2 flex-wrap">
@@ -346,7 +343,9 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                     <div className="flex justify-between py-4 border-b border-primary-light/20">
                       <span className="font-medium text-gray-400">Engine</span>
                       <span className="text-gray-900 font-semibold">
-                        {car.engine_size || 'Not specified'}, {car.specifications?.power || 'Not specified'}, {car.specifications?.drivetrain || 'Not specified'}
+                        {[car.engine_size, car.specifications?.power, car.specifications?.drivetrain]
+                          .filter(Boolean)
+                          .join(', ') || 'Not specified'}
                       </span>
                     </div>
                     {!car.is_new_car && (
