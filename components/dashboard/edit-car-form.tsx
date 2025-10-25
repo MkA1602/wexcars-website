@@ -555,7 +555,9 @@ export default function EditCarForm({ car }: EditCarFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
+              <Label htmlFor="price">
+                {formData.is_netto_price ? "Netto Price" : "Price"}
+              </Label>
               <div className="flex gap-2">
                 <select
                   id="currency"
@@ -581,6 +583,11 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                 />
               </div>
               {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
+              {formData.is_netto_price && (
+                <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                  ℹ️ This is your netto price. No VAT calculation or service fee will be applied.
+                </p>
+              )}
             </div>
           </div>
 

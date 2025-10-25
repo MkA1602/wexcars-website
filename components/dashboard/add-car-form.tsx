@@ -1209,20 +1209,22 @@ export default function AddCarForm() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="vatRate">VAT Rate (%)</Label>
-                <Input
-                  id="vatRate"
-                  name="vatRate"
-                  type="number"
-                  step="0.01"
-                  value={formData.vatRate}
-                  onChange={handleChange}
-                  placeholder="e.g. 5"
-                  className={errors.vatRate ? "border-red-500" : ""}
-                />
-                {errors.vatRate && <p className="text-red-500 text-sm">{errors.vatRate}</p>}
-              </div>
+              {!formData.is_netto_price && (
+                <div className="space-y-2">
+                  <Label htmlFor="vatRate">VAT Rate (%)</Label>
+                  <Input
+                    id="vatRate"
+                    name="vatRate"
+                    type="number"
+                    step="0.01"
+                    value={formData.vatRate}
+                    onChange={handleChange}
+                    placeholder="e.g. 5"
+                    className={errors.vatRate ? "border-red-500" : ""}
+                  />
+                  {errors.vatRate && <p className="text-red-500 text-sm">{errors.vatRate}</p>}
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label>
