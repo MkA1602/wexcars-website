@@ -85,6 +85,12 @@ const CarCard = memo(({ car, vatDisplay, favorites, onToggleFavorite }: {
             Featured
           </Badge>
         )}
+        {car.is_new_car && (
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-1 rounded-lg font-bold text-xs shadow-lg flex items-center gap-1 z-10">
+            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
+            NEW CAR
+          </div>
+        )}
       </div>
       
       <CardContent className="p-4 flex-grow">
@@ -96,7 +102,7 @@ const CarCard = memo(({ car, vatDisplay, favorites, onToggleFavorite }: {
               </Link>
             </h3>
             <p className="text-gray-500 text-sm">
-              {car.year} • {car.mileage ? `${car.mileage.toLocaleString()} km` : 'Mileage N/A'} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
+              {car.year}{!car.is_new_car && (car.mileage ? ` • ${car.mileage.toLocaleString()} km` : ' • Mileage N/A')} • {car.fuel_type || 'Fuel N/A'} • {car.location ? (
                 <span className="text-red-500 font-medium">📍 {car.location}</span>
               ) : (
                 <span className="text-gray-400">Location N/A</span>
