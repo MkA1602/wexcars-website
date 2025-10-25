@@ -37,6 +37,8 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     category: car.category || "",
     year: car.year || new Date().getFullYear(),
     price: car.price || "",
+    priceExclVat: car.price_excl_vat || "",
+    vatRate: car.vat_rate || "5",
     currency: car.currency || "EUR",
     image: car.image || "",
     description: car.description || "",
@@ -80,6 +82,22 @@ export default function EditCarForm({ car }: EditCarFormProps) {
 
   const { user } = useAuth()
   const router = useRouter()
+
+  // Calculate prices based on VAT
+  const calculatePrices = (priceExclVat: string, vatRate: string) => {
+    const priceNum = parseFloat(priceExclVat)
+    const vatNum = parseFloat(vatRate)
+    
+    if (isNaN(priceNum) || isNaN(vatNum)) return { priceWithVat: "", vatAmount: "" }
+    
+    const vatAmount = (priceNum * vatNum) / 100
+    const priceWithVat = priceNum + vatAmount
+    
+    return {
+      priceWithVat: priceWithVat.toString(),
+      vatAmount: vatAmount.toString()
+    }
+  }
 
   // Initialize existing images
   useEffect(() => {
@@ -186,6 +204,21 @@ export default function EditCarForm({ car }: EditCarFormProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+
+    // Auto-calculate price with VAT when price excluding VAT or VAT rate changes
+    if (name === 'priceExclVat' || name === 'vatRate') {
+      const priceExclVat = name === 'priceExclVat' ? value : formData.priceExclVat
+      const vatRate = name === 'vatRate' ? value : formData.vatRate
+      
+      const { priceWithVat, vatAmount } = calculatePrices(priceExclVat, vatRate)
+      if (priceWithVat) {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+          price: priceWithVat
+        }))
+      }
+    }
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -414,6 +447,9 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         category: formData.category,
         year: Number(formData.year),
         price: Number(formData.price),
+        price_excl_vat: Number(formData.priceExclVat),
+        vat_rate: Number(formData.vatRate),
+        vat_amount: Number(calculatePrices(formData.priceExclVat, formData.vatRate).vatAmount),
         currency: formData.currency,
         image: allImageUrls[0] || formData.image, // Primary image
         images: allImageUrls.length > 1 ? JSON.stringify(allImageUrls) : null, // Additional images as JSON
@@ -552,40 +588,98 @@ export default function EditCarForm({ car }: EditCarFormProps) {
               {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="price">
-                {formData.is_netto_price ? "Netto Price" : "Price"}
-              </Label>
-              <div className="flex gap-2">
-                <select
-                  id="currency"
-                  name="currency"
-                  value={formData.currency}
-                  onChange={handleChange}
-                  className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="USD">$ USD</option>
-                  <option value="EUR">€ EUR</option>
-                  <option value="GBP">£ GBP</option>
-                  <option value="JPY">¥ JPY</option>
-                  <option value="AED">د.إ AED</option>
-                </select>
-                <Input
-                  id="price"
-                  name="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={handleChange}
-                  placeholder="e.g. 100000"
-                  className={`flex-1 ${errors.price ? "border-red-500" : ""}`}
-                />
+            {/* Pricing Section */}
+            <div className="space-y-4 p-4 border rounded-lg bg-blue-50">
+              <h3 className="font-semibold text-lg">
+                {formData.is_netto_price ? "Netto Price Information" : "Pricing Information"}
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="priceExclVat">
+                    {formData.is_netto_price ? "Netto Price" : "Price (excl. VAT)"}
+                  </Label>
+                  <div className="flex gap-2">
+                    <select
+                      id="currency"
+                      name="currency"
+                      value={formData.currency}
+                      onChange={handleChange}
+                      className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="EUR">EUR</option>
+                      <option value="USD">USD</option>
+                      <option value="AED">AED</option>
+                      <option value="GBP">GBP</option>
+                    </select>
+                    <Input
+                      id="priceExclVat"
+                      name="priceExclVat"
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={formData.priceExclVat}
+                      onChange={handleChange}
+                      placeholder="e.g. 257240"
+                      className={`flex-1 ${errors.priceExclVat ? "border-red-500" : ""}`}
+                    />
+                  </div>
+                  {errors.priceExclVat && <p className="text-red-500 text-sm">{errors.priceExclVat}</p>}
+                  {formData.is_netto_price ? (
+                    <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                      ℹ️ This is your netto price. No service fee will be calculated on this amount.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500">Enter the price excluding VAT (e.g., 257240 for €257,240)</p>
+                  )}
+                </div>
+
+                {!formData.is_netto_price && (
+                  <div className="space-y-2">
+                    <Label htmlFor="vatRate">VAT Rate (%)</Label>
+                    <Input
+                      id="vatRate"
+                      name="vatRate"
+                      type="number"
+                      step="0.01"
+                      value={formData.vatRate}
+                      onChange={handleChange}
+                      placeholder="e.g. 5"
+                      className={errors.vatRate ? "border-red-500" : ""}
+                    />
+                    {errors.vatRate && <p className="text-red-500 text-sm">{errors.vatRate}</p>}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label>
+                    {formData.is_netto_price ? "Netto Price Summary" : "Price Summary"}
+                  </Label>
+                  <div className="bg-white p-3 border rounded-md space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span>{formData.is_netto_price ? "Netto Price:" : "Price (excl. VAT):"}</span>
+                      <span>{formData.priceExclVat ? `${formData.currency} ${formData.priceExclVat}` : '-'}</span>
+                    </div>
+                    {!formData.is_netto_price && (
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span>VAT ({formData.vatRate}%):</span>
+                          <span>{calculatePrices(formData.priceExclVat, formData.vatRate).vatAmount ? `${formData.currency} ${calculatePrices(formData.priceExclVat, formData.vatRate).vatAmount}` : '-'}</span>
+                        </div>
+                        <div className="flex justify-between font-semibold border-t pt-1">
+                          <span>Total (incl. VAT):</span>
+                          <span>{calculatePrices(formData.priceExclVat, formData.vatRate).priceWithVat ? `${formData.currency} ${calculatePrices(formData.priceExclVat, formData.vatRate).priceWithVat}` : '-'}</span>
+                        </div>
+                      </>
+                    )}
+                    {formData.is_netto_price && (
+                      <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded mt-2">
+                        ✓ No service fee will be charged on this netto price
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-              {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
-              {formData.is_netto_price && (
-                <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-                  ℹ️ This is your netto price. No VAT calculation or service fee will be applied.
-                </p>
-              )}
             </div>
           </div>
 

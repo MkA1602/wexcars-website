@@ -239,7 +239,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                   </h1>
                   <div className="flex items-center gap-4">
                     <p className="text-lg text-gray-600">
-                      {car.year}{getMileageDisplay(car) ? ` • ${getMileageDisplay(car)}` : ''}
+                      {car.year}
                     </p>
                     
                     {/* Specification Tags - Smaller and beside mileage */}

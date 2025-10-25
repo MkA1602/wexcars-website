@@ -86,7 +86,7 @@ const CarCard = memo(({ car, vatDisplay, favorites, onToggleFavorite }: {
           </Badge>
         )}
         {car.is_new_car && (
-          <div className="absolute top-2 left-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-1 rounded-lg font-bold text-xs shadow-lg flex items-center gap-1 z-10">
+          <div className={`absolute ${car.featured ? 'top-2 right-2' : 'top-2 left-2'} bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-1 rounded-lg font-bold text-xs shadow-lg flex items-center gap-1 z-10`}>
             <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
             NEW CAR
           </div>
