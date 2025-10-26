@@ -38,7 +38,7 @@ export default function Header() {
           <div className="relative h-10 w-40 md:h-12 md:w-52 flex-shrink-0">
             {!logoError ? (
               <Image
-                src={`${GITHUB_RAW_BASE}/new-red-logo -wexcars.png`}
+                src={`${GITHUB_RAW_BASE}/new-red-logo-wexcars.png`}
                 alt="WexCars Logo"
                 width={180}
                 height={44}
@@ -138,7 +138,7 @@ export default function Header() {
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="mb-2">
               {!logoError ? (
                 <Image
-                  src={`${GITHUB_RAW_BASE}/new-red-logo -wexcars.png`}
+                  src={`${GITHUB_RAW_BASE}/new-red-logo-wexcars.png`}
                   alt="WexCars Logo"
                   width={150}
                   height={36}

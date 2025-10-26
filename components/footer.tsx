@@ -137,7 +137,7 @@ const Footer = () => {
                 <div className="flex items-center space-x-3">
                   <div className="relative w-48 h-48">
                     <Image 
-                      src={`${GITHUB_RAW_BASE}/new-White-logo -wexcars.png`}
+                      src={`${GITHUB_RAW_BASE}/new-white-logo-wexcars.png`}
                       alt="WexCars White Logo" 
                       fill 
                       className="object-contain filter brightness-0 invert" 
@@ -324,7 +324,7 @@ const Footer = () => {
                 <div className="flex items-center space-x-2">
                   <div className="relative w-16 h-16">
                     <Image 
-                      src={`${GITHUB_RAW_BASE}/new-White-logo -wexcars.png`}
+                      src={`${GITHUB_RAW_BASE}/new-white-logo-wexcars.png`}
                       alt="WexCars Logo" 
                       fill 
                       className="object-contain filter brightness-0 invert" 

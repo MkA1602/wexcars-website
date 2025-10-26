@@ -57,7 +57,7 @@ const FooterMobile = () => {
           <div className="flex items-center justify-center space-x-3 mb-4">
             <div className="relative w-32 h-32">
               <Image 
-                src={`${GITHUB_RAW_BASE}/new-White-logo -wexcars.png`}
+                src={`${GITHUB_RAW_BASE}/new-white-logo-wexcars.png`}
                 alt="WexCars White Logo" 
                 fill 
                 className="object-contain filter brightness-0 invert" 
@@ -147,7 +147,7 @@ const FooterMobile = () => {
           <div className="flex flex-col items-center space-y-2">
             <div className="relative w-14 h-14">
               <Image 
-                src={`${GITHUB_RAW_BASE}/new-White-logo -wexcars.png`}
+                src={`${GITHUB_RAW_BASE}/new-white-logo-wexcars.png`}
                 alt="WexCars Logo" 
                 fill 
                 className="object-contain filter brightness-0 invert" 
