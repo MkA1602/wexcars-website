@@ -135,7 +135,7 @@ const Footer = () => {
               {/* Brand Section */}
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
-                  <div className="relative w-48 h-48">
+                  <div className="relative w-32 h-32">
                     <Image 
                       src={`${GITHUB_RAW_BASE}/new-white-logo-wexcars.png`}
                       alt="WexCars White Logo" 

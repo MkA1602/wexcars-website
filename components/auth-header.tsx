@@ -59,13 +59,13 @@ export default function AuthHeader() {
     <header className="sticky top-0 z-50 bg-white py-3 px-4 md:px-12 flex items-center justify-between shadow-sm border-b border-gray-100">
       <div className="flex items-center min-w-0">
         <Link href="/" className="flex items-center min-w-0">
-          <div className="relative h-10 w-40 md:h-12 md:w-52 flex-shrink-0">
+          <div className="relative h-6 w-24 md:h-8 md:w-32 flex-shrink-0">
             {!logoError ? (
               <Image
                 src={`${GITHUB_RAW_BASE}/new-red-logo-wexcars.png`}
                 alt="WexCars Logo"
-                width={180}
-                height={44}
+                width={120}
+                height={28}
                 className="h-full w-auto object-contain"
                 priority
                 onError={handleLogoError}
@@ -213,9 +213,9 @@ export default function AuthHeader() {
                 <Image
                   src={`${GITHUB_RAW_BASE}/new-red-logo-wexcars.png`}
                   alt="WexCars Logo"
-                  width={150}
-                  height={36}
-                  className="h-9 w-auto object-contain"
+                  width={100}
+                  height={24}
+                  className="h-6 w-auto object-contain"
                   onError={handleLogoError}
                   style={{ maxWidth: '100%', height: 'auto' }}
                 />
