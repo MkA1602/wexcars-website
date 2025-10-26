@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button"
 import OptimizedCarGrid from "./car-grid"
 import type { Car } from "@/lib/types"
 import { supabaseClient } from "@/lib/supabase/client"
+import VariableProximity from "@/components/ui/variable-proximity"
 
 const FeaturedCars = () => {
   const [cars, setCars] = useState<Car[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const containerRef = useRef<HTMLElement>(null!)
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -115,12 +117,30 @@ const FeaturedCars = () => {
     <section ref={sectionRef} className="py-12 md:py-16 bg-white">
       <div className="container mx-auto px-4 md:px-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Featured Collection
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover our handpicked selection of premium vehicles, each offering unmatched luxury and performance.
-          </p>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              <VariableProximity
+                label="Featured Collection"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-gray-900"
+              />
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              <VariableProximity
+                label="Discover our handpicked selection of premium vehicles, each offering unmatched luxury and performance."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-gray-600"
+              />
+            </p>
+          </div>
         </div>
 
         {!isVisible ? (

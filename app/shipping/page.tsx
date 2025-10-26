@@ -1,17 +1,15 @@
-import type { Metadata } from "next"
+"use client"
+
+import VariableProximity from "@/components/ui/variable-proximity"
+import { useRef } from "react"
 import { ArrowLeft, Truck, Shield, Globe, Clock, Phone, Mail, MapPin, CheckCircle } from "lucide-react"
 import Link from "next/link"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
 
-export const metadata: Metadata = {
-  title: "Shipping Information | WexCars - Luxury Vehicle Delivery",
-  description: "Learn about WexCars' premium shipping services, global delivery options, and secure transport for luxury vehicles worldwide.",
-  keywords: "luxury car shipping, vehicle transport, global delivery, secure shipping, WexCars",
-}
-
 export default function ShippingPage() {
+  const containerRef = useRef<HTMLElement>(null!)
   return (
     <main className="flex-grow">
       {/* Hero Section with Background Image */}
@@ -25,12 +23,30 @@ export default function ShippingPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-primary-light/90 to-primary-dark/90"></div>
         </div>
         <div className="container mx-auto px-4 text-center relative z-10 hero-content-animate">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 hero-title-animate">
-            Shipping Information
-          </h1>
-          <p className="text-white/80 max-w-2xl mx-auto text-lg hero-text-animate">
-            We deliver luxury vehicles worldwide with exceptional care and attention to detail, ensuring your prized possession arrives in perfect condition.
-          </p>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 hero-title-animate">
+              <VariableProximity
+                label="Shipping Information"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-white"
+              />
+            </h1>
+            <p className="text-white/80 max-w-2xl mx-auto text-lg hero-text-animate">
+              <VariableProximity
+                label="We deliver luxury vehicles worldwide with exceptional care and attention to detail, ensuring your prized possession arrives in perfect condition."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-white/80"
+              />
+            </p>
+          </div>
         </div>
       </section>
 
@@ -38,10 +54,30 @@ export default function ShippingPage() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Our Shipping Services</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              We offer comprehensive shipping solutions designed specifically for luxury vehicles.
-            </p>
+            <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+              <h2 className="text-3xl font-bold mb-4">
+                <VariableProximity
+                  label="Our Shipping Services"
+                  fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                  toFontVariationSettings="'wght' 900, 'slnt' -5"
+                  containerRef={containerRef}
+                  radius={60}
+                  falloff="gaussian"
+                  className="text-gray-900"
+                />
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                <VariableProximity
+                  label="We offer comprehensive shipping solutions designed specifically for luxury vehicles."
+                  fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                  toFontVariationSettings="'wght' 600, 'slnt' -2"
+                  containerRef={containerRef}
+                  radius={50}
+                  falloff="linear"
+                  className="text-gray-600"
+                />
+              </p>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -89,10 +125,30 @@ export default function ShippingPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Our Shipping Process</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                We follow a meticulous process to ensure your luxury vehicle arrives safely and on time.
-              </p>
+              <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+                <h2 className="text-3xl font-bold mb-4">
+                  <VariableProximity
+                    label="Our Shipping Process"
+                    fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                    toFontVariationSettings="'wght' 900, 'slnt' -5"
+                    containerRef={containerRef}
+                    radius={60}
+                    falloff="gaussian"
+                    className="text-gray-900"
+                  />
+                </h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  <VariableProximity
+                    label="We follow a meticulous process to ensure your luxury vehicle arrives safely and on time."
+                    fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                    toFontVariationSettings="'wght' 600, 'slnt' -2"
+                    containerRef={containerRef}
+                    radius={50}
+                    falloff="linear"
+                    className="text-gray-600"
+                  />
+                </p>
+              </div>
             </div>
             <div className="bg-white rounded-xl shadow-md p-8">
               <div className="space-y-6">
@@ -144,10 +200,30 @@ export default function ShippingPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Shipping Zones & Timeframes</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                We deliver to locations worldwide with different timeframes based on your region.
-              </p>
+              <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+                <h2 className="text-3xl font-bold mb-4">
+                  <VariableProximity
+                    label="Shipping Zones & Timeframes"
+                    fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                    toFontVariationSettings="'wght' 900, 'slnt' -5"
+                    containerRef={containerRef}
+                    radius={60}
+                    falloff="gaussian"
+                    className="text-gray-900"
+                  />
+                </h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  <VariableProximity
+                    label="We deliver to locations worldwide with different timeframes based on your region."
+                    fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                    toFontVariationSettings="'wght' 600, 'slnt' -2"
+                    containerRef={containerRef}
+                    radius={50}
+                    falloff="linear"
+                    className="text-gray-600"
+                  />
+                </p>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
@@ -190,10 +266,30 @@ export default function ShippingPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Insurance & Protection</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Your luxury vehicle is fully protected throughout the entire shipping process.
-              </p>
+              <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+                <h2 className="text-3xl font-bold mb-4">
+                  <VariableProximity
+                    label="Insurance & Protection"
+                    fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                    toFontVariationSettings="'wght' 900, 'slnt' -5"
+                    containerRef={containerRef}
+                    radius={60}
+                    falloff="gaussian"
+                    className="text-gray-900"
+                  />
+                </h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  <VariableProximity
+                    label="Your luxury vehicle is fully protected throughout the entire shipping process."
+                    fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                    toFontVariationSettings="'wght' 600, 'slnt' -2"
+                    containerRef={containerRef}
+                    radius={50}
+                    falloff="linear"
+                    className="text-gray-600"
+                  />
+                </p>
+              </div>
             </div>
             <div className="bg-white rounded-xl shadow-md p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

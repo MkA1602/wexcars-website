@@ -1,4 +1,10 @@
+"use client"
+
+import React, { useRef } from "react"
+import VariableProximity from "@/components/ui/variable-proximity"
+
 export default function ShippingSection() {
+  const containerRef = useRef<HTMLElement>(null!)
   return (
     <section className="relative py-20 overflow-hidden bg-gradient-to-b from-gray-50 to-white">
       {/* Background decorative elements */}
@@ -8,16 +14,41 @@ export default function ShippingSection() {
       <div className="container mx-auto px-4 relative z-10">
         {/* Section header with modern styling */}
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <div className="inline-block px-3 py-1 bg-primary-light/10 rounded-full text-black text-sm font-medium mb-4">
-            Global Logistics
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <div className="inline-block px-3 py-1 bg-primary-light/10 rounded-full text-black text-sm font-medium mb-4">
+              <VariableProximity
+                label="Global Logistics"
+                fromFontVariationSettings="'wght' 500, 'slnt' 0"
+                toFontVariationSettings="'wght' 700, 'slnt' -3"
+                containerRef={containerRef}
+                radius={40}
+                falloff="linear"
+                className="text-black"
+              />
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+              <VariableProximity
+                label="Premium Shipping Solutions"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-gray-900"
+              />
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              <VariableProximity
+                label="We deliver luxury vehicles worldwide with exceptional care and attention to detail, ensuring your prized possession arrives in perfect condition."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-gray-600"
+              />
+            </p>
           </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-            Premium Shipping <span className="text-primary-light">Solutions</span>
-          </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            We deliver luxury vehicles worldwide with exceptional care and attention to detail, ensuring your prized
-            possession arrives in perfect condition.
-          </p>
         </div>
 
         {/* Modern card grid with hover effects */}

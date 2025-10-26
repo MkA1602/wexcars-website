@@ -1,4 +1,8 @@
+"use client"
+
 import type { Metadata } from "next"
+import VariableProximity from "@/components/ui/variable-proximity"
+import { useRef } from "react"
 import { Search, MessageCircle, Phone, Mail, MapPin, ChevronRight, HelpCircle, Car, CreditCard, Truck, Shield, Users, FileText, Plus, Minus, Building2, CarFront, Wallet, Package, Star, Settings, Globe, Clock, ShieldCheck, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -84,6 +88,7 @@ const faqData = [
 ]
 
 export default function FAQPage() {
+  const containerRef = useRef<HTMLElement>(null!)
   return (
     <main className="flex-grow">
       {/* Hero Section */}
@@ -97,12 +102,30 @@ export default function FAQPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-primary-light/90 to-primary-dark/90"></div>
         </div>
         <div className="container mx-auto px-4 text-center relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-white/80 max-w-2xl mx-auto text-lg">
-            Find answers to common questions about our services, vehicles, and policies.
-          </p>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              <VariableProximity
+                label="Frequently Asked Questions"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-white"
+              />
+            </h1>
+            <p className="text-white/80 max-w-2xl mx-auto text-lg">
+              <VariableProximity
+                label="Find answers to common questions about our services, vehicles, and policies."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-white/80"
+              />
+            </p>
+          </div>
         </div>
       </section>
 

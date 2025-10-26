@@ -4,6 +4,8 @@ import { CheckCircle, Star, Crown, Zap } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import "@/styles/pricing-animations.css"
+import VariableProximity from "@/components/ui/variable-proximity"
+import { useRef } from "react"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -52,6 +54,7 @@ const pricingPlans = [
 ]
 
 export default function PricingContent() {
+  const containerRef = useRef<HTMLElement>(null!)
   return (
     <main className="flex-grow">
       {/* Hero Section with Background Image */}
@@ -65,13 +68,30 @@ export default function PricingContent() {
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-gray-900/95"></div>
         </div>
         <div className="container mx-auto px-4 text-center relative z-10 hero-content-animate">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 hero-title-animate tracking-tight">
-            Pricing & Membership
-          </h1>
-          <p className="text-gray-200 max-w-2xl mx-auto text-lg md:text-xl hero-text-animate leading-relaxed">
-            Choose the perfect plan that suits your luxury vehicle needs. All plans include access to our exclusive
-            collection of premium vehicles.
-          </p>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 hero-title-animate tracking-tight">
+              <VariableProximity
+                label="Pricing & Membership"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-white"
+              />
+            </h1>
+            <p className="text-gray-200 max-w-2xl mx-auto text-lg md:text-xl hero-text-animate leading-relaxed">
+              <VariableProximity
+                label="Choose the perfect plan that suits your luxury vehicle needs. All plans include access to our exclusive collection of premium vehicles."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-gray-200"
+              />
+            </p>
+          </div>
           <div className="mt-8 inline-block bg-gradient-to-r from-red-600/20 to-red-700/20 backdrop-blur-md px-6 py-3 rounded-xl text-white border border-red-400/30 hero-cta-animate shadow-xl">
             <span className="font-bold text-red-300">Free Trial: Enjoy 3 Months on Us</span>
             <span className="text-gray-200"> – Absolutely Free! No credit card required. Unlimited access. Cancel anytime.</span>
@@ -316,12 +336,30 @@ export default function PricingContent() {
           <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-red-900/20 to-red-600/20 animate-pulse"></div>
         </div>
         <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-            Ready to Experience Luxury?
-          </h2>
-          <p className="text-gray-300 max-w-2xl mx-auto mb-10 text-lg leading-relaxed">
-            Join thousands of satisfied customers who have elevated their driving experience with WexCars.
-          </p>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+              <VariableProximity
+                label="Ready to Experience Luxury?"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-white"
+              />
+            </h2>
+            <p className="text-gray-300 max-w-2xl mx-auto mb-10 text-lg leading-relaxed">
+              <VariableProximity
+                label="Join thousands of satisfied customers who have elevated their driving experience with WexCars."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-gray-300"
+              />
+            </p>
+          </div>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
             <Link href="/dashboard">
               <Button className="bg-gradient-to-r from-red-600 via-red-500 to-red-600 hover:from-red-700 hover:via-red-600 hover:to-red-700 text-white font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl px-8 py-6 text-base">

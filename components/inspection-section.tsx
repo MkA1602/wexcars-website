@@ -1,11 +1,10 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState } from "react"
 import { motion } from "framer-motion"
 import { Check, ChevronRight, Shield, PenToolIcon as Tool, FileCheck, Video } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import VariableProximity from "@/components/ui/variable-proximity"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -46,16 +45,36 @@ const inspectionFeatures: InspectionFeature[] = [
 
 export default function InspectionSection() {
   const [activeFeature, setActiveFeature] = useState(0)
+  const containerRef = React.useRef<HTMLElement>(null!)
 
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Inspection Experience</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            We believe in transparency and quality. Every vehicle in our collection undergoes a rigorous inspection
-            process to ensure it meets our exceptional standards.
-          </p>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <VariableProximity
+                label="Our Inspection Experience"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-gray-900"
+              />
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              <VariableProximity
+                label="We believe in transparency and quality. Every vehicle in our collection undergoes a rigorous inspection process to ensure it meets our exceptional standards."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-gray-600"
+              />
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row items-center gap-12">

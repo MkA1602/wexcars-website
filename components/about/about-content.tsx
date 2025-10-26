@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Car, Users, Shield, Star, Target, Heart, Award } from "lucide-react"
+import VariableProximity from "@/components/ui/variable-proximity"
+import { useRef } from "react"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -61,6 +63,7 @@ const milestones = [
 ]
 
 export default function AboutContent() {
+  const containerRef = useRef<HTMLElement>(null!)
   return (
     <main className="flex-grow">
       {/* Hero Section with Background Image */}
@@ -74,10 +77,30 @@ export default function AboutContent() {
           <div className="absolute inset-0 bg-gradient-to-r from-primary-light/90 to-primary-dark/90"></div>
         </div>
         <div className="container mx-auto px-4 text-center relative z-10 hero-content-animate">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 hero-title-animate">About WexCars</h1>
-          <p className="text-white/80 max-w-2xl mx-auto text-lg hero-text-animate">
-            Redefining the luxury automotive experience since 2015.
-          </p>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 hero-title-animate">
+              <VariableProximity
+                label="About WexCars"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-white"
+              />
+            </h1>
+            <p className="text-white/80 max-w-2xl mx-auto text-lg hero-text-animate">
+              <VariableProximity
+                label="Redefining the luxury automotive experience since 2015."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-white/80"
+              />
+            </p>
+          </div>
         </div>
       </section>
 
@@ -117,7 +140,19 @@ export default function AboutContent() {
       {/* Our Mission & Values */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center">Our Mission & Values</h2>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h2 className="text-3xl font-bold mb-12 text-center">
+              <VariableProximity
+                label="Our Mission & Values"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-gray-900"
+              />
+            </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-xl shadow-md">
               <div className="w-12 h-12 bg-primary-light/10 rounded-full flex items-center justify-center mb-4">
@@ -197,7 +232,19 @@ export default function AboutContent() {
       {/* Our Team */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center">Meet Our Team</h2>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h2 className="text-3xl font-bold mb-12 text-center">
+              <VariableProximity
+                label="Meet Our Team"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-gray-900"
+              />
+            </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {teamMembers.map((member, idx) => (
               <div key={member.name + '-' + member.position + '-' + idx} className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -215,7 +262,19 @@ export default function AboutContent() {
       {/* Company Timeline */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center">Our Journey</h2>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h2 className="text-3xl font-bold mb-12 text-center">
+              <VariableProximity
+                label="Our Journey"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-gray-900"
+              />
+            </h2>
+          </div>
           <div className="max-w-4xl mx-auto">
             {milestones.map((milestone, index) => (
               <div key={`${milestone.year}-${index}`} className="relative pl-10 pb-10">
@@ -239,11 +298,30 @@ export default function AboutContent() {
       {/* CTA Section */}
       <section className="py-16 bg-primary-light">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Join Our Journey</h2>
-          <p className="text-white/80 max-w-2xl mx-auto mb-8">
-            Experience the WexCars difference and discover why we're the preferred choice for luxury car enthusiasts
-            worldwide.
-          </p>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>}>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              <VariableProximity
+                label="Join Our Journey"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-white"
+              />
+            </h2>
+            <p className="text-white/80 max-w-2xl mx-auto mb-8">
+              <VariableProximity
+                label="Experience the WexCars difference and discover why we're the preferred choice for luxury car enthusiasts worldwide."
+                fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                toFontVariationSettings="'wght' 600, 'slnt' -2"
+                containerRef={containerRef}
+                radius={50}
+                falloff="linear"
+                className="text-white/80"
+              />
+            </p>
+          </div>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/collections">
               <Button className="bg-white hover:bg-gray-100 text-primary-light font-semibold px-8 py-3 transition-all duration-300">
