@@ -12,6 +12,7 @@ interface CarGalleryProps {
 export default function CarGallery({ car }: CarGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [showLightbox, setShowLightbox] = useState(false)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   // Parse additional images from JSON string if available
   const parseImages = (imagesString: string | null | undefined): string[] => {
@@ -34,7 +35,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
 
   // Ensure we have unique images for thumbnails
   const uniqueImages = [...new Set(displayImages)]
-  const thumbnailImages = uniqueImages.slice(0, 4)
+  const thumbnailImages = uniqueImages // Show all images as thumbnails, not just 4
 
   // Debug logging to check for duplicates
   console.log('Original images:', displayImages)
@@ -56,7 +57,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
         <div className="lg:col-span-4 relative">
           <div className="relative h-[300px] md:h-[400px] lg:h-[450px] bg-gray-50 rounded-lg overflow-hidden">
             <img
-              src={displayImages[activeIndex] || "/placeholder.svg"}
+              src={displayImages[hoveredIndex !== null ? hoveredIndex : activeIndex] || "/placeholder.svg"}
               alt={`${car.brand} ${car.name}`}
               className="w-full h-full object-cover cursor-pointer"
               onClick={openLightbox}
@@ -99,7 +100,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
 
         {/* Thumbnail Grid - Right Side - Made Bigger */}
         <div className="lg:col-span-2">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 max-h-[450px] overflow-y-auto">
             {thumbnailImages.map((image, index) => (
               <div
                 key={`thumbnail-${index}-${image}`}
@@ -107,6 +108,8 @@ export default function CarGallery({ car }: CarGalleryProps) {
                   activeIndex === index ? "ring-2 ring-red-600/30" : "hover:ring-2 hover:ring-red-300/30"
                 }`}
                 onClick={() => setActiveIndex(index)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
               >
                 <img 
                   src={image} 
