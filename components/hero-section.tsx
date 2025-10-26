@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { VariableProximity } from "@/components/ui/variable-proximity"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -99,14 +100,18 @@ export default function HeroSection() {
       </div>
       <div className="container mx-auto px-4 md:px-8 relative z-10">
         <div className="max-w-2xl">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic mb-4 leading-tight text-black">
-            Global Luxury Car
-            <br />
-            <span className="text-black">Export - Simplified.</span>
-          </h1>
-          <p className="text-black/80 mb-8 max-w-md">
-            Discover our exclusive collection of premium vehicles for an unparalleled driving experience.
-          </p>
+          <VariableProximity proximity={150} scale={1.05} duration={0.4}>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic mb-4 leading-tight text-black">
+              Global Luxury Car
+              <br />
+              <span className="text-black">Export - Simplified.</span>
+            </h1>
+          </VariableProximity>
+          <VariableProximity proximity={120} scale={1.03} duration={0.3}>
+            <p className="text-black/80 mb-8 max-w-md">
+              Discover our exclusive collection of premium vehicles for an unparalleled driving experience.
+            </p>
+          </VariableProximity>
           <button
             ref={buttonRef}
             onClick={handleClick}
