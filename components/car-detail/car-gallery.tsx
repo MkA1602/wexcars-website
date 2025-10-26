@@ -33,14 +33,12 @@ export default function CarGallery({ car }: CarGalleryProps) {
   // Fallback to placeholder if no images
   const displayImages = images.length > 0 ? images : ["/placeholder.svg?height=400&width=600&query=luxury+car"]
 
-  // Ensure we have unique images for thumbnails
+  // Ensure we have unique images and use the same array for both main and thumbnails
   const uniqueImages = [...new Set(displayImages)]
-  const thumbnailImages = uniqueImages // Show all images as thumbnails, not just 4
-
+  
   // Debug logging to check for duplicates
   console.log('Original images:', displayImages)
   console.log('Unique images:', uniqueImages)
-  console.log('Thumbnail images:', thumbnailImages)
 
   const openLightbox = () => {
     setShowLightbox(true)
@@ -57,9 +55,10 @@ export default function CarGallery({ car }: CarGalleryProps) {
         <div className="lg:col-span-4 relative">
           <div className="relative h-[300px] md:h-[400px] lg:h-[450px] bg-gray-50 rounded-lg overflow-hidden">
             <img
-              src={displayImages[hoveredIndex !== null ? hoveredIndex : activeIndex] || "/placeholder.svg"}
+              key={`main-image-${hoveredIndex !== null ? hoveredIndex : activeIndex}`}
+              src={uniqueImages[hoveredIndex !== null ? hoveredIndex : activeIndex] || "/placeholder.svg"}
               alt={`${car.brand} ${car.name}`}
-              className="w-full h-full object-cover cursor-pointer"
+              className="w-full h-full object-cover cursor-pointer transition-opacity duration-300"
               onClick={openLightbox}
             />
             
@@ -83,7 +82,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
             {/* Photo Count Button */}
             <div className="absolute bottom-4 right-4 bg-gray-800 text-white px-3 py-2 rounded-lg font-medium text-sm flex items-center gap-2">
               <ImageIcon className="w-4 h-4" />
-              +{displayImages.length} photos
+              +{uniqueImages.length} photos
             </div>
             
             {/* Zoom Button */}
@@ -101,7 +100,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
         {/* Thumbnail Grid - Right Side - Made Bigger */}
         <div className="lg:col-span-2">
           <div className="grid grid-cols-2 gap-3 max-h-[450px] overflow-y-auto">
-            {thumbnailImages.map((image, index) => (
+            {uniqueImages.map((image, index) => (
               <div
                 key={`thumbnail-${index}-${image}`}
                 className={`relative aspect-square bg-gray-50 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:scale-105 ${
@@ -127,7 +126,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center" onClick={closeLightbox}>
           <div className="relative max-w-6xl max-h-[90vh] p-4" onClick={(e) => e.stopPropagation()}>
             <img
-              src={displayImages[activeIndex] || "/placeholder.svg"}
+              src={uniqueImages[activeIndex] || "/placeholder.svg"}
               alt={`${car.brand} ${car.name}`}
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
             />
@@ -139,7 +138,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
               className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/70 hover:bg-black/90 text-white border-white/50 shadow-lg backdrop-blur-sm"
               onClick={(e) => {
                 e.stopPropagation()
-                setActiveIndex(prev => prev === 0 ? displayImages.length - 1 : prev - 1)
+                setActiveIndex(prev => prev === 0 ? uniqueImages.length - 1 : prev - 1)
               }}
             >
               ←
@@ -150,7 +149,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
               className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/70 hover:bg-black/90 text-white border-white/50 shadow-lg backdrop-blur-sm"
               onClick={(e) => {
                 e.stopPropagation()
-                setActiveIndex(prev => prev === displayImages.length - 1 ? 0 : prev + 1)
+                setActiveIndex(prev => prev === uniqueImages.length - 1 ? 0 : prev + 1)
               }}
             >
               →
@@ -158,7 +157,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
             
             {/* Image Counter */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-lg">
-              {activeIndex + 1} of {displayImages.length}
+              {activeIndex + 1} of {uniqueImages.length}
             </div>
             
             {/* Close Button */}
