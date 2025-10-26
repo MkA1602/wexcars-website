@@ -10,6 +10,7 @@ import CarInquiryForm from "./car-inquiry-form"
 import type { Car } from "@/lib/types"
 import { formatCurrency } from "@/lib/utils"
 import RelatedCars from "./related-cars"
+import PriceDisplay from "@/components/ui/price-display"
 
 interface CarDetailPageProps {
   car: Car
@@ -281,14 +282,18 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
               <div className="flex flex-col items-end gap-4">
                 {/* Pricing Information */}
                 <div className="text-right">
-                  <div className="text-3xl font-bold mb-1">
-                    <span className="text-gray-600 font-normal text-lg">Price excl. VAT: </span>
-                    <span className="text-red-600">€{(car.price_excl_vat || car.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                  </div>
-                  <div className="text-xl text-gray-600">
-                    <span className="font-normal text-base">Price incl. VAT: </span>
-                    €{car.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                  </div>
+                  <PriceDisplay
+                    price={car.price}
+                    priceExclVat={car.price_excl_vat}
+                    vatRate={car.vat_rate}
+                    vatAmount={car.vat_amount}
+                    currency={car.currency}
+                    enableToggle={true}
+                    carId={car.id}
+                    size="lg"
+                    isNettoPrice={car.is_netto_price}
+                    className="text-right"
+                  />
                 </div>
                 
                 {/* Buy Button */}
