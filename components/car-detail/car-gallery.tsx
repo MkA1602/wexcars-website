@@ -136,7 +136,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
             <Button
               variant="outline"
               size="icon"
-              className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white border-white/30"
+              className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-black/70 hover:bg-black/90 text-white border-white/50 shadow-lg backdrop-blur-sm"
               onClick={(e) => {
                 e.stopPropagation()
                 setActiveIndex(prev => prev === 0 ? displayImages.length - 1 : prev - 1)
@@ -147,7 +147,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
             <Button
               variant="outline"
               size="icon"
-              className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white border-white/30"
+              className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-black/70 hover:bg-black/90 text-white border-white/50 shadow-lg backdrop-blur-sm"
               onClick={(e) => {
                 e.stopPropagation()
                 setActiveIndex(prev => prev === displayImages.length - 1 ? 0 : prev + 1)
@@ -165,7 +165,7 @@ export default function CarGallery({ car }: CarGalleryProps) {
             <Button
               variant="outline"
               size="sm"
-              className="absolute top-4 right-4 bg-white/20 hover:bg-white/40 text-white border-white/30"
+              className="absolute top-4 right-4 bg-black/70 hover:bg-black/90 text-white border-white/50 shadow-lg backdrop-blur-sm"
               onClick={closeLightbox}
             >
               ✕
