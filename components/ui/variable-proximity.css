@@ -1,0 +1,26 @@
+/* Variable Proximity CSS */
+.variable-proximity {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-variation-settings: 'wght' 900, 'slnt' -10;
+  transition: font-variation-settings 0.1s ease-out;
+}
+
+/* Ensure smooth transitions */
+.variable-proximity span {
+  transition: font-variation-settings 0.1s ease-out;
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

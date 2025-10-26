@@ -6,7 +6,8 @@ import { useState, useRef, useEffect } from "react"
 import { ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { VariableProximity } from "@/components/ui/variable-proximity"
+import VariableProximity from "@/components/ui/variable-proximity"
+import "@/components/ui/variable-proximity.css"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -17,6 +18,7 @@ export default function HeroSection() {
   const [imageError, setImageError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const buttonRef = useRef<HTMLButtonElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   let nextId = 0
 
@@ -99,19 +101,29 @@ export default function HeroSection() {
         )}
       </div>
       <div className="container mx-auto px-4 md:px-8 relative z-10">
-        <div className="max-w-2xl">
-          <VariableProximity proximity={150} scale={1.05} duration={0.4}>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic mb-4 leading-tight text-black">
-              Global Luxury Car
-              <br />
-              <span className="text-black">Export - Simplified.</span>
-            </h1>
-          </VariableProximity>
-          <VariableProximity proximity={120} scale={1.03} duration={0.3}>
-            <p className="text-black/80 mb-8 max-w-md">
-              Discover our exclusive collection of premium vehicles for an unparalleled driving experience.
-            </p>
-          </VariableProximity>
+        <div ref={containerRef} className="max-w-2xl">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic mb-4 leading-tight text-black">
+            <VariableProximity
+              label="Global Luxury Car Export - Simplified."
+              fromFontVariationSettings="'wght' 900, 'slnt' -10"
+              toFontVariationSettings="'wght' 100, 'slnt' 0"
+              containerRef={containerRef}
+              radius={80}
+              falloff="gaussian"
+              className="text-black"
+            />
+          </h1>
+          <p className="text-black/80 mb-8 max-w-md">
+            <VariableProximity
+              label="Discover our exclusive collection of premium vehicles for an unparalleled driving experience."
+              fromFontVariationSettings="'wght' 400, 'slnt' 0"
+              toFontVariationSettings="'wght' 700, 'slnt' -5"
+              containerRef={containerRef}
+              radius={60}
+              falloff="linear"
+              className="text-black/80"
+            />
+          </p>
           <button
             ref={buttonRef}
             onClick={handleClick}
