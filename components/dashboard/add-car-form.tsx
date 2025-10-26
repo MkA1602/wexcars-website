@@ -126,11 +126,11 @@ export default function AddCarForm() {
           .order('usage_count', { ascending: false })
         
         if (error) throw error
-        
+
         if (data && data.length > 0) {
-          const featureNames = data.map(f => f.feature_name)
+          const featureNames = data.map((f: { feature_name: string }) => f.feature_name)
           // Merge with default features, removing duplicates
-          const mergedFeatures = [...new Set([...CAR_FEATURES, ...featureNames])]
+          const mergedFeatures = Array.from(new Set([...CAR_FEATURES, ...featureNames]))
           setAvailableFeatures(mergedFeatures)
         }
       } catch (error) {
