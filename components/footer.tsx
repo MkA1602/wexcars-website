@@ -133,7 +133,7 @@ const Footer = () => {
           <div className="container mx-auto px-4 py-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               {/* Brand Section */}
-              <div className="space-y-1">
+              <div>
                 <div className="flex items-center space-x-3">
                   <div className="relative w-32 h-32">
                     <Image 
@@ -145,7 +145,7 @@ const Footer = () => {
                     />
                   </div>
                 </div>
-                <p className="text-gray-light max-w-md leading-relaxed mt-1">
+                <p className="text-gray-light max-w-md leading-relaxed mt-2">
                   Discover the world's finest luxury vehicles. From exotic supercars to elegant sedans, we curate an
                   exceptional collection for discerning automotive enthusiasts.
                 </p>
