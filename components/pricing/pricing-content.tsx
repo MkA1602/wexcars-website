@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import "@/styles/pricing-animations.css"
 import VariableProximity from "@/components/ui/variable-proximity"
+import ScrollVelocity from "@/components/ui/scroll-velocity"
 import { useRef } from "react"
 
 // GitHub Raw URL base for reliable image serving
@@ -94,9 +95,22 @@ export default function PricingContent() {
               />
             </p>
           </div>
-          <div className="mt-8 inline-block bg-gradient-to-r from-red-600/20 to-red-700/20 backdrop-blur-md px-6 py-3 rounded-xl text-white border border-red-400/30 hero-cta-animate shadow-xl">
-            <span className="font-bold text-red-300">Free Trial: Enjoy 3 Months on Us</span>
-            <span className="text-gray-200"> – Absolutely Free! No credit card required. Unlimited access. Cancel anytime.</span>
+          <div className="mt-8 -mx-4 py-3 bg-gradient-to-r from-red-600/20 to-red-700/20 backdrop-blur-md border-y border-red-400/30 shadow-xl overflow-hidden">
+            <ScrollVelocity
+              texts={[
+                "Free Trial: Enjoy 3 Months on Us – Absolutely Free! No credit card required. Unlimited access. Cancel anytime."
+              ]}
+              velocity={50}
+              className="text-white font-bold text-lg md:text-2xl"
+              damping={50}
+              stiffness={400}
+              numCopies={3}
+              velocityMapping={{ input: [0, 1000], output: [0, 3] }}
+              parallaxClassName="parallax py-2"
+              scrollerClassName="scroller text-red-300"
+              parallaxStyle={{ margin: 0 }}
+              scrollerStyle={{ fontSize: "20px" }}
+            />
           </div>
         </div>
       </section>
