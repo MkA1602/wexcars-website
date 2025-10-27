@@ -2,12 +2,13 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Check, MapPin, Phone, Mail, Clock } from "lucide-react"
 import dynamic from "next/dynamic"
+import VariableProximity from "@/components/ui/variable-proximity"
 
 // Dynamically import OpenStreetMap to avoid SSR issues and chunk loading problems
 const OpenStreetMap = dynamic(() => import("@/components/openstreet-map"), {
@@ -26,6 +27,8 @@ const OpenStreetMap = dynamic(() => import("@/components/openstreet-map"), {
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
 
 export default function ContactContent() {
+  const containerRef = useRef<HTMLElement>(null!)
+  
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -60,10 +63,28 @@ export default function ContactContent() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-primary-light/90 to-primary-dark/90"></div>
         </div>
-        <div className="container mx-auto px-4 text-center relative z-10 hero-content-animate">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 hero-title-animate">Contact Us</h1>
+        <div className="container mx-auto px-4 text-center relative z-10 hero-content-animate" ref={containerRef as React.RefObject<HTMLDivElement>}>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 hero-title-animate">
+            <VariableProximity
+              label="Contact Us"
+              fromFontVariationSettings="'wght' 700, 'slnt' 0"
+              toFontVariationSettings="'wght' 900, 'slnt' -5"
+              containerRef={containerRef}
+              radius={60}
+              falloff="gaussian"
+              className="text-white"
+            />
+          </h1>
           <p className="text-white/80 max-w-2xl mx-auto text-lg hero-text-animate">
-            Have questions about our vehicles or services? Our team is here to help.
+            <VariableProximity
+              label="Have questions about our vehicles or services? Our team is here to help."
+              fromFontVariationSettings="'wght' 400, 'slnt' 0"
+              toFontVariationSettings="'wght' 600, 'slnt' -2"
+              containerRef={containerRef}
+              radius={50}
+              falloff="linear"
+              className="text-white/80"
+            />
           </p>
         </div>
       </section>
