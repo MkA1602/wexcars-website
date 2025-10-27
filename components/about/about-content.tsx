@@ -118,21 +118,50 @@ export default function AboutContent() {
                 loading="lazy"
               />
             </div>
-            <div className="md:w-1/2">
-              <h2 className="text-3xl font-bold mb-6">Our Story</h2>
+            <div className="md:w-1/2" ref={containerRef as React.RefObject<HTMLDivElement>}>
+              <h2 className="text-3xl font-bold mb-6">
+                <VariableProximity
+                  label="Our Story"
+                  fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                  toFontVariationSettings="'wght' 900, 'slnt' -5"
+                  containerRef={containerRef}
+                  radius={60}
+                  falloff="gaussian"
+                  className="text-gray-900"
+                />
+              </h2>
               <p className="text-gray-700 mb-4">
-                Founded in 2022, WexCars was born from a passion for exceptional automobiles and a vision to transform
-                how discerning clients discover, experience, and acquire luxury vehicles.
+                <VariableProximity
+                  label="Founded in 2022, WexCars was born from a passion for exceptional automobiles and a vision to transform how discerning clients discover, experience, and acquire luxury vehicles."
+                  fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                  toFontVariationSettings="'wght' 600, 'slnt' -2"
+                  containerRef={containerRef}
+                  radius={50}
+                  falloff="linear"
+                  className="text-gray-700"
+                />
               </p>
               <p className="text-gray-700 mb-4">
-                What began as a small collection of handpicked vehicles has evolved into one of the most prestigious
-                luxury car platforms, offering an unparalleled selection of premium automobiles from the world's most
-                esteemed manufacturers.
+                <VariableProximity
+                  label="What began as a small collection of handpicked vehicles has evolved into one of the most prestigious luxury car platforms, offering an unparalleled selection of premium automobiles from the world's most esteemed manufacturers."
+                  fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                  toFontVariationSettings="'wght' 600, 'slnt' -2"
+                  containerRef={containerRef}
+                  radius={50}
+                  falloff="linear"
+                  className="text-gray-700"
+                />
               </p>
               <p className="text-gray-700 mb-4">
-                Our founder, MK Sulaiman, recognized a gap in the market for a truly personalized, transparent,
-                and exceptional car buying journey. Today, that vision has expanded into a global operation that
-                maintains the same dedication to quality and client satisfaction that defined our beginnings.
+                <VariableProximity
+                  label="Our founder, MK Sulaiman, recognized a gap in the market for a truly personalized, transparent, and exceptional car buying journey. Today, that vision has expanded into a global operation that maintains the same dedication to quality and client satisfaction that defined our beginnings."
+                  fromFontVariationSettings="'wght' 400, 'slnt' 0"
+                  toFontVariationSettings="'wght' 600, 'slnt' -2"
+                  containerRef={containerRef}
+                  radius={50}
+                  falloff="linear"
+                  className="text-gray-700"
+                />
               </p>
             </div>
           </div>
