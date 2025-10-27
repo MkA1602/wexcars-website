@@ -1,6 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
 import VariableProximity from "@/components/ui/variable-proximity"
 import { useRef } from "react"
 import { Search, MessageCircle, Phone, Mail, MapPin, ChevronRight, HelpCircle, Car, CreditCard, Truck, Shield, Users, FileText, Plus, Minus, Building2, CarFront, Wallet, Package, Star, Settings, Globe, Clock, ShieldCheck, CheckCircle2 } from "lucide-react"
@@ -9,12 +8,6 @@ import { Button } from "@/components/ui/button"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
-
-export const metadata: Metadata = {
-  title: "FAQ | WexCars - Frequently Asked Questions",
-  description: "Find answers to frequently asked questions about WexCars services, vehicles, and policies.",
-  keywords: "FAQ, frequently asked questions, WexCars, help, support",
-}
 
 const faqData = [
   {
