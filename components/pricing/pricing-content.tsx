@@ -302,9 +302,19 @@ export default function PricingContent() {
       {/* FAQ Section */}
       <section className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center text-gray-900 tracking-tight">
-            Frequently Asked Questions
-          </h2>
+          <div ref={containerRef as React.RefObject<HTMLDivElement>} className="mb-16 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
+              <VariableProximity
+                label="Frequently Asked Questions"
+                fromFontVariationSettings="'wght' 700, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'slnt' -5"
+                containerRef={containerRef}
+                radius={60}
+                falloff="gaussian"
+                className="text-gray-900"
+              />
+            </h2>
+          </div>
           <div className="max-w-4xl mx-auto space-y-6">
             <div className="bg-white p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-red-200 group">
               <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-red-600 transition-colors">
