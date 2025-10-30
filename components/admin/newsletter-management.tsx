@@ -70,11 +70,14 @@ export default function NewsletterManagement() {
 
   const fetchSubscribers = async () => {
     try {
+      console.log('Fetching subscribers...')
       setError(null)
       const { data, error: fetchError } = await supabaseClient
         .from('newsletter_subscribers')
         .select('*')
         .order('subscribed_at', { ascending: false })
+
+      console.log('Supabase response:', { data, error: fetchError })
 
       if (fetchError) {
         console.error('Supabase error:', fetchError)
@@ -100,6 +103,7 @@ export default function NewsletterManagement() {
         return
       }
       
+      console.log('Setting subscribers:', data)
       setSubscribers(data || [])
     } catch (error: any) {
       console.error('Error fetching subscribers:', error)
@@ -337,8 +341,24 @@ export default function NewsletterManagement() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Newsletter Management</h1>
-        <p className="text-gray-600">Manage your newsletter subscribers and campaigns</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Newsletter Management</h1>
+            <p className="text-gray-600">Manage your newsletter subscribers and campaigns</p>
+          </div>
+          <Button
+            onClick={() => {
+              setIsLoading(true)
+              fetchSubscribers()
+            }}
+            disabled={isLoading}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Mail className="w-4 h-4" />
+            {isLoading ? 'Refreshing...' : 'Refresh Data'}
+          </Button>
+        </div>
       </div>
 
       {/* Error Display */}
@@ -386,6 +406,19 @@ export default function NewsletterManagement() {
           </CardContent>
         </Card>
       )}
+
+      {/* Debug Info */}
+      <Card className="mb-6 bg-blue-50 border-blue-200">
+        <CardContent className="p-4">
+          <div className="text-sm">
+            <p><strong>Debug Info:</strong></p>
+            <p>• Loading: {isLoading ? 'Yes' : 'No'}</p>
+            <p>• Error: {error || 'None'}</p>
+            <p>• Subscribers Count: {subscribers.length}</p>
+            <p>• Subscribers Data: {JSON.stringify(subscribers.slice(0, 2), null, 2)}</p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
