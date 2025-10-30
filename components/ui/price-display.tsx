@@ -4,7 +4,8 @@ import type React from "react"
 import { useState, memo, useEffect, useRef } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown, ChevronUp, Info } from "lucide-react"
+import PriceDetailsModal from "./price-details-modal"
 
 // Global state store for toggle states - ensures complete isolation
 const toggleStates = new Map<string, boolean>()
@@ -139,57 +140,57 @@ function PriceDisplay({
     )
   }
 
-  // If toggle is enabled, show compact view with expandable details
+  // If toggle is enabled, show compact view with popup details
   if (enableToggle && priceExclVat) {
     return (
-      <div className={`space-y-1 ${className}`}>
-        {/* Main price with VAT - always visible */}
-        <div className="flex items-baseline gap-2">
-          <span className={`text-primary-light ${sizeClasses[size].main}`}>
-            {formatPrice(price)}
-          </span>
-          <Badge variant="secondary" className="text-xs">
-            incl. VAT
-          </Badge>
-        </div>
-        
-        {/* Price excluding VAT - always visible */}
-        <div className={`text-gray-600 ${sizeClasses[size].breakdown}`}>
-          <span>Price (excl. VAT): </span>
-          <span className="font-semibold">{formatPrice(calculatedPriceExclVat)}</span>
-        </div>
-        
-        {/* More Details Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            const newState = !isExpanded
-            console.log(`[${componentId}] Toggling car ${carId}: ${isExpanded} -> ${newState}`)
-            setIsExpanded(newState)
-          }}
-          className="h-auto p-1 text-xs text-gray-600 hover:text-primary-light flex items-center gap-1"
-        >
-          {isExpanded ? 'Less Details' : 'More Details'}
-          {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-        </Button>
-        
-        {/* VAT breakdown - expandable */}
-        {isExpanded && (
-          <div className={`text-gray-600 space-y-1 ${sizeClasses[size].breakdown} bg-gray-50 p-3 rounded-md border`}>
-            <div className="flex justify-between">
-              <span>VAT ({vatRate}%):</span>
-              <span className="font-semibold">{formatPrice(calculatedVatAmount)}</span>
-            </div>
-            <div className="flex justify-between border-t pt-1 font-bold">
-              <span>Total:</span>
-              <span className="text-primary-light">{formatPrice(price)}</span>
-            </div>
+      <>
+        <div className={`space-y-1 ${className}`}>
+          {/* Main price with VAT - always visible */}
+          <div className="flex items-baseline gap-2">
+            <span className={`text-primary-light ${sizeClasses[size].main}`}>
+              {formatPrice(price)}
+            </span>
+            <Badge variant="secondary" className="text-xs">
+              incl. VAT
+            </Badge>
           </div>
-        )}
-      </div>
+          
+          {/* Price excluding VAT - always visible */}
+          <div className={`text-gray-600 ${sizeClasses[size].breakdown}`}>
+            <span>Price (excl. VAT): </span>
+            <span className="font-semibold">{formatPrice(calculatedPriceExclVat)}</span>
+          </div>
+          
+          {/* More Details Button - Now opens popup */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              const newState = !isExpanded
+              console.log(`[${componentId}] Opening popup for car ${carId}`)
+              setIsExpanded(newState)
+            }}
+            className="h-auto p-1 text-xs text-gray-600 hover:text-primary-light flex items-center gap-1 group"
+          >
+            <Info className="w-3 h-3 group-hover:scale-110 transition-transform" />
+            <span>View Details</span>
+          </Button>
+        </div>
+
+        {/* Price Details Modal */}
+        <PriceDetailsModal
+          isOpen={isExpanded}
+          onClose={() => setIsExpanded(false)}
+          price={price}
+          priceExclVat={priceExclVat}
+          vatRate={vatRate}
+          vatAmount={vatAmount}
+          currency={currency}
+          isNettoPrice={isNettoPrice}
+        />
+      </>
     )
   }
 

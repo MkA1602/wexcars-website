@@ -23,10 +23,13 @@
     "add-missing-fields": "node scripts/add-missing-fields.js",
     "update-schema": "node scripts/update-database-schema.js",
     "test-add-car": "node scripts/test-add-car.js",
-    "get-env-netlify": "node scripts/get-env-for-netlify.js"
+    "get-env-netlify": "node scripts/get-env-for-netlify.js",
+    "fix-dev": "powershell -ExecutionPolicy Bypass -File scripts/fix-dev-issues.ps1",
+    "check-imports": "powershell -ExecutionPolicy Bypass -File scripts/check-react-imports.ps1"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
+    "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
@@ -69,6 +72,7 @@
     "dotenv": "^16.4.5",
     "embla-carousel-react": "8.5.1",
     "framer-motion": "latest",
+    "gsap": "^3.13.0",
     "input-otp": "1.4.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.454.0",
@@ -79,6 +83,7 @@
     "react-dom": "^19",
     "react-hook-form": "^7.54.1",
     "react-resizable-panels": "^2.1.7",
+    "react-shuffle-text": "^1.0.6",
     "recharts": "2.15.0",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",

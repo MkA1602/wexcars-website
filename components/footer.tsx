@@ -5,7 +5,8 @@ import type React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
-import { Mail, Phone, MapPin, ArrowRight, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react"
+import { Mail, Phone, MapPin, ArrowRight, Facebook, Twitter, Instagram, Linkedin, Youtube, CheckCircle, X } from "lucide-react"
+import { supabaseClient } from "@/lib/supabase/client"
 
 // VFX Types
 interface VFXInstance {
@@ -25,7 +26,50 @@ const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-websi
 const Footer = () => {
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const [notification, setNotification] = useState<{
+    show: boolean
+    type: 'success' | 'error' | 'info'
+    message: string
+    title: string
+  }>({
+    show: false,
+    type: 'success',
+    message: '',
+    title: ''
+  })
+  const [browserNotificationEnabled, setBrowserNotificationEnabled] = useState(false)
   const subscribeButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Show notification function
+  const showNotification = (type: 'success' | 'error' | 'info', title: string, message: string) => {
+    setNotification({
+      show: true,
+      type,
+      title,
+      message
+    })
+    
+    // Auto-hide after 6 seconds (increased for better UX)
+    setTimeout(() => {
+      setNotification(prev => ({ ...prev, show: false }))
+    }, 6000)
+
+    // Show browser notification if enabled and permission granted
+    if (browserNotificationEnabled && 'Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, {
+        body: message,
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
+        tag: 'newsletter-subscription',
+        requireInteraction: false
+      })
+    }
+  }
+
+  // Close notification function
+  const closeNotification = () => {
+    setNotification(prev => ({ ...prev, show: false }))
+  }
 
   // VFX Effect for Subscribe Button
   useEffect(() => {
@@ -109,18 +153,225 @@ const Footer = () => {
     }
   }, [])
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle newsletter subscription
-    setIsSubscribed(true)
-    setEmail("")
-    setTimeout(() => setIsSubscribed(false), 3000)
+    
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      showNotification('error', 'Invalid Email', 'Please enter a valid email address')
+      return
+    }
+
+    try {
+      // Try to save to database first
+      let subscriptionSuccess = false
+      
+      try {
+        // Test Supabase connection first
+        const { data: testData, error: testError } = await supabaseClient
+          .from('newsletter_subscribers')
+          .select('count')
+          .limit(1)
+
+        if (testError) {
+          throw new Error(`Supabase connection failed: ${testError.message}`)
+        }
+
+        // Check if email already exists
+        const { data: existingSubscriber, error: fetchError } = await supabaseClient
+          .from('newsletter_subscribers')
+          .select('id, status')
+          .eq('email', email)
+          .single()
+
+        if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows found
+          throw fetchError
+        }
+
+        if (existingSubscriber) {
+          if (existingSubscriber.status === 'active') {
+            showNotification('info', 'Already Subscribed', 'This email is already subscribed to our newsletter')
+            return
+          } else if (existingSubscriber.status === 'unsubscribed') {
+            // Reactivate subscription
+            const { error: updateError } = await supabaseClient
+              .from('newsletter_subscribers')
+              .update({ 
+                status: 'active',
+                subscribed_at: new Date().toISOString(),
+                unsubscribed_at: null
+              })
+              .eq('id', existingSubscriber.id)
+
+            if (updateError) throw updateError
+            
+            subscriptionSuccess = true
+            showNotification('success', '🎉 Welcome to WexCars!', 'You\'re now subscribed to our exclusive newsletter. Get ready for luxury car updates!')
+          }
+        } else {
+          // Create new subscription
+          const { error: insertError } = await supabaseClient
+            .from('newsletter_subscribers')
+            .insert({
+              email: email,
+              status: 'active',
+              subscribed_at: new Date().toISOString(),
+              source: 'website_footer'
+            })
+
+          if (insertError) throw insertError
+          subscriptionSuccess = true
+          showNotification('success', '🚗 Subscription Successful!', 'Welcome to WexCars! You\'ll receive exclusive updates on luxury cars, special offers, and industry news.')
+        }
+      } catch (dbError: any) {
+        console.warn('Database connection failed, using fallback method:', dbError.message)
+        
+        // Fallback: Store in localStorage temporarily
+        const existingSubscriptions = JSON.parse(localStorage.getItem('newsletter_subscriptions') || '[]')
+        
+        if (existingSubscriptions.includes(email)) {
+          showNotification('info', 'Already Subscribed', 'This email is already subscribed to our newsletter')
+          return
+        }
+        
+        existingSubscriptions.push(email)
+        localStorage.setItem('newsletter_subscriptions', JSON.stringify(existingSubscriptions))
+        subscriptionSuccess = true
+        showNotification('success', '🚗 Subscription Successful!', 'Welcome to WexCars! You\'ll receive exclusive updates on luxury cars, special offers, and industry news.')
+      }
+
+      if (subscriptionSuccess) {
+        // Try to send welcome email (don't fail if this doesn't work)
+        try {
+          await sendWelcomeEmail(email)
+        } catch (emailError) {
+          console.warn('Welcome email failed:', emailError)
+          // Don't show error to user, subscription still succeeded
+        }
+        
+        // Try to send admin notification (don't fail if this doesn't work)
+        try {
+          await sendAdminNotification(email)
+        } catch (notificationError) {
+          console.warn('Admin notification failed:', notificationError)
+          // Don't show error to user, subscription still succeeded
+        }
+
+        setIsSubscribed(true)
+        setEmail("")
+        setTimeout(() => setIsSubscribed(false), 5000)
+      }
+    } catch (error: any) {
+      console.error('Subscription error:', error)
+      showNotification('error', 'Subscription Failed', 'Failed to subscribe. Please try again or contact support.')
+    }
+  }
+
+  const sendWelcomeEmail = async (subscriberEmail: string) => {
+    try {
+      // Check if Edge Function exists
+      const { error } = await supabaseClient.functions.invoke('send-welcome-email', {
+        body: {
+          email: subscriberEmail,
+          template: 'welcome'
+        }
+      })
+
+      if (error) {
+        console.warn('Welcome email function not deployed yet:', error)
+        return
+      }
+    } catch (error) {
+      console.warn('Welcome email service not available:', error)
+      // Don't fail the subscription if welcome email fails
+    }
+  }
+
+  const sendAdminNotification = async (subscriberEmail: string) => {
+    try {
+      // Check if Edge Function exists
+      const { error } = await supabaseClient.functions.invoke('send-admin-notification', {
+        body: {
+          type: 'new_subscriber',
+          email: subscriberEmail,
+          timestamp: new Date().toISOString()
+        }
+      })
+
+      if (error) {
+        console.warn('Admin notification function not deployed yet:', error)
+        return
+      }
+    } catch (error) {
+      console.warn('Admin notification service not available:', error)
+    }
   }
 
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="relative bg-gradient-to-br from-black-lighter via-black-light to-black text-white overflow-hidden">
+    <>
+      {/* Newsletter Notification */}
+      {notification.show && (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
+          <div className={`max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 ${
+            notification.type === 'success' ? 'border-green-500' :
+            notification.type === 'error' ? 'border-red-500' :
+            'border-blue-500'
+          }`}>
+            <div className="p-4">
+              <div className="flex items-start">
+                <div className={`flex-shrink-0 ${
+                  notification.type === 'success' ? 'text-green-500' :
+                  notification.type === 'error' ? 'text-red-500' :
+                  'text-blue-500'
+                }`}>
+                  {notification.type === 'success' ? (
+                    <CheckCircle className="w-6 h-6" />
+                  ) : notification.type === 'error' ? (
+                    <X className="w-6 h-6" />
+                  ) : (
+                    <Mail className="w-6 h-6" />
+                  )}
+                </div>
+                <div className="ml-3 flex-1">
+                  <h3 className={`text-sm font-medium ${
+                    notification.type === 'success' ? 'text-green-800' :
+                    notification.type === 'error' ? 'text-red-800' :
+                    'text-blue-800'
+                  }`}>
+                    {notification.title}
+                  </h3>
+                  <p className={`mt-1 text-sm ${
+                    notification.type === 'success' ? 'text-green-700' :
+                    notification.type === 'error' ? 'text-red-700' :
+                    'text-blue-700'
+                  }`}>
+                    {notification.message}
+                  </p>
+                </div>
+                <div className="ml-4 flex-shrink-0">
+                  <button
+                    onClick={closeNotification}
+                    className={`inline-flex rounded-md p-1.5 ${
+                      notification.type === 'success' ? 'text-green-500 hover:text-green-700' :
+                      notification.type === 'error' ? 'text-red-500 hover:text-red-700' :
+                      'text-blue-500 hover:text-blue-700'
+                    } focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      notification.type === 'success' ? 'focus:ring-green-500' :
+                      notification.type === 'error' ? 'focus:ring-red-500' :
+                      'focus:ring-blue-500'
+                    }`}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <footer className="relative bg-gradient-to-br from-black-lighter via-black-light to-black text-white overflow-hidden">
       {/* Background Pattern removed */}
       {/* <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0 bg-[url('/geometric-pattern.png')] bg-repeat opacity-20"></div>
@@ -155,27 +406,41 @@ const Footer = () => {
               <div className="space-y-4">
                 <h4 className="text-xl font-semibold">Stay Updated</h4>
                 <p className="text-gray-medium">Get the latest updates on new arrivals and exclusive offers.</p>
-                <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address"
-                      className="w-full px-4 py-3 bg-black-lighter/50 border border-gray-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
-                      required
-                    />
+                
+                {isSubscribed ? (
+                  <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg animate-in fade-in-0 duration-500">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-500/20 rounded-full">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                      </div>
+                      <div>
+                        <p className="text-green-400 font-medium">🎉 Successfully Subscribed!</p>
+                        <p className="text-green-300 text-sm">Welcome to WexCars! Check your email for confirmation.</p>
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    ref={subscribeButtonRef}
-                    type="submit"
-                    className="vfx-button px-6 py-3 bg-gradient-to-r from-primary-dark to-primary hover:from-primary-darker hover:to-primary-dark rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 group relative overflow-hidden"
-                  >
-                    <span>{isSubscribed ? "Subscribed!" : "Subscribe"}</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-                  </button>
-                </form>
-                {isSubscribed && <p className="text-green-400 text-sm">Thank you for subscribing!</p>}
+                ) : (
+                  <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1">
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email address"
+                        className="w-full px-4 py-3 bg-black-lighter/50 border border-gray-dark rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                        required
+                      />
+                    </div>
+                    <button
+                      ref={subscribeButtonRef}
+                      type="submit"
+                      className="vfx-button px-6 py-3 bg-gradient-to-r from-primary-dark to-primary hover:from-primary-darker hover:to-primary-dark rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 group relative overflow-hidden"
+                    >
+                      <span>Subscribe</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </div>
@@ -343,6 +608,7 @@ const Footer = () => {
       {/* Decorative Elements */}
       <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-primary-dark via-primary to-primary-dark"></div>
     </footer>
+    </>
   )
 }
 

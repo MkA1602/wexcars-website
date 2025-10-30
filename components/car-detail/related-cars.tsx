@@ -18,11 +18,17 @@ export default function RelatedCars({ currentCarId }: RelatedCarsProps) {
   useEffect(() => {
     const fetchRelatedCars = async () => {
       try {
-        // Fetch 3 random cars excluding the current one
+        // Fetch 3 random cars excluding the current one, sold cars, and removed cars
         const { data, error } = await supabaseClient
           .from('cars')
           .select('*')
           .neq('id', currentCarId)
+          .eq('is_sold', false) // Exclude sold cars
+          .eq('is_published', true) // Only show published cars
+          .neq('availability', 'Sold') // Exclude cars marked as sold in availability
+          .neq('availability', 'Removed') // Exclude removed cars
+          .neq('availability', 'Inactive') // Exclude inactive cars
+          .order('created_at', { ascending: false })
           .limit(3)
           
         if (error) {

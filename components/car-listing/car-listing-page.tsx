@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import ErrorBoundary from "@/components/error-boundary"
+import GradientText from "@/components/ui/gradient-text"
 
 // Performance constants
 const ITEMS_PER_PAGE = 12
@@ -500,7 +501,11 @@ export default function OptimizedCarListingPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header and Search */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Our Car Collection</h1>
+          <h1 className="text-2xl md:text-3xl font-black mb-4 tracking-tight">
+            <GradientText colors={['#ff0606', '#890b0b', '#ff0606', '#890b0b', '#ff0606']} animationSpeed={4}>
+              Our Car Collection
+            </GradientText>
+          </h1>
           <SearchBar onSearch={handleSearch} />
         </div>
 

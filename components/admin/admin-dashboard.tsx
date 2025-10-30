@@ -24,9 +24,12 @@ import {
   DollarSign,
   UserX,
   UserCheck,
-  MoreVertical
+  MoreVertical,
+  Mail,
+  Upload
 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
+import Link from "next/link"
 
 // User Edit Form Component
 function UserEditForm({ user, onSave, onCancel }: {
@@ -560,7 +563,7 @@ export default function AdminDashboard() {
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-        <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+        <TabsList className="grid grid-cols-6 w-full max-w-4xl">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Settings size={16} />
             Overview
@@ -572,6 +575,10 @@ export default function AdminDashboard() {
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users size={16} />
             Users ({stats.totalUsers})
+          </TabsTrigger>
+          <TabsTrigger value="newsletter" className="flex items-center gap-2">
+            <Mail size={16} />
+            Newsletter
           </TabsTrigger>
           <TabsTrigger value="fees" className="flex items-center gap-2">
             <DollarSign size={16} />
@@ -711,10 +718,12 @@ export default function AdminDashboard() {
                     Manage all cars listed in the system
                   </CardDescription>
                 </div>
-                <Button className="bg-primary-light hover:bg-primary-dark text-white">
-                  <Plus size={16} className="mr-2" />
-                  Add Car
-                </Button>
+                <Link href="/dashboard/add-car">
+                  <Button className="bg-primary-light hover:bg-primary-dark text-white">
+                    <Plus size={16} className="mr-2" />
+                    Add Car
+                  </Button>
+                </Link>
               </div>
             </CardHeader>
             <CardContent>
@@ -1068,6 +1077,116 @@ export default function AdminDashboard() {
                   <p className="text-gray-500">No users found</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="newsletter">
+          <Card>
+            <CardHeader>
+              <CardTitle>Newsletter Management</CardTitle>
+              <CardDescription>
+                Manage newsletter subscribers and campaigns
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Alert>
+                  <Mail className="h-4 w-4" />
+                  <AlertDescription>
+                    Newsletter system is now active! Subscribers will receive welcome emails and you'll get notifications for new subscriptions.
+                  </AlertDescription>
+                </Alert>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-blue-600" />
+                        <div>
+                          <p className="text-sm font-medium">Total Subscribers</p>
+                          <p className="text-2xl font-bold">-</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-5 w-5 text-green-600" />
+                        <div>
+                          <p className="text-sm font-medium">Active Subscribers</p>
+                          <p className="text-2xl font-bold">-</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-purple-600" />
+                        <div>
+                          <p className="text-sm font-medium">This Month</p>
+                          <p className="text-2xl font-bold">-</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="flex gap-2 flex-wrap">
+                  <Button asChild>
+                    <Link href="/admin/newsletter-management">
+                      <Mail className="w-4 h-4 mr-2" />
+                      Newsletter Dashboard
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/admin/newsletter-migration">
+                      <Upload className="w-4 h-4 mr-2" />
+                      Migration Tool
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/admin/supabase-test">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Connection Test
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/unsubscribe">
+                      <UserX className="w-4 h-4 mr-2" />
+                      Test Unsubscribe
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/admin/newsletter-notification-demo">
+                      <Mail className="w-4 h-4 mr-2" />
+                      Notification Demo
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/admin/notification-settings">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Notification Settings
+                    </Link>
+                  </Button>
+                </div>
+
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="font-medium text-blue-900 mb-2">Newsletter Features</h3>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>✅ Automatic welcome emails for new subscribers</li>
+                    <li>✅ Admin notifications for new subscriptions</li>
+                    <li>✅ Unsubscribe functionality with resubscribe option</li>
+                    <li>✅ Subscriber management dashboard</li>
+                    <li>✅ Email analytics and tracking</li>
+                    <li>✅ CSV export of subscriber data</li>
+                  </ul>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

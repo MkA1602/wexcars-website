@@ -17,6 +17,7 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import ServiceFeeCalculator from "./service-fee-calculator"
 import type { FeeCalculationResult } from "@/lib/fee-calculator"
+import PriceInput from "@/components/ui/price-input"
 
 // Common car features for selection
 const CAR_FEATURES = [
@@ -69,6 +70,15 @@ export default function AddCarForm() {
     // New pricing and admin features
     is_netto_price: false,
     is_new_car: false,
+  })
+
+  // New price input state
+  const [priceInputData, setPriceInputData] = useState({
+    priceType: 'exclude' as 'exclude' | 'include' | 'no_vat',
+    priceExclVat: '',
+    priceInclVat: '',
+    vatRate: '5',
+    currency: 'EUR'
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -125,17 +135,26 @@ export default function AddCarForm() {
           .select('feature_name')
           .order('usage_count', { ascending: false })
         
-        if (error) throw error
+        if (error) {
+          console.warn('Could not load features from database:', error.message)
+          // Use default features if table doesn't exist or query fails
+          setAvailableFeatures(CAR_FEATURES)
+          return
+        }
 
         if (data && data.length > 0) {
           const featureNames = data.map((f: { feature_name: string }) => f.feature_name)
           // Merge with default features, removing duplicates
           const mergedFeatures = Array.from(new Set([...CAR_FEATURES, ...featureNames]))
           setAvailableFeatures(mergedFeatures)
+        } else {
+          // No custom features found, use defaults
+          setAvailableFeatures(CAR_FEATURES)
         }
-      } catch (error) {
-        console.error('Error loading features:', error)
+      } catch (error: any) {
+        console.warn('Error loading features:', error?.message || 'Unknown error')
         // Keep default features if database fetch fails
+        setAvailableFeatures(CAR_FEATURES)
       }
     }
     
@@ -185,16 +204,16 @@ export default function AddCarForm() {
     }
 
     // Validate price (excluding VAT)
-    if (!formData.priceExclVat) {
-      newErrors.priceExclVat = "Price (excl. VAT) is required"
-    } else if (isNaN(Number(formData.priceExclVat)) || Number(formData.priceExclVat) <= 0) {
+    if (!priceInputData.priceExclVat && priceInputData.priceType !== 'no_vat') {
+      newErrors.priceExclVat = "Price is required"
+    } else if (priceInputData.priceExclVat && (isNaN(Number(priceInputData.priceExclVat)) || Number(priceInputData.priceExclVat) <= 0)) {
       newErrors.priceExclVat = "Price must be a positive number"
     }
 
-    // Validate VAT rate
-    if (!formData.vatRate) {
+    // Validate VAT rate (only if not "No VAT")
+    if (priceInputData.priceType !== 'no_vat' && !priceInputData.vatRate) {
       newErrors.vatRate = "VAT rate is required"
-    } else if (isNaN(Number(formData.vatRate)) || Number(formData.vatRate) < 0) {
+    } else if (priceInputData.priceType !== 'no_vat' && priceInputData.vatRate && (isNaN(Number(priceInputData.vatRate)) || Number(priceInputData.vatRate) < 0)) {
       newErrors.vatRate = "VAT rate must be a valid percentage"
     }
 
@@ -234,7 +253,7 @@ export default function AddCarForm() {
     }
 
     // Validate service fee payment (only if not netto pricing and not admin)
-    if (!formData.is_netto_price && !isFeePaid && !isAdmin) {
+    if (priceInputData.priceType !== 'no_vat' && !isFeePaid && !isAdmin) {
       newErrors.feePayment = "Service fee must be paid before publishing the car ad"
     }
 
@@ -301,6 +320,64 @@ export default function AddCarForm() {
     }
   }
 
+  // Handle price input changes from the new PriceInput component
+  const handlePriceInputChange = (field: string, value: string) => {
+    setPriceInputData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
+
+    // Update formData to keep compatibility with existing logic
+    if (field === 'priceType') {
+      const priceType = value as 'exclude' | 'include' | 'no_vat'
+      setFormData((prev) => ({
+        ...prev,
+        is_netto_price: priceType === 'no_vat'
+      }))
+    } else if (field === 'priceExclVat') {
+      setFormData((prev) => ({
+        ...prev,
+        priceExclVat: value
+      }))
+    } else if (field === 'priceInclVat') {
+      // Calculate price excluding VAT from price including VAT
+      const priceInclVat = parseFloat(value)
+      const vatRate = parseFloat(priceInputData.vatRate)
+      if (!isNaN(priceInclVat) && !isNaN(vatRate)) {
+        const priceExclVat = priceInclVat / (1 + vatRate / 100)
+        setFormData((prev) => ({
+          ...prev,
+          priceExclVat: priceExclVat.toFixed(2),
+          price: value
+        }))
+        setPriceInputData((prev) => ({
+          ...prev,
+          priceExclVat: priceExclVat.toFixed(2)
+        }))
+      }
+    } else if (field === 'vatRate') {
+      setFormData((prev) => ({
+        ...prev,
+        vatRate: value
+      }))
+    } else if (field === 'currency') {
+      setFormData((prev) => ({
+        ...prev,
+        currency: value
+      }))
+    }
+
+    // Clear price-related errors
+    if (errors.priceExclVat || errors.vatRate) {
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors.priceExclVat
+        delete newErrors.vatRate
+        return newErrors
+      })
+    }
+  }
+
   const toggleFeature = (feature: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -319,7 +396,7 @@ export default function AddCarForm() {
         features: [...prev.features, feature]
       }))
       
-      // Save to database
+      // Save to database (optional - don't fail if table doesn't exist)
       try {
         const { error } = await supabaseClient
           .from('car_features')
@@ -335,14 +412,18 @@ export default function AddCarForm() {
             }
           )
         
-        if (error) throw error
+        if (error) {
+          console.warn('Could not save feature to database:', error.message)
+          // Continue anyway - feature is still added to the form
+        }
         
         // Add to available features list
         if (!availableFeatures.includes(feature)) {
           setAvailableFeatures([...availableFeatures, feature])
         }
-      } catch (error) {
-        console.error('Error saving feature:', error)
+      } catch (error: any) {
+        console.warn('Error saving feature:', error?.message || 'Unknown error')
+        // Continue anyway - feature is still added to the form
       }
       
       setCustomFeature("")
@@ -534,9 +615,41 @@ export default function AddCarForm() {
         imageUrls = [formData.image]
       }
 
-      // Calculate final prices
-      const { priceWithVat, vatAmount } = calculatePrices(formData.priceExclVat, formData.vatRate)
-      console.log('Calculated prices:', { priceWithVat, vatAmount })
+      // Calculate final prices based on price type
+      let finalPriceExclVat = priceInputData.priceExclVat
+      let finalPriceWithVat = ""
+      let finalVatAmount = ""
+      let finalVatRate = priceInputData.vatRate
+
+      if (priceInputData.priceType === 'no_vat') {
+        // No VAT - use the price as is
+        finalPriceExclVat = priceInputData.priceExclVat
+        finalPriceWithVat = priceInputData.priceExclVat
+        finalVatAmount = "0"
+        finalVatRate = "0"
+      } else if (priceInputData.priceType === 'include') {
+        // Price includes VAT - calculate excluding VAT
+        const priceInclVat = parseFloat(priceInputData.priceInclVat)
+        const vatRate = parseFloat(priceInputData.vatRate)
+        if (!isNaN(priceInclVat) && !isNaN(vatRate)) {
+          finalPriceExclVat = (priceInclVat / (1 + vatRate / 100)).toFixed(2)
+          finalPriceWithVat = priceInputData.priceInclVat
+          finalVatAmount = (priceInclVat - parseFloat(finalPriceExclVat)).toFixed(2)
+        }
+      } else {
+        // Price excludes VAT - calculate including VAT
+        const { priceWithVat, vatAmount } = calculatePrices(priceInputData.priceExclVat, priceInputData.vatRate)
+        finalPriceWithVat = priceWithVat
+        finalVatAmount = vatAmount
+      }
+
+      console.log('Final prices:', { 
+        priceType: priceInputData.priceType,
+        priceExclVat: finalPriceExclVat, 
+        priceWithVat: finalPriceWithVat, 
+        vatAmount: finalVatAmount,
+        vatRate: finalVatRate
+      })
 
       // Add car to database with all the new fields
       const carData = {
@@ -544,11 +657,11 @@ export default function AddCarForm() {
         brand: formData.brand,
         category: formData.category,
         year: Number(formData.year),
-        price: Number(priceWithVat),
-        price_excl_vat: Number(formData.priceExclVat),
-        vat_rate: Number(formData.vatRate),
-        vat_amount: Number(vatAmount),
-        currency: formData.currency,
+        price: Number(finalPriceWithVat),
+        price_excl_vat: Number(finalPriceExclVat),
+        vat_rate: Number(finalVatRate),
+        vat_amount: Number(finalVatAmount),
+        currency: priceInputData.currency,
         image: imageUrls[0] || formData.image, // Primary image
         images: imageUrls.length > 1 ? JSON.stringify(imageUrls) : null, // Additional images as JSON
         description: formData.description,
@@ -579,13 +692,13 @@ export default function AddCarForm() {
         availability_days: formData.availability_type === 'available_soon' ? Number(formData.availability_days) : null,
         availability_date: formData.availability_type === 'available_date' ? formData.availability_date : null,
         // New pricing and admin features
-        is_netto_price: formData.is_netto_price,
+        is_netto_price: priceInputData.priceType === 'no_vat',
         is_new_car: formData.is_new_car,
         admin_fee_waived: isAdmin, // Mark as admin waived for admins
-        fee_paid: formData.is_netto_price || isAdmin ? true : isFeePaid, // Skip fee payment for netto pricing or admins
-        service_fee_amount: formData.is_netto_price || isAdmin ? 0 : (feeCalculation?.totalCustomerPays || 0),
-        service_fee_currency: formData.currency,
-        fee_model: formData.is_netto_price ? 'netto_pricing' : (isAdmin ? 'admin_waived' : (feeCalculation?.feeModel || 'vat_on_top')),
+        fee_paid: priceInputData.priceType === 'no_vat' || isAdmin ? true : isFeePaid, // Skip fee payment for netto pricing or admins
+        service_fee_amount: priceInputData.priceType === 'no_vat' || isAdmin ? 0 : (feeCalculation?.totalCustomerPays || 0),
+        service_fee_currency: priceInputData.currency,
+        fee_model: priceInputData.priceType === 'no_vat' ? 'netto_pricing' : (isAdmin ? 'admin_waived' : (feeCalculation?.feeModel || 'vat_on_top')),
         is_published: true, // Auto-publish after successful submission
         published_at: new Date().toISOString(),
       }
@@ -1138,98 +1251,19 @@ export default function AddCarForm() {
             </div>
           </div>
 
-          {/* Pricing Section */}
+          {/* Pricing Section - New Modern Price Input */}
           <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
-            <h3 className="font-semibold text-lg">
-              {formData.is_netto_price ? "Netto Price Information" : "Pricing Information"}
-            </h3>
+            <h3 className="font-semibold text-lg">Pricing Information</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="priceExclVat">
-                  {formData.is_netto_price ? "Netto Price" : "Price (excl. VAT)"}
-                </Label>
-                <div className="flex gap-2">
-                  <select
-                    id="currency"
-                    name="currency"
-                    value={formData.currency}
-                    onChange={handleChange}
-                    className="w-20 px-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-                  >
-                    <option value="EUR">EUR</option>
-                    <option value="USD">USD</option>
-                    <option value="AED">AED</option>
-                    <option value="GBP">GBP</option>
-                  </select>
-                  <Input
-                    id="priceExclVat"
-                    name="priceExclVat"
-                    type="number"
-                    step="1"
-                    min="0"
-                    value={formData.priceExclVat}
-                    onChange={handleChange}
-                    placeholder="e.g. 257240"
-                    className={`flex-1 ${errors.priceExclVat ? "border-red-500" : ""}`}
-                  />
-                </div>
-                {errors.priceExclVat && <p className="text-red-500 text-sm">{errors.priceExclVat}</p>}
-                {formData.is_netto_price ? (
-                  <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-                    ℹ️ This is your netto price. No service fee will be calculated on this amount.
-                  </p>
-                ) : (
-                  <p className="text-xs text-gray-500">Enter the price excluding VAT (e.g., 257240 for €257,240)</p>
-                )}
-              </div>
-
-              {!formData.is_netto_price && (
-                <div className="space-y-2">
-                  <Label htmlFor="vatRate">VAT Rate (%)</Label>
-                  <Input
-                    id="vatRate"
-                    name="vatRate"
-                    type="number"
-                    step="0.01"
-                    value={formData.vatRate}
-                    onChange={handleChange}
-                    placeholder="e.g. 5"
-                    className={errors.vatRate ? "border-red-500" : ""}
-                  />
-                  {errors.vatRate && <p className="text-red-500 text-sm">{errors.vatRate}</p>}
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label>
-                  {formData.is_netto_price ? "Netto Price Summary" : "Price Summary"}
-                </Label>
-                <div className="bg-white p-3 border rounded-md space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>{formData.is_netto_price ? "Netto Price:" : "Price (excl. VAT):"}</span>
-                    <span>{formData.priceExclVat ? `${formData.currency} ${formData.priceExclVat}` : '-'}</span>
-                  </div>
-                  {!formData.is_netto_price && (
-                    <>
-                      <div className="flex justify-between text-sm">
-                        <span>VAT ({formData.vatRate}%):</span>
-                        <span>{vatAmount ? `${formData.currency} ${vatAmount}` : '-'}</span>
-                      </div>
-                      <div className="flex justify-between font-semibold border-t pt-1">
-                        <span>Total (incl. VAT):</span>
-                        <span>{priceWithVat ? `${formData.currency} ${priceWithVat}` : '-'}</span>
-                      </div>
-                    </>
-                  )}
-                  {formData.is_netto_price && (
-                    <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded mt-2">
-                      ✓ No service fee will be charged on this netto price
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+            <PriceInput
+              priceType={priceInputData.priceType}
+              priceExclVat={priceInputData.priceExclVat}
+              priceInclVat={priceInputData.priceInclVat}
+              vatRate={priceInputData.vatRate}
+              currency={priceInputData.currency}
+              onChange={handlePriceInputChange}
+              errors={errors}
+            />
           </div>
 
           {/* New Car and Pricing Options */}
@@ -1308,7 +1342,7 @@ export default function AddCarForm() {
           </div>
 
           {/* Service Fee Section - Only show if not netto pricing */}
-          {!formData.is_netto_price && (
+          {priceInputData.priceType !== 'no_vat' && (
             <div className="space-y-4 p-4 border rounded-lg bg-blue-50">
               <div className="flex items-center justify-between">
                 <div>
@@ -1337,9 +1371,9 @@ export default function AddCarForm() {
                 <ServiceFeeCalculator
                   onFeePaid={setIsFeePaid}
                   onFeeCalculated={setFeeCalculation}
-                  initialPrice={formData.priceExclVat ? parseFloat(formData.priceExclVat) : 0}
-                  initialCurrency={formData.currency}
-                  initialVatRate={formData.vatRate ? parseFloat(formData.vatRate) : 25}
+                  initialPrice={priceInputData.priceExclVat ? parseFloat(priceInputData.priceExclVat) : 0}
+                  initialCurrency={priceInputData.currency}
+                  initialVatRate={priceInputData.vatRate ? parseFloat(priceInputData.vatRate) : 25}
                 />
               )}
               
@@ -1367,15 +1401,15 @@ export default function AddCarForm() {
           )}
 
           {/* Netto Pricing Info */}
-          {formData.is_netto_price && (
+          {priceInputData.priceType === 'no_vat' && (
             <div className="space-y-4 p-4 border rounded-lg bg-green-50">
               <div className="flex items-center gap-2 text-green-700">
                 <Check className="h-5 w-5" />
-                <h3 className="font-semibold text-lg">Netto Pricing Selected</h3>
+                <h3 className="font-semibold text-lg">No VAT Pricing Selected</h3>
               </div>
               <p className="text-sm text-green-600">
-                You have selected netto pricing. No service fee calculation is required. 
-                Your car will be published with the netto price as displayed.
+                You have selected "No VAT" pricing. No VAT calculation is required. 
+                Your car will be published with the price as displayed.
               </p>
             </div>
           )}
@@ -1680,14 +1714,14 @@ export default function AddCarForm() {
             <Button 
               type="submit" 
               className="bg-primary-light hover:bg-primary-dark text-white" 
-              disabled={isSubmitting || (!formData.is_netto_price && !isFeePaid && !isAdmin)}
+              disabled={isSubmitting || (priceInputData.priceType !== 'no_vat' && !isFeePaid && !isAdmin)}
             >
               {isSubmitting 
                 ? "Adding Car..." 
                 : isAdmin
                   ? "Publish Car Ad (Admin)"
-                  : formData.is_netto_price 
-                    ? "Publish Car Ad (Netto Pricing)" 
+                  : priceInputData.priceType === 'no_vat'
+                    ? "Publish Car Ad (No VAT)" 
                     : isFeePaid 
                       ? "Publish Car Ad" 
                       : "Pay Fee to Publish"
