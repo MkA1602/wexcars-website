@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Car, Users, Shield, Star, Target, Heart, Award } from "lucide-react"
 import VariableProximity from "@/components/ui/variable-proximity"
 import { useRef } from "react"
+import TiltedCard from "@/components/ui/tilted-card"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
@@ -185,77 +186,83 @@ export default function AboutContent() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <div className="w-12 h-12 bg-primary-light/10 rounded-full flex items-center justify-center mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-primary-light"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
+            <TiltedCard>
+              <div className="bg-white p-6 rounded-xl shadow-md h-full">
+                <div className="w-12 h-12 bg-primary-light/10 rounded-full flex items-center justify-center mb-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-primary-light"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Excellence</h3>
+                <p className="text-gray-600">
+                  We are committed to excellence in every aspect of our business, from the vehicles we select to the
+                  service we provide.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-2">Excellence</h3>
-              <p className="text-gray-600">
-                We are committed to excellence in every aspect of our business, from the vehicles we select to the
-                service we provide.
-              </p>
-            </div>
+            </TiltedCard>
 
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <div className="w-12 h-12 bg-primary-light/10 rounded-full flex items-center justify-center mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-primary-light"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
-                  />
-                </svg>
+            <TiltedCard>
+              <div className="bg-white p-6 rounded-xl shadow-md h-full">
+                <div className="w-12 h-12 bg-primary-light/10 rounded-full flex items-center justify-center mb-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-primary-light"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Transparency</h3>
+                <p className="text-gray-600">
+                  We believe in complete transparency throughout the buying process, ensuring our clients make informed
+                  decisions.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-2">Transparency</h3>
-              <p className="text-gray-600">
-                We believe in complete transparency throughout the buying process, ensuring our clients make informed
-                decisions.
-              </p>
-            </div>
+            </TiltedCard>
 
-            <div className="bg-white p-6 rounded-xl shadow-md">
-              <div className="w-12 h-12 bg-primary-light/10 rounded-full flex items-center justify-center mb-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-primary-light"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
-                  />
-                </svg>
+            <TiltedCard>
+              <div className="bg-white p-6 rounded-xl shadow-md h-full">
+                <div className="w-12 h-12 bg-primary-light/10 rounded-full flex items-center justify-center mb-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-primary-light"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold mb-2">Personalization</h3>
+                <p className="text-gray-600">
+                  We tailor every interaction to the unique preferences and requirements of each client, creating bespoke
+                  experiences.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-2">Personalization</h3>
-              <p className="text-gray-600">
-                We tailor every interaction to the unique preferences and requirements of each client, creating bespoke
-                experiences.
-              </p>
-            </div>
+            </TiltedCard>
           </div>
         </div>
       </section>
@@ -278,13 +285,15 @@ export default function AboutContent() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {teamMembers.map((member, idx) => (
-              <div key={member.name + '-' + member.position + '-' + idx} className="bg-white rounded-xl shadow-md overflow-hidden">
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-                  <p className="text-primary-light font-medium mb-3">{member.position}</p>
-                  <p className="text-gray-600">{member.bio}</p>
+              <TiltedCard key={member.name + '-' + member.position + '-' + idx}>
+                <div className="bg-white rounded-xl shadow-md overflow-hidden h-full">
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold mb-1">{member.name}</h3>
+                    <p className="text-primary-light font-medium mb-3">{member.position}</p>
+                    <p className="text-gray-600">{member.bio}</p>
+                  </div>
                 </div>
-              </div>
+              </TiltedCard>
             ))}
           </div>
         </div>
@@ -312,14 +321,16 @@ export default function AboutContent() {
                 {index !== milestones.length - 1 && (
                   <div className="absolute left-4 top-4 bottom-0 w-0.5 bg-gray-300"></div>
                 )}
-                <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary-light flex items-center justify-center text-white font-bold">
+                <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary-light flex items-center justify-center text-white font-bold z-10">
                   {index + 1}
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                  <div className="text-primary-light font-bold mb-1">{milestone.year}</div>
-                  <h3 className="text-xl font-bold mb-2">{milestone.title}</h3>
-                  <p className="text-gray-600">{milestone.description}</p>
-                </div>
+                <TiltedCard>
+                  <div className="bg-white p-6 rounded-xl shadow-sm h-full">
+                    <div className="text-primary-light font-bold mb-1">{milestone.year}</div>
+                    <h3 className="text-xl font-bold mb-2">{milestone.title}</h3>
+                    <p className="text-gray-600">{milestone.description}</p>
+                  </div>
+                </TiltedCard>
               </div>
             ))}
           </div>

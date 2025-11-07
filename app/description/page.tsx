@@ -1,18 +1,14 @@
-import type { Metadata } from "next"
-import Link from "next/link"
+"use client"
+
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { FileText, Search, Star, CheckCircle, Zap, Shield } from "lucide-react"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
 
-export const metadata: Metadata = {
-  title: "Car Descriptions | WexCars - Detailed Vehicle Information",
-  description: "Discover how WexCars provides comprehensive, detailed descriptions for every luxury vehicle in our collection. Make informed decisions with complete vehicle information.",
-  keywords: "car descriptions, vehicle information, car details, WexCars, luxury vehicles, detailed specifications",
-}
-
 export default function DescriptionPage() {
+  const router = useRouter()
   return (
     <main className="flex-grow">
       {/* Hero Section with Background Image */}
@@ -301,23 +297,20 @@ export default function DescriptionPage() {
               Explore our exclusive collection of luxury vehicles, each with detailed descriptions to help you make the perfect choice.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/collections">
-                <Button 
-                  size="lg" 
-                  className="bg-white text-primary-light hover:bg-gray-100 hover:text-primary-dark font-semibold px-8 py-4 text-lg transition-all duration-300 transform hover:scale-105"
-                >
-                  Explore Collection
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="border-2 border-white text-white hover:bg-white hover:text-primary-light font-semibold px-8 py-4 text-lg transition-all duration-300"
-                >
-                  Contact Expert
-                </Button>
-              </Link>
+              <Button 
+                size="lg"
+                onClick={() => router.push("/collections")}
+                className="bg-white text-primary-light hover:bg-gray-100 hover:text-primary-dark font-semibold px-8 py-4 text-lg transition-all duration-300 transform hover:scale-105 cursor-pointer"
+              >
+                Explore Collection
+              </Button>
+              <Button 
+                size="lg"
+                onClick={() => router.push("/contact")}
+                className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary-light font-semibold px-8 py-4 text-lg transition-all duration-300 cursor-pointer"
+              >
+                Contact Expert
+              </Button>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import Link from "next/link"
 import { supabaseClient } from "@/lib/supabase/client"
 import { X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { StatsCards } from "@/components/ui/stats-cards"
 import type { Car } from "@/lib/types"
 
 // GitHub Raw URL base for reliable image serving
@@ -655,23 +656,37 @@ export default function CarCategories() {
         )}
 
         {/* Category stats */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 bg-white p-6 rounded-xl shadow-sm">
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-primary-light mb-1">{categoryStats.totalVehicles}+</div>
-            <div className="text-gray-600">Luxury Vehicles</div>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-primary-light mb-1">{categoryStats.brands}</div>
-            <div className="text-gray-600">Premium Brands</div>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-primary-light mb-1">24/7</div>
-            <div className="text-gray-600">Customer Support</div>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl font-bold text-primary-light mb-1">{categoryStats.satisfaction}</div>
-            <div className="text-gray-600">Satisfaction</div>
-          </div>
+        <div className="mt-16">
+          <StatsCards
+            title="Our Impact in Numbers"
+            description="See how we're making a difference across the globe"
+            stats={[
+              {
+                value: `${categoryStats.totalVehicles}+`,
+                label: "Luxury Vehicles",
+                description: "Premium collection",
+                icon: "Car",
+              },
+              {
+                value: `${categoryStats.brands}`,
+                label: "Premium Brands",
+                description: "Top manufacturers",
+                icon: "Users",
+              },
+              {
+                value: "24/7",
+                label: "Customer Support",
+                description: "Always available",
+                icon: "Clock",
+              },
+              {
+                value: categoryStats.satisfaction,
+                label: "Satisfaction",
+                description: "Customer rating",
+                icon: "Shield",
+              },
+            ]}
+          />
         </div>
       </div>
     </section>

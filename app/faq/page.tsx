@@ -1,13 +1,92 @@
 "use client"
 
 import VariableProximity from "@/components/ui/variable-proximity"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { Search, MessageCircle, Phone, Mail, MapPin, ChevronRight, HelpCircle, Car, CreditCard, Truck, Shield, Users, FileText, Plus, Minus, Building2, CarFront, Wallet, Package, Star, Settings, Globe, Clock, ShieldCheck, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { motion, AnimatePresence } from "framer-motion"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
+// FAQ Accordion Component
+function FAQAccordionGroup({ questions }: { questions: Array<{ question: string; answer: string }> }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+  const toggleAccordion = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index)
+  }
+
+  return (
+    <div className="space-y-4">
+      {questions.map((faq, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: index * 0.1 }}
+          viewport={{ once: true }}
+          className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-primary-light hover:shadow-lg"
+        >
+          <motion.button
+            onClick={() => toggleAccordion(index)}
+            className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-gray-50"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+          >
+            <h3 className="text-lg font-semibold text-gray-900 pr-4">
+              {faq.question}
+            </h3>
+            <motion.div
+              animate={{ rotate: openIndex === index ? 180 : 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="flex-shrink-0"
+            >
+              <svg
+                className="h-5 w-5 text-primary-light"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </motion.div>
+          </motion.button>
+
+          <AnimatePresence>
+            {openIndex === index && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <motion.div
+                  initial={{ y: -10 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: -10 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="px-4 pb-4"
+                >
+                  <p className="text-gray-600 leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      ))}
+    </div>
+  )
+}
 
 const faqData = [
   {
@@ -141,32 +220,20 @@ export default function FAQPage() {
             {/* FAQ Categories */}
             <div className="space-y-8">
               {faqData.map((category, categoryIndex) => (
-                <div key={categoryIndex} className="bg-white rounded-xl shadow-md p-6">
+                <motion.div
+                  key={categoryIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: categoryIndex * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-xl shadow-md p-6"
+                >
                   <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                     <category.icon className="w-6 h-6 text-primary-light mr-3" />
                     {category.category}
                   </h2>
-                  <div className="space-y-4">
-                    {category.questions.map((faq, faqIndex) => (
-                      <div key={faqIndex} className="border border-gray-200 rounded-lg">
-                        <details className="group">
-                          <summary className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
-                            <h3 className="text-lg font-semibold text-gray-900 pr-4">
-                              {faq.question}
-                            </h3>
-                            <Plus className="w-5 h-5 text-primary-light group-open:hidden" />
-                            <Minus className="w-5 h-5 text-primary-light hidden group-open:block" />
-                          </summary>
-                          <div className="px-4 pb-4">
-                            <p className="text-gray-600 leading-relaxed">
-                              {faq.answer}
-                            </p>
-                          </div>
-                        </details>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  <FAQAccordionGroup questions={category.questions} />
+                </motion.div>
               ))}
             </div>
 

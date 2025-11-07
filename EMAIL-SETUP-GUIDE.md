@@ -1,231 +1,178 @@
-# دليل إعداد البريد الإلكتروني لموقع WexCars / WexCars Email Setup Guide
+# Newsletter Email Setup Guide
 
-## الخيار 1: Gmail Business (الأسهل / Easiest)
+This guide will help you set up automatic email sending for newsletter subscriptions.
 
-### إنشاء حساب Gmail جديد / Create New Gmail Account:
+## Problem
+- Users subscribe but don't receive welcome emails
+- Admin/owner doesn't get notified about new subscribers
 
-1. **اذهب إلى:** https://accounts.google.com/signup
-2. **أنشئ حساب باسم:** 
-   - `info.wexcars@gmail.com`
-   - `wexcarsinfo@gmail.com`
-   - `support.wexcars@gmail.com`
+## Solution Options
 
-### إعداد App Password للـ SMTP:
+### Option 1: Deploy Supabase Edge Functions (Recommended)
 
-1. **فعل التحقق بخطوتين:**
-   - Google Account → Security → 2-Step Verification → Turn On
+Edge Functions provide the most reliable way to send emails automatically.
 
-2. **إنشاء App Password:**
-   - Security → App passwords → Select app: Mail → Generate
-   - **احفظ هذا الباسورد** - ستحتاجه في SMTP
+#### Step 1: Install Supabase CLI
 
-### إعدادات SMTP في Supabase:
-
-```
-SMTP Host: smtp.gmail.com
-SMTP Port: 587
-SMTP User: your-email@gmail.com
-SMTP Pass: [App Password من الخطوة السابقة]
-SMTP Admin Email: your-email@gmail.com
-SMTP Sender Name: WexCars
+```bash
+npm install -g supabase
 ```
 
----
+Or download from: https://github.com/supabase/cli/releases
 
-## الخيار 2: بريد مهني مع الدومين / Professional Domain Email
+#### Step 2: Login to Supabase
 
-### إذا كان لديك دومين wexcars.com:
-
-#### A. مع Hostinger:
-1. **Dashboard → Email → Create Email Account**
-2. **أنشئ:** `info@wexcars.com`
-3. **إعدادات SMTP:**
-   ```
-   SMTP Host: smtp.hostinger.com
-   SMTP Port: 587
-   SMTP User: info@wexcars.com
-   SMTP Pass: [كلمة مرور البريد]
-   ```
-
-#### B. مع Namecheap:
-1. **Dashboard → Domain List → Manage → Email Forwarding**
-2. **أنشئ:** `info@wexcars.com`
-3. **إعدادات SMTP:**
-   ```
-   SMTP Host: mail.privateemail.com
-   SMTP Port: 587
-   SMTP User: info@wexcars.com
-   SMTP Pass: [كلمة مرور البريد]
-   ```
-
-#### C. مع GoDaddy:
-1. **My Products → Email → Manage**
-2. **أنشئ:** `info@wexcars.com`
-3. **إعدادات SMTP:**
-   ```
-   SMTP Host: smtpout.secureserver.net
-   SMTP Port: 80 or 3535
-   SMTP User: info@wexcars.com
-   SMTP Pass: [كلمة مرور البريد]
-   ```
-
----
-
-## الخيار 3: SendGrid (للمواقع الكبيرة / For High Volume)
-
-### إنشاء حساب SendGrid:
-
-1. **اذهب إلى:** https://sendgrid.com/free/
-2. **أنشئ حساب مجاني** (100 بريد/يوم)
-3. **تحقق من البريد الإلكتروني**
-
-### الحصول على API Key:
-
-1. **Dashboard → Settings → API Keys**
-2. **Create API Key → Full Access → Create**
-3. **احفظ API Key** (لن تراه مرة أخرى!)
-
-### إعدادات SMTP في Supabase:
-
-```
-SMTP Host: smtp.sendgrid.net
-SMTP Port: 587
-SMTP User: apikey
-SMTP Pass: [SendGrid API Key]
-SMTP Admin Email: any-email@gmail.com
-SMTP Sender Name: WexCars
+```bash
+supabase login
 ```
 
----
+#### Step 3: Link Your Project
 
-## إعداد Supabase SMTP
-
-### في Supabase Dashboard:
-
-1. **اذهب إلى:** Authentication → Settings → SMTP Settings
-2. **فعل Custom SMTP:** Enable custom SMTP
-3. **أدخل المعلومات حسب الخيار المختار:**
-
-#### للـ Gmail:
-```
-SMTP Host: smtp.gmail.com
-SMTP Port: 587
-SMTP User: your-gmail@gmail.com
-SMTP Pass: [App Password]
-SMTP Admin Email: your-gmail@gmail.com
-SMTP Sender Name: WexCars
+```bash
+supabase link --project-ref your-project-ref
 ```
 
-#### للبريد المهني:
-```
-SMTP Host: [حسب مزود الخدمة]
-SMTP Port: 587
-SMTP User: info@wexcars.com
-SMTP Pass: [كلمة مرور البريد]
-SMTP Admin Email: info@wexcars.com
-SMTP Sender Name: WexCars
-```
+#### Step 4: Deploy Edge Functions
 
-### تخصيص قوالب البريد الإلكتروني:
+```bash
+# Deploy welcome email function
+supabase functions deploy send-welcome-email
 
-في **Auth → Email Templates**:
-
-#### Confirm Signup:
-```html
-<h2>مرحباً بك في WexCars! / Welcome to WexCars!</h2>
-<p>اضغط على الرابط لتفعيل حسابك / Click the link to activate your account:</p>
-<a href="{{ .ConfirmationURL }}">تفعيل الحساب / Activate Account</a>
+# Deploy admin notification function
+supabase functions deploy send-admin-notification
 ```
 
-#### Magic Link:
-```html
-<h2>تسجيل دخول سريع / Quick Sign In</h2>
-<p>اضغط هنا لتسجيل الدخول / Click here to sign in:</p>
-<a href="{{ .Token }}">دخول / Sign In</a>
+#### Step 5: Set Environment Variables
+
+In Supabase Dashboard:
+1. Go to **Edge Functions** > **Settings**
+2. Add these secrets:
+
+```
+RESEND_API_KEY=your_resend_api_key_here
+ADMIN_EMAIL=your-admin-email@example.com
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ```
 
-#### Reset Password:
-```html
-<h2>إعادة تعيين كلمة المرور / Reset Password</h2>
-<p>اضغط على الرابط لإعادة تعيين كلمة المرور / Click to reset your password:</p>
-<a href="{{ .Token }}">إعادة تعيين / Reset Password</a>
+#### Step 6: Get Resend API Key
+
+1. Sign up at https://resend.com
+2. Create an API key
+3. Verify your domain (or use Resend's test domain)
+4. Add the API key to Supabase Edge Function secrets
+
+### Option 2: Use Database Triggers (Alternative)
+
+If Edge Functions are not available, you can use database triggers to queue emails.
+
+#### Step 1: Run SQL Script
+
+In Supabase SQL Editor, run:
+```sql
+-- Run scripts/newsletter-email-triggers.sql
 ```
 
----
+#### Step 2: Set Database Settings
 
-## اختبار الإعداد / Testing Setup
+```sql
+-- Set Supabase URL (replace with your actual URL)
+ALTER DATABASE postgres SET app.supabase_url = 'https://your-project.supabase.co';
 
-### سكريبت اختبار البريد الإلكتروني:
-
-أنشئ ملف `test-email.js`:
-
-```javascript
-const { createClient } = require('@supabase/supabase-js')
-require('dotenv').config({ path: '.env.local' })
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-)
-
-async function testEmail() {
-  // اختبار إرسال بريد تفعيل
-  const { error } = await supabase.auth.signUp({
-    email: 'test-email@example.com',
-    password: 'testpassword123'
-  })
-  
-  if (error) {
-    console.log('خطأ:', error.message)
-  } else {
-    console.log('تم إرسال بريد التفعيل بنجاح!')
-  }
-}
-
-testEmail()
+-- Set service role key (replace with your actual key)
+ALTER DATABASE postgres SET app.service_role_key = 'your_service_role_key';
 ```
 
----
+### Option 3: Manual Email Queue Processing
 
-## الأخطاء الشائعة وحلولها / Common Errors & Solutions
+Create a scheduled job to process the email queue:
 
-### 1. "Invalid login credentials"
-- **المشكلة:** كلمة مرور خاطئة
-- **الحل:** تأكد من استخدام App Password للـ Gmail
+```sql
+-- View pending emails
+SELECT * FROM newsletter_email_queue WHERE status = 'pending' ORDER BY created_at;
 
-### 2. "Connection refused"
-- **المشكلة:** Port أو Host خاطئ
-- **الحل:** تحقق من إعدادات مزود الخدمة
+-- Mark as sent (after manually sending)
+UPDATE newsletter_email_queue 
+SET status = 'sent', processed_at = NOW() 
+WHERE id = 'email-id-here';
+```
 
-### 3. "Authentication failed"
-- **المشكلة:** اسم المستخدم خاطئ
-- **الحل:** استخدم البريد الإلكتروني الكامل
+## Testing
 
-### 4. "TLS/SSL Error"
-- **المشكلة:** مشكلة في التشفير
-- **الحل:** جرب Port 465 بدلاً من 587
+### Test Welcome Email
 
----
+1. Subscribe to newsletter with a test email
+2. Check browser console for logs:
+   - `Attempting to send welcome email to: test@example.com`
+   - `Welcome email sent successfully` or error messages
 
-## توصياتي / My Recommendations:
+3. Check email inbox (including spam folder)
 
-### للبداية (Quick Start):
-✅ **استخدم Gmail** - أسرع وأسهل حل
+### Test Admin Notification
 
-### للاحترافية (Professional):
-✅ **احصل على دومين + بريد مهني** - يبدو أكثر احترافية
+1. Subscribe to newsletter
+2. Check admin email inbox
+3. Check browser console for logs:
+   - `Attempting to send admin notification for: test@example.com`
+   - `Admin notification sent successfully` or error messages
 
-### للنمو (Scaling):
-✅ **SendGrid** - عندما تحتاج أكثر من 100 بريد يومياً
+## Troubleshooting
 
----
+### Problem: Emails not sending
 
-## خطوات سريعة للبدء / Quick Start Steps:
+**Check 1: Edge Functions Deployed?**
+```bash
+supabase functions list
+```
 
-1. **أنشئ حساب Gmail:** `info.wexcars@gmail.com`
-2. **فعل 2-Step Verification**
-3. **أنشئ App Password**
-4. **أدخل الإعدادات في Supabase SMTP**
-5. **اختبر التسجيل في الموقع**
+**Check 2: Environment Variables Set?**
+- Go to Supabase Dashboard > Edge Functions > Settings
+- Verify all required secrets are present
 
-🎉 **جاهز للاستخدام!** / **Ready to use!** 
+**Check 3: Resend API Key Valid?**
+- Check Resend dashboard for API key status
+- Verify domain is verified (if using custom domain)
+
+**Check 4: Database Triggers Active?**
+```sql
+SELECT * FROM pg_trigger WHERE tgname LIKE '%newsletter%';
+```
+
+### Problem: Edge Function Returns 404
+
+- Verify the function is deployed: `supabase functions list`
+- Check function name matches exactly (case-sensitive)
+- Verify project is linked: `supabase projects list`
+
+### Problem: Permission Denied
+
+- Check RLS policies on `newsletter_subscribers` table
+- Verify service role key has correct permissions
+- Check Edge Function secrets are accessible
+
+## Configuration Checklist
+
+- [ ] Supabase CLI installed
+- [ ] Project linked to Supabase
+- [ ] Edge Functions deployed
+- [ ] Resend API key configured
+- [ ] ADMIN_EMAIL environment variable set
+- [ ] Test subscription completed
+- [ ] Welcome email received
+- [ ] Admin notification received
+
+## Next Steps
+
+After setup:
+1. Monitor email delivery in Resend dashboard
+2. Check error logs in Supabase Edge Function logs
+3. Set up email queue monitoring (if using queue approach)
+4. Configure email templates customization
+
+## Support
+
+If you encounter issues:
+1. Check browser console for detailed error messages
+2. Check Supabase Edge Function logs
+3. Verify all environment variables are set
+4. Test with a simple Edge Function first to verify setup

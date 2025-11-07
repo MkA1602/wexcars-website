@@ -240,21 +240,33 @@ const Footer = () => {
       }
 
       if (subscriptionSuccess) {
-        // Try to send welcome email (don't fail if this doesn't work)
-        try {
-          await sendWelcomeEmail(email)
-        } catch (emailError) {
-          console.warn('Welcome email failed:', emailError)
-          // Don't show error to user, subscription still succeeded
-        }
+        // Send welcome email and admin notification in parallel (don't fail if these don't work)
+        const emailPromises = []
         
-        // Try to send admin notification (don't fail if this doesn't work)
-        try {
-          await sendAdminNotification(email)
-        } catch (notificationError) {
-          console.warn('Admin notification failed:', notificationError)
-          // Don't show error to user, subscription still succeeded
-        }
+        // Try to send welcome email
+        emailPromises.push(
+          sendWelcomeEmail(email).catch(error => {
+            console.error('Welcome email failed:', error)
+            // Log error to database for debugging
+            try {
+              supabaseClient.from('newsletter_subscribers')
+                .update({ tags: ['welcome_email_failed'] })
+                .eq('email', email)
+                .then(() => {})
+            } catch (e) {}
+          })
+        )
+        
+        // Try to send admin notification
+        emailPromises.push(
+          sendAdminNotification(email).catch(error => {
+            console.error('Admin notification failed:', error)
+            // Note: We'll also handle this via database trigger as backup
+          })
+        )
+        
+        // Wait for both to complete (or fail gracefully)
+        await Promise.allSettled(emailPromises)
 
         setIsSubscribed(true)
         setEmail("")
@@ -268,8 +280,8 @@ const Footer = () => {
 
   const sendWelcomeEmail = async (subscriberEmail: string) => {
     try {
-      // Check if Edge Function exists
-      const { error } = await supabaseClient.functions.invoke('send-welcome-email', {
+      console.log('Attempting to send welcome email to:', subscriberEmail)
+      const { data, error } = await supabaseClient.functions.invoke('send-welcome-email', {
         body: {
           email: subscriberEmail,
           template: 'welcome'
@@ -277,19 +289,27 @@ const Footer = () => {
       })
 
       if (error) {
-        console.warn('Welcome email function not deployed yet:', error)
-        return
+        console.error('Welcome email function error:', error)
+        // If function not found, the database trigger will handle it
+        if (error.message?.includes('Function not found') || error.message?.includes('404')) {
+          console.warn('Edge Function not deployed. Using database trigger as fallback.')
+        }
+        throw error
       }
-    } catch (error) {
-      console.warn('Welcome email service not available:', error)
-      // Don't fail the subscription if welcome email fails
+      
+      console.log('Welcome email sent successfully:', data)
+      return data
+    } catch (error: any) {
+      console.error('Welcome email service error:', error)
+      // The database trigger will send the email as a backup
+      throw error
     }
   }
 
   const sendAdminNotification = async (subscriberEmail: string) => {
     try {
-      // Check if Edge Function exists
-      const { error } = await supabaseClient.functions.invoke('send-admin-notification', {
+      console.log('Attempting to send admin notification for:', subscriberEmail)
+      const { data, error } = await supabaseClient.functions.invoke('send-admin-notification', {
         body: {
           type: 'new_subscriber',
           email: subscriberEmail,
@@ -298,11 +318,20 @@ const Footer = () => {
       })
 
       if (error) {
-        console.warn('Admin notification function not deployed yet:', error)
-        return
+        console.error('Admin notification function error:', error)
+        // If function not found, the database trigger will handle it
+        if (error.message?.includes('Function not found') || error.message?.includes('404')) {
+          console.warn('Edge Function not deployed. Using database trigger as fallback.')
+        }
+        throw error
       }
-    } catch (error) {
-      console.warn('Admin notification service not available:', error)
+      
+      console.log('Admin notification sent successfully:', data)
+      return data
+    } catch (error: any) {
+      console.error('Admin notification service error:', error)
+      // The database trigger will send the email as a backup
+      throw error
     }
   }
 

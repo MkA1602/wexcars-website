@@ -1,14 +1,89 @@
-import type { Metadata } from "next"
+"use client"
+
+import { useState } from "react"
 import { Search, MessageCircle, Phone, Mail, MapPin, ChevronRight, HelpCircle, Car, CreditCard, Truck, Shield, Users, FileText } from "lucide-react"
 import Link from "next/link"
+import { motion, AnimatePresence } from "framer-motion"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
 
-export const metadata: Metadata = {
-  title: "Help Center | WexCars - Support & FAQ",
-  description: "Get help with your WexCars experience. Find answers to frequently asked questions, contact support, and access resources.",
-  keywords: "help, support, FAQ, WexCars, assistance, customer service",
+// FAQ Accordion Component
+function FAQAccordionGroup({ questions }: { questions: Array<{ question: string; answer: string }> }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+  const toggleAccordion = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index)
+  }
+
+  return (
+    <div className="space-y-4">
+      {questions.map((faq, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: index * 0.1 }}
+          viewport={{ once: true }}
+          className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:border-primary-light hover:shadow-lg"
+        >
+          <motion.button
+            onClick={() => toggleAccordion(index)}
+            className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-gray-50"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+          >
+            <h4 className="font-medium text-gray-900 pr-4">
+              {faq.question}
+            </h4>
+            <motion.div
+              animate={{ rotate: openIndex === index ? 180 : 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="flex-shrink-0"
+            >
+              <svg
+                className="h-4 w-4 text-primary-light"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </motion.div>
+          </motion.button>
+
+          <AnimatePresence>
+            {openIndex === index && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <motion.div
+                  initial={{ y: -10 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: -10 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="px-4 pb-4"
+                >
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      ))}
+    </div>
+  )
 }
 
 const faqCategories = [
@@ -199,27 +274,22 @@ export default function HelpPage() {
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {faqCategories.map((category, categoryIndex) => (
-                <div key={categoryIndex} className="bg-white rounded-xl shadow-md p-6">
+                <motion.div
+                  key={categoryIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: categoryIndex * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-xl shadow-md p-6"
+                >
                   <div className="flex items-center mb-6">
                     <div className="w-10 h-10 bg-primary-light/10 rounded-lg flex items-center justify-center mr-4">
                       <category.icon className="h-5 w-5 text-primary-light" />
                     </div>
                     <h3 className="text-xl font-semibold">{category.title}</h3>
                   </div>
-                  <div className="space-y-4">
-                    {category.questions.map((faq, faqIndex) => (
-                      <div key={faqIndex} className="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                        <button className="w-full text-left">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-gray-900 mb-2">{faq.question}</h4>
-                            <HelpCircle className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                          </div>
-                          <p className="text-gray-600 text-sm">{faq.answer}</p>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  <FAQAccordionGroup questions={category.questions} />
+                </motion.div>
               ))}
             </div>
           </div>
