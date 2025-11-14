@@ -30,6 +30,7 @@ import {
 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import Link from "next/link"
+import MaintenanceModeSettings from "./maintenance-mode-settings"
 
 // User Edit Form Component
 function UserEditForm({ user, onSave, onCancel }: {
@@ -1192,51 +1193,57 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="settings">
-          <Card>
-            <CardHeader>
-              <CardTitle>System Settings</CardTitle>
-              <CardDescription>
-                General system settings
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold mb-2">System Information</h3>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500">Total Cars:</p>
-                      <p className="font-semibold">{stats.totalCars}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Total Users:</p>
-                      <p className="font-semibold">{stats.totalUsers}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Admins:</p>
-                      <p className="font-semibold">{stats.adminUsers}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Last Updated:</p>
-                      <p className="font-semibold">{new Date().toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                </div>
+          <div className="space-y-6">
+            {/* Maintenance Mode Settings */}
+            <MaintenanceModeSettings />
 
-                <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold mb-2">System Actions</h3>
-                  <div className="flex gap-2">
-                    <Button variant="outline" onClick={fetchAdminData}>
-                      Refresh Data
-                    </Button>
-                    <Button variant="outline">
-                      Export Data
-                    </Button>
+            {/* System Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle>System Settings</CardTitle>
+                <CardDescription>
+                  General system settings
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="border rounded-lg p-4">
+                    <h3 className="font-semibold mb-2">System Information</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-500">Total Cars:</p>
+                        <p className="font-semibold">{stats.totalCars}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Total Users:</p>
+                        <p className="font-semibold">{stats.totalUsers}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Admins:</p>
+                        <p className="font-semibold">{stats.adminUsers}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Last Updated:</p>
+                        <p className="font-semibold">{new Date().toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border rounded-lg p-4">
+                    <h3 className="font-semibold mb-2">System Actions</h3>
+                    <div className="flex gap-2">
+                      <Button variant="outline" onClick={fetchAdminData}>
+                        Refresh Data
+                      </Button>
+                      <Button variant="outline">
+                        Export Data
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
 

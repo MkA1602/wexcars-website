@@ -1,9 +1,9 @@
-'use client'
+"use client"
 
-import { useState, useEffect } from 'react'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { AlertCircle } from 'lucide-react'
+import { useMemo, useState } from "react"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { AlertCircle, Search } from "lucide-react"
 
 export type PriceType = 'exclude' | 'include' | 'no_vat'
 
@@ -20,6 +20,41 @@ interface PriceInputProps {
   }
 }
 
+interface VatRateOption {
+  country: string
+  rate: number
+}
+
+const EU_VAT_RATES: VatRateOption[] = [
+  { country: "Austria", rate: 20 },
+  { country: "Belgium", rate: 21 },
+  { country: "Bulgaria", rate: 20 },
+  { country: "Croatia", rate: 25 },
+  { country: "Cyprus", rate: 19 },
+  { country: "Czechia", rate: 21 },
+  { country: "Denmark", rate: 25 },
+  { country: "Estonia", rate: 22 },
+  { country: "Finland", rate: 25.5 },
+  { country: "France", rate: 20 },
+  { country: "Germany", rate: 19 },
+  { country: "Greece", rate: 24 },
+  { country: "Hungary", rate: 27 },
+  { country: "Ireland", rate: 23 },
+  { country: "Italy", rate: 22 },
+  { country: "Latvia", rate: 21 },
+  { country: "Lithuania", rate: 21 },
+  { country: "Luxembourg", rate: 17 },
+  { country: "Malta", rate: 18 },
+  { country: "Netherlands", rate: 21 },
+  { country: "Poland", rate: 23 },
+  { country: "Portugal", rate: 23 },
+  { country: "Romania", rate: 19 },
+  { country: "Slovakia", rate: 23 },
+  { country: "Slovenia", rate: 22 },
+  { country: "Spain", rate: 21 },
+  { country: "Sweden", rate: 25 }
+]
+
 export default function PriceInput({
   priceType,
   priceExclVat,
@@ -29,6 +64,28 @@ export default function PriceInput({
   onChange,
   errors = {}
 }: PriceInputProps) {
+  const [vatCountrySearch, setVatCountrySearch] = useState("")
+  const [showVatDropdown, setShowVatDropdown] = useState(false)
+
+  const filteredVatOptions = useMemo(() => {
+    if (!vatCountrySearch.trim()) return EU_VAT_RATES
+    return EU_VAT_RATES.filter((option) =>
+      option.country.toLowerCase().includes(vatCountrySearch.toLowerCase())
+    )
+  }, [vatCountrySearch])
+
+  const handleVatRateSelection = (option: VatRateOption) => {
+    onChange("vatRate", option.rate.toString())
+    setShowVatDropdown(false)
+    setVatCountrySearch(option.country)
+  }
+
+  const handleManualVatRate = (value: string) => {
+    onChange("vatRate", value)
+    setVatCountrySearch("")
+    setShowVatDropdown(false)
+  }
+
   // Calculate prices based on current values
   const calculatePrices = () => {
     const priceExclNum = parseFloat(priceExclVat || '0')
@@ -198,26 +255,78 @@ export default function PriceInput({
         </div>
 
         {/* VAT Rate Input - Only show if not "No VAT" */}
-        {priceType !== 'no_vat' && (
-          <div className="flex-1">
+        {priceType !== "no_vat" && (
+          <div className="flex-1 space-y-2">
             <Label htmlFor="vatRate" className="text-sm font-medium">VAT Rate (%)</Label>
-            <Input
-              id="vatRate"
-              type="number"
-              step="0.01"
-              min="0"
-              max="100"
-              value={vatRate}
-              onChange={(e) => onChange('vatRate', e.target.value)}
-              placeholder="e.g. 5"
-              className={errors?.vatRate ? "border-red-500 focus:ring-red-500" : "focus:ring-red-500"}
-            />
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <Input
+                  id="vatRate"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={vatRate}
+                  onChange={(e) => handleManualVatRate(e.target.value)}
+                  placeholder="Enter VAT rate"
+                  className={errors?.vatRate ? "border-red-500 focus:ring-red-500 flex-1" : "focus:ring-red-500 flex-1"}
+                  onFocus={() => setShowVatDropdown(false)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowVatDropdown((prev) => !prev)}
+                  className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
+                >
+                  <Search className="w-4 h-4" />
+                  EU Rates
+                </button>
+              </div>
+
+              {showVatDropdown && (
+                <div className="border border-gray-200 rounded-md shadow-lg bg-white max-h-60 overflow-y-auto">
+                  <div className="p-2 border-b border-gray-100">
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        value={vatCountrySearch}
+                        onChange={(e) => setVatCountrySearch(e.target.value)}
+                        placeholder="Search country..."
+                        className="pl-9"
+                      />
+                      <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    </div>
+                  </div>
+                  <ul className="py-2 text-sm">
+                    {filteredVatOptions.length === 0 && (
+                      <li className="px-3 py-2 text-gray-500">
+                        No matches found. Enter rate manually above.
+                      </li>
+                    )}
+                    {filteredVatOptions.map((option) => (
+                      <li key={option.country}>
+                        <button
+                          type="button"
+                          onClick={() => handleVatRateSelection(option)}
+                          className="w-full px-3 py-2 text-left hover:bg-red-50 flex items-center justify-between transition-colors"
+                        >
+                          <span>{option.country}</span>
+                          <span className="text-sm font-medium text-gray-700">{option.rate}%</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
             {errors?.vatRate && (
               <p className="text-sm text-red-500 flex items-center gap-1">
                 <AlertCircle className="w-4 h-4" />
                 {errors.vatRate}
               </p>
             )}
+            <p className="text-xs text-gray-500">
+              Select a country to auto-fill the standard rate or type a custom percentage.
+            </p>
           </div>
         )}
       </div>

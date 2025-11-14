@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus, Check } from "lucide-react"
+import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus, Check, Video } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 
@@ -78,7 +78,42 @@ export default function EditCarForm({ car }: EditCarFormProps) {
   const [existingImages, setExistingImages] = useState<string[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [customFeature, setCustomFeature] = useState("")
+  const deriveInitialVideos = () => {
+    const urls: string[] = []
+    if (car.video_url) {
+      urls.push(car.video_url)
+    }
+    if (car.videos) {
+      try {
+        const parsed = JSON.parse(car.videos)
+        if (Array.isArray(parsed)) {
+          parsed.forEach((value) => {
+            if (typeof value === "string" && value.trim()) {
+              urls.push(value.trim())
+            }
+          })
+        } else if (typeof parsed === "string" && parsed.trim()) {
+          urls.push(parsed.trim())
+        }
+      } catch {
+        if (typeof car.videos === "string" && car.videos.trim()) {
+          urls.push(car.videos.trim())
+        }
+      }
+    }
+    return Array.from(new Set(urls))
+  }
+  const [videoEntries, setVideoEntries] = useState<{ url: string; name: string }[]>(() =>
+    deriveInitialVideos().map((url, index) => ({
+      url,
+      name: index === 0 ? "Primary video" : `Video ${index + 1}`
+    }))
+  )
+  const [videoUploadMethod, setVideoUploadMethod] = useState<'url' | 'file'>('url')
+  const [videoInput, setVideoInput] = useState("")
+  const [videoError, setVideoError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const videoFileInputRef = useRef<HTMLInputElement>(null)
 
   const { user } = useAuth()
   const router = useRouter()
@@ -375,6 +410,74 @@ export default function EditCarForm({ car }: EditCarFormProps) {
     return Promise.all(uploadPromises)
   }
 
+  const isValidUrl = (value: string) => {
+    try {
+      const parsed = new URL(value)
+      return parsed.protocol === "http:" || parsed.protocol === "https:"
+    } catch {
+      return false
+    }
+  }
+
+  const handleAddVideoUrl = () => {
+    const url = videoInput.trim()
+    if (!url) {
+      setVideoError("Please enter a video URL")
+      return
+    }
+
+    if (!isValidUrl(url)) {
+      setVideoError("Please enter a valid URL (YouTube, Vimeo, or direct video link)")
+      return
+    }
+
+    if (videoEntries.some((entry) => entry.url === url)) {
+      setVideoError("This video has already been added")
+      return
+    }
+
+    setVideoEntries((prev) => [...prev, { url, name: url }])
+    setVideoInput("")
+    setVideoError(null)
+  }
+
+  const handleRemoveVideoUrl = (index: number) => {
+    setVideoEntries((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const setPrimaryVideo = (index: number) => {
+    if (index === 0) return
+    setVideoEntries((prev) => {
+      const entries = [...prev]
+      const [selected] = entries.splice(index, 1)
+      return [selected, ...entries]
+    })
+  }
+
+  const handleVideoFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? [])
+    if (files.length === 0) return
+
+    files.forEach((file) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const result = reader.result as string
+        setVideoEntries((prev) => {
+          if (prev.some((entry) => entry.url === result)) {
+            return prev
+          }
+          return [...prev, { url: result, name: file.name || `Uploaded video ${prev.length + 1}` }]
+        })
+      }
+      reader.readAsDataURL(file)
+    })
+
+    if (videoFileInputRef.current) {
+      videoFileInputRef.current.value = ""
+    }
+    setVideoError(null)
+  }
+
   const toggleFeature = (feature: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -441,6 +544,8 @@ export default function EditCarForm({ car }: EditCarFormProps) {
       }
 
       // Update car in database with primary image and additional images
+      const videoSources = videoEntries.map((entry) => entry.url)
+
       const updateData = {
         name: formData.name,
         brand: formData.brand,
@@ -453,6 +558,8 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         currency: formData.currency,
         image: allImageUrls[0] || formData.image, // Primary image
         images: allImageUrls.length > 1 ? JSON.stringify(allImageUrls) : null, // Additional images as JSON
+        video_url: videoSources.length > 0 ? videoSources[0] : null,
+        videos: videoSources.length > 0 ? JSON.stringify(videoSources) : null,
         description: formData.description,
         features: formData.features.length > 0 ? JSON.stringify(formData.features) : null,
         transmission: formData.transmission,
@@ -1373,6 +1480,135 @@ export default function EditCarForm({ car }: EditCarFormProps) {
                 <p className="text-xs text-gray-500">
                   Enter a URL for the car image. You can use image hosting services like Imgur or Cloudinary.
                 </p>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <Label htmlFor="videoUrl">Car Videos (optional)</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={videoUploadMethod === 'file' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setVideoUploadMethod('file')}
+                className="flex items-center gap-2"
+              >
+                <Video size={16} />
+                Upload from Device
+              </Button>
+              <Button
+                type="button"
+                variant={videoUploadMethod === 'url' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setVideoUploadMethod('url')}
+                className="flex items-center gap-2"
+              >
+                <ExternalLink size={16} />
+                Use Video URL
+              </Button>
+            </div>
+
+            {videoUploadMethod === 'file' ? (
+              <div className="border-2 border-dashed rounded-lg p-6 text-center transition-colors border-gray-300 hover:border-gray-400">
+                <div className="flex flex-col items-center gap-3">
+                  <Video className="h-8 w-8 text-gray-400" />
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium">Click to upload</span> or drag and drop video files
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    MP4, MOV, WebM up to 150MB (multiple videos allowed)
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-2"
+                    onClick={() => videoFileInputRef.current?.click()}
+                  >
+                    Choose Videos
+                  </Button>
+                  <input
+                    ref={videoFileInputRef}
+                    type="file"
+                    accept="video/*"
+                    multiple
+                    onChange={handleVideoFileInputChange}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    id="videoUrl"
+                    type="url"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    value={videoInput}
+                    onChange={(e) => {
+                      setVideoInput(e.target.value)
+                      if (videoError) setVideoError(null)
+                    }}
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleAddVideoUrl}
+                    className="sm:w-auto"
+                  >
+                    Add Video
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Supports YouTube, Vimeo, or direct video links (MP4, WebM). First video will be highlighted by default.
+                </p>
+              </div>
+            )}
+            {videoError && <p className="text-red-500 text-sm">{videoError}</p>}
+            {videoEntries.length > 0 && (
+              <div className="space-y-2">
+                {videoEntries.map((video, index) => (
+                  <div
+                    key={`${video.url}-${index}`}
+                    className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white/60 px-3 py-2"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Video className="h-4 w-4 text-primary-light flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {video.name || `Video ${index + 1}`}
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">{video.url}</p>
+                      </div>
+                    </div>
+                    <div className="ml-auto flex items-center gap-2">
+                      {index === 0 ? (
+                        <Badge variant="outline" className="text-xs text-green-600 border-green-300">
+                          Primary
+                        </Badge>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPrimaryVideo(index)}
+                        >
+                          Set Primary
+                        </Button>
+                      )}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveVideoUrl(index)}
+                        aria-label="Remove video"
+                      >
+                        <X size={14} />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

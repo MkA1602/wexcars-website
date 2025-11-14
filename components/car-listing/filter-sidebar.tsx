@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Slider } from "@/components/ui/slider"
+import { Slider } from "@/components/base/slider/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { FilterOptions } from "@/lib/types"
 import { ChevronDown, ChevronUp, Info } from "lucide-react"

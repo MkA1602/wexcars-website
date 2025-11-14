@@ -2,8 +2,25 @@ import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
+// Helper to check if hostname is localhost
+function isLocalhost(hostname: string): boolean {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.startsWith("localhost:") ||
+    hostname.startsWith("127.0.0.1:") ||
+    hostname === "0.0.0.0"
+  )
+}
+
+// Helper to check if hostname is production domain
+function isProductionDomain(hostname: string): boolean {
+  return hostname === "wexcars.com" || hostname === "www.wexcars.com"
+}
+
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
+  const hostname = req.headers.get("host") || ""
   
   // Check if Supabase environment variables are set
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -16,6 +33,36 @@ export async function middleware(req: NextRequest) {
   }
   
   const supabase = createMiddlewareClient({ req, res })
+  
+  // Define route types (declare once)
+  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin")
+  const isApiRoute = req.nextUrl.pathname.startsWith("/api")
+  const isAuthRoute = req.nextUrl.pathname.startsWith("/auth")
+  const isMaintenanceRoute = req.nextUrl.pathname === "/maintenance"
+  
+  // Check maintenance mode for production domain only
+  // Allow localhost and admin routes to bypass
+  // Only check maintenance mode on production domain, not localhost
+  if (isProductionDomain(hostname) && !isLocalhost(hostname) && !isAdminRoute && !isApiRoute && !isMaintenanceRoute) {
+    try {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("setting_value")
+        .eq("setting_key", "maintenance_mode")
+        .single()
+
+      if (!error && data?.setting_value) {
+        const maintenanceMode = data.setting_value as { enabled: boolean }
+        if (maintenanceMode.enabled) {
+          // Redirect to maintenance page
+          return NextResponse.rewrite(new URL("/maintenance", req.url))
+        }
+      }
+    } catch (error) {
+      // Fail open - allow access if we can't check maintenance mode
+      console.error("Error checking maintenance mode:", error)
+    }
+  }
 
   const {
     data: { session },
@@ -23,9 +70,6 @@ export async function middleware(req: NextRequest) {
 
   // Check if the user is authenticated
   const isAuthenticated = !!session
-  const isAuthRoute = req.nextUrl.pathname.startsWith("/auth")
-  const isApiRoute = req.nextUrl.pathname.startsWith("/api")
-  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin")
 
   // Define public routes that don't require authentication
   const publicRoutes = ["/", "/about", "/contact", "/pricing", "/collections", "/terms", "/privacy", "/cookies", "/help", "/faq", "/shipping", "/description"]

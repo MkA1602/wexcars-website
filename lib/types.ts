@@ -22,6 +22,8 @@ export interface Car {
   discountPriceWithVat?: number
   image: string
   images?: string // JSON string of additional images
+  video_url?: string | null // Primary video URL (optional)
+  videos?: string | null // JSON string of additional video URLs
   rating: number
   transmission: string
   color: string
