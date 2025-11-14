@@ -100,7 +100,7 @@ export default function ComingSoonPage() {
             className="inline-block"
           >
             <Image
-              src="/wexcars-logo-new.png"
+              src="/new-white-logo-wexcars.png"
               alt="WexCars Logo"
               width={200}
               height={200}
