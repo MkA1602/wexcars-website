@@ -258,3 +258,19 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   }
 }
+
+/* Hide header and footer on maintenance page */
+html[data-maintenance="true"] header,
+html[data-maintenance="true"] footer,
+html[data-maintenance="true"] > body > header,
+html[data-maintenance="true"] > body > footer,
+body[data-maintenance="true"] header,
+body[data-maintenance="true"] footer,
+[data-maintenance="true"] header,
+[data-maintenance="true"] footer {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}

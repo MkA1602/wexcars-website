@@ -9,6 +9,15 @@ export default function ComingSoonPage() {
 
   useEffect(() => {
     setMounted(true)
+    // Add data attribute to hide header/footer
+    document.documentElement.setAttribute('data-maintenance', 'true')
+    document.body.setAttribute('data-maintenance', 'true')
+    
+    return () => {
+      // Cleanup on unmount
+      document.documentElement.removeAttribute('data-maintenance')
+      document.body.removeAttribute('data-maintenance')
+    }
   }, [])
 
   if (!mounted) {
