@@ -78,37 +78,18 @@ export default function ComingSoonPage() {
 
       {/* Main Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        {/* Logo Animation */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5, y: -50 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{
-            duration: 0.8,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="mb-8"
-        >
-          <motion.div
-            animate={{
-              y: [0, -10, 0],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="inline-block"
-          >
+        {/* Logo */}
+        <div className="mb-12 flex justify-center">
+          <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
             <Image
               src="/new-white-logo-wexcars.png"
               alt="WexCars Logo"
-              width={200}
-              height={200}
-              className="mx-auto drop-shadow-2xl"
+              fill
+              className="object-contain drop-shadow-2xl"
               priority
             />
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Title */}
         <motion.h1
