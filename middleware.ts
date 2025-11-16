@@ -21,6 +21,14 @@ function isProductionDomain(hostname: string): boolean {
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const hostname = req.headers.get("host") || ""
+  const pathname = req.nextUrl.pathname
+  const isStaticAsset =
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/static/") ||
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/public/") ||
+    pathname.startsWith("/assets/") ||
+    pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|ico|txt|xml|json|css|js|woff2?|ttf|otf)$/i)
   
   // Check if Supabase environment variables are set
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -35,15 +43,23 @@ export async function middleware(req: NextRequest) {
   const supabase = createMiddlewareClient({ req, res })
   
   // Define route types (declare once)
-  const isAdminRoute = req.nextUrl.pathname.startsWith("/admin")
-  const isApiRoute = req.nextUrl.pathname.startsWith("/api")
-  const isAuthRoute = req.nextUrl.pathname.startsWith("/auth")
-  const isMaintenanceRoute = req.nextUrl.pathname === "/maintenance"
+  const isAdminRoute = pathname.startsWith("/admin")
+  const isApiRoute = pathname.startsWith("/api")
+  const isAuthRoute = pathname.startsWith("/auth")
+  const isMaintenanceRoute = pathname === "/maintenance"
   
   // Check maintenance mode for production domain only
   // Allow localhost and admin routes to bypass
   // Only check maintenance mode on production domain, not localhost
-  if (isProductionDomain(hostname) && !isLocalhost(hostname) && !isAdminRoute && !isApiRoute && !isMaintenanceRoute) {
+  // Also ALWAYS bypass static assets to avoid blocking images/css/js
+  if (
+    isProductionDomain(hostname) &&
+    !isLocalhost(hostname) &&
+    !isAdminRoute &&
+    !isApiRoute &&
+    !isMaintenanceRoute &&
+    !isStaticAsset
+  ) {
     try {
       const { data, error } = await supabase
         .from("site_settings")
