@@ -92,9 +92,9 @@ export default function ComingSoonPage() {
           <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
             <Image
               src="/new-white-logo-wexcars.png"
-              alt="WexCars Logo"
+              alt="WexCars White Logo"
               fill
-              className="object-contain drop-shadow-2xl"
+              className="object-contain filter brightness-0 invert drop-shadow-2xl"
               priority
             />
           </div>
