@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import GridScan from "./grid-scan"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export default function ComingSoonPage() {
   const [mounted, setMounted] = useState(false)
@@ -34,117 +39,74 @@ export default function ComingSoonPage() {
       <GridScan className="absolute inset-0 -z-10" style={{ opacity: 0.6 }} />
 
       {/* Main Content */}
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        {/* Logo */}
-        <div className="mb-12 flex justify-center">
-          <img
-            src="/new-white-logo-wexcars.png"
-            alt="WexCars White Logo"
-            className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 object-contain drop-shadow-2xl"
-            style={{ maxWidth: '400px', maxHeight: '400px' }}
-            onError={(e) => {
-              console.error('Logo failed to load:', e);
-              // Fallback to a different path if needed
-              const target = e.target as HTMLImageElement;
-              if (target.src !== '/logo-white.png') {
-                target.src = '/logo-white.png';
-              }
-            }}
-          />
-        </div>
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 w-full max-w-5xl mx-auto">
+        <Card className="bg-white/5 backdrop-blur-md border-white/10 text-white">
+          <CardHeader className="flex flex-col items-center gap-4 pt-8">
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="bg-white/10 text-white border-white/10">
+                Maintenance Mode
+              </Badge>
+            </div>
+            <CardTitle className="text-center text-3xl md:text-4xl font-bold">
+              We're preparing something exceptional
+            </CardTitle>
+            <CardDescription className="text-center text-base md:text-lg text-gray-300">
+              Our team is finalizing a premium experience. Please check back soon.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pb-10">
+            <div className="flex flex-col items-center gap-8">
+              {/* Logo */}
+              <div className="flex justify-center">
+                <img
+                  src="/new-white-logo-wexcars.png"
+                  alt="WexCars White Logo"
+                  className="w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 object-contain drop-shadow-2xl"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    if (target.src !== '/wexcars-logo-new.png') target.src = '/wexcars-logo-new.png'
+                  }}
+                />
+              </div>
 
-        {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6"
-        >
-          <span className="bg-gradient-to-r from-white via-red-100 to-white bg-clip-text text-transparent">
-            Coming Soon
-          </span>
-        </motion.h1>
+              {/* Status */}
+              <div className="w-full max-w-xl">
+                <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
+                  <span>Deployment progress</span>
+                  <span>75%</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full" style={{ width: '75%' }} />
+                </div>
+              </div>
 
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-xl sm:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto"
-        >
-          We're crafting an extraordinary experience for luxury car enthusiasts.
-          <br />
-          <span className="text-red-400 font-semibold">Something amazing is on the way.</span>
-        </motion.p>
+              <Separator className="bg-white/10" />
 
-        {/* Animated Divider */}
-        <motion.div
-          initial={{ opacity: 0, scaleX: 0 }}
-          animate={{ opacity: 1, scaleX: 1 }}
-          transition={{ duration: 1, delay: 0.6 }}
-          className="w-32 h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent mx-auto mb-12"
-        />
+              {/* Notify form */}
+              <div className="w-full max-w-xl">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email for launch updates"
+                    className="bg-white/10 border-white/10 text-white placeholder:text-white/60"
+                  />
+                  <Button className="bg-red-600 hover:bg-red-700">Notify Me</Button>
+                </div>
+                <p className="mt-2 text-xs text-white/70">
+                  We respect your privacy. Unsubscribe anytime.
+                </p>
+              </div>
 
-        {/* Features/Info Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
-        >
-          {[
-            { icon: "🚗", title: "Premium Collection", desc: "Exclusive luxury vehicles" },
-            { icon: "✨", title: "Expert Service", desc: "Dedicated support team" },
-            { icon: "🌍", title: "Global Reach", desc: "Worldwide delivery" },
-          ].map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1 + index * 0.1 }}
-              whileHover={{ scale: 1.05, y: -5 }}
-              className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6"
-            >
-              <div className="text-4xl mb-3">{feature.icon}</div>
-              <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-              <p className="text-gray-400 text-sm">{feature.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Progress Bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-          className="mb-8"
-        >
-          <div className="text-gray-400 text-sm mb-2">We're working hard to launch soon</div>
-          <div className="w-full max-w-md mx-auto h-2 bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-red-500 to-red-600"
-              initial={{ width: "0%" }}
-              animate={{ width: "75%" }}
-              transition={{ duration: 2, delay: 1.4, ease: "easeOut" }}
-            />
-          </div>
-        </motion.div>
-
-        {/* Contact Info */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.4 }}
-          className="text-gray-400 text-sm"
-        >
-          <p>For inquiries, contact us at</p>
-          <a
-            href="mailto:support@wexcars.com"
-            className="text-red-400 hover:text-red-300 transition-colors font-semibold"
-          >
-            support@wexcars.com
-          </a>
-        </motion.div>
+              {/* Contact */}
+              <div className="text-center text-sm text-gray-300">
+                For urgent inquiries, contact{" "}
+                <a className="text-red-400 hover:text-red-300 underline underline-offset-4" href="mailto:support@wexcars.com">
+                  support@wexcars.com
+                </a>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Bottom Wave Animation */}
