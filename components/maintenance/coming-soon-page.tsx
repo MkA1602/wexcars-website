@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import Image from "next/image"
 
 export default function ComingSoonPage() {
   const [mounted, setMounted] = useState(false)
@@ -89,13 +88,19 @@ export default function ComingSoonPage() {
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Logo */}
         <div className="mb-12 flex justify-center">
-          <Image
+          <img
             src="/new-white-logo-wexcars.png"
             alt="WexCars White Logo"
-            width={400}
-            height={400}
             className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 object-contain drop-shadow-2xl"
-            priority
+            style={{ maxWidth: '400px', maxHeight: '400px' }}
+            onError={(e) => {
+              console.error('Logo failed to load:', e);
+              // Fallback to a different path if needed
+              const target = e.target as HTMLImageElement;
+              if (target.src !== '/logo-white.png') {
+                target.src = '/logo-white.png';
+              }
+            }}
           />
         </div>
 
