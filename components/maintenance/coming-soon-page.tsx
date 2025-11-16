@@ -89,13 +89,14 @@ export default function ComingSoonPage() {
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Logo */}
         <div className="mb-12 flex justify-center">
-          <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
+          <div className="relative w-80 h-80 sm:w-96 sm:h-96 md:w-[400px] md:h-[400px]">
             <Image
               src="/new-white-logo-wexcars.png"
               alt="WexCars White Logo"
               fill
-              className="object-contain filter brightness-0 invert drop-shadow-2xl"
+              className="object-contain drop-shadow-2xl"
               priority
+              sizes="(max-width: 640px) 320px, (max-width: 768px) 384px, 400px"
             />
           </div>
         </div>
