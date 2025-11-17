@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 import GridScan from "./grid-scan"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 
 export default function ComingSoonPage() {
   const [mounted, setMounted] = useState(false)
@@ -63,21 +62,16 @@ export default function ComingSoonPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                <img
-                  src="/new-white-logo-wexcars.png"
-                  alt="WexCars White Logo"
-                  width={400}
-                  height={400}
-                  className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 object-contain drop-shadow-2xl"
-                  style={{ maxWidth: '400px', maxHeight: '400px' }}
-                  onError={(e) => {
-                    console.error('Logo failed to load, trying fallback')
-                    const target = e.target as HTMLImageElement
-                    if (!target.src.includes('logo-white.png')) {
-                      target.src = '/logo-white.png'
-                    }
-                  }}
-                />
+                <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
+                  <Image
+                    src="/new-white-logo-wexcars.png"
+                    alt="WexCars White Logo"
+                    fill
+                    className="object-contain drop-shadow-2xl"
+                    priority
+                    sizes="(max-width: 640px) 256px, (max-width: 768px) 320px, 384px"
+                  />
+                </div>
               </motion.div>
 
               {/* Status */}
@@ -89,23 +83,6 @@ export default function ComingSoonPage() {
                 <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full" style={{ width: '75%' }} />
                 </div>
-              </div>
-
-              <Separator className="bg-white/10" />
-
-              {/* Notify form */}
-              <div className="w-full max-w-xl">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Input
-                    type="email"
-                    placeholder="Enter your email for launch updates"
-                    className="bg-white/10 border-white/10 text-white placeholder:text-white/60"
-                  />
-                  <Button className="bg-red-600 hover:bg-red-700">Notify Me</Button>
-                </div>
-                <p className="mt-2 text-xs text-white/70">
-                  We respect your privacy. Unsubscribe anytime.
-                </p>
               </div>
 
               {/* Contact */}
