@@ -56,18 +56,28 @@ export default function ComingSoonPage() {
           </CardHeader>
           <CardContent className="pb-10">
             <div className="flex flex-col items-center gap-8">
-              {/* Logo */}
-              <div className="flex justify-center">
-                <img
-                  src="/new-white-logo-wexcars.png"
-                  alt="WexCars White Logo"
-                  className="w-40 h-40 sm:w-52 sm:h-52 md:w-60 md:h-60 object-contain drop-shadow-2xl"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    if (target.src !== '/wexcars-logo-new.png') target.src = '/wexcars-logo-new.png'
-                  }}
-                />
-              </div>
+              {/* Logo - Large and Centered */}
+              <motion.div 
+                className="flex justify-center mb-4"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+              >
+                <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
+                  <img
+                    src="/new-white-logo-wexcars.png"
+                    alt="WexCars White Logo"
+                    className="w-full h-full object-contain filter brightness-0 invert drop-shadow-2xl"
+                    style={{ maxWidth: '400px', maxHeight: '400px' }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      if (target.src !== '/logo-white.png') {
+                        target.src = '/logo-white.png'
+                      }
+                    }}
+                  />
+                </div>
+              </motion.div>
 
               {/* Status */}
               <div className="w-full max-w-xl">
