@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import Image from "next/image"
 import GridScan from "./grid-scan"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -62,16 +61,26 @@ export default function ComingSoonPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
-                  <Image
-                    src="/new-white-logo-wexcars.png"
-                    alt="WexCars White Logo"
-                    fill
-                    className="object-contain drop-shadow-2xl"
-                    priority
-                    sizes="(max-width: 640px) 256px, (max-width: 768px) 320px, 384px"
-                  />
-                </div>
+                <img
+                  src="/new-white-logo-wexcars.png"
+                  alt="WexCars White Logo"
+                  className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 object-contain drop-shadow-2xl"
+                  style={{ 
+                    maxWidth: '400px', 
+                    maxHeight: '400px',
+                    display: 'block'
+                  }}
+                  onError={(e) => {
+                    console.error('Logo failed to load:', e)
+                    const target = e.target as HTMLImageElement
+                    // Try alternative paths
+                    if (!target.src.includes('wexcars-logo-new.png')) {
+                      target.src = '/wexcars-logo-new.png'
+                    } else if (!target.src.includes('logo-white.png')) {
+                      target.src = '/logo-white.png'
+                    }
+                  }}
+                />
               </motion.div>
 
               {/* Status */}
