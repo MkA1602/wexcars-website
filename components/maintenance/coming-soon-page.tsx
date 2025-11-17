@@ -58,25 +58,26 @@ export default function ComingSoonPage() {
             <div className="flex flex-col items-center gap-8">
               {/* Logo - Large and Centered */}
               <motion.div 
-                className="flex justify-center mb-4"
+                className="flex justify-center mb-8"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
-                  <img
-                    src="/new-white-logo-wexcars.png"
-                    alt="WexCars White Logo"
-                    className="w-full h-full object-contain filter brightness-0 invert drop-shadow-2xl"
-                    style={{ maxWidth: '400px', maxHeight: '400px' }}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      if (target.src !== '/logo-white.png') {
-                        target.src = '/logo-white.png'
-                      }
-                    }}
-                  />
-                </div>
+                <img
+                  src="/new-white-logo-wexcars.png"
+                  alt="WexCars White Logo"
+                  width={400}
+                  height={400}
+                  className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 object-contain drop-shadow-2xl"
+                  style={{ maxWidth: '400px', maxHeight: '400px' }}
+                  onError={(e) => {
+                    console.error('Logo failed to load, trying fallback')
+                    const target = e.target as HTMLImageElement
+                    if (!target.src.includes('logo-white.png')) {
+                      target.src = '/logo-white.png'
+                    }
+                  }}
+                />
               </motion.div>
 
               {/* Status */}
