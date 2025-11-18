@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import Image from "next/image"
 import GridScan from "./grid-scan"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -55,24 +54,6 @@ export default function ComingSoonPage() {
           </CardHeader>
           <CardContent className="pb-10">
             <div className="flex flex-col items-center gap-8">
-              {/* Logo - Large and Centered */}
-              <motion.div 
-                className="flex justify-center mb-8"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-              >
-                <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96">
-                  <Image 
-                    src="/new-white-logo-wexcars.png"
-                    alt="WexCars White Logo" 
-                    fill 
-                    className="object-contain drop-shadow-2xl" 
-                    priority
-                  />
-                </div>
-              </motion.div>
-
               {/* Status */}
               <div className="w-full max-w-xl">
                 <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
