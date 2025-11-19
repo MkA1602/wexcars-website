@@ -33,6 +33,16 @@ export default function ComingSoonPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+      {/* Car Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/lycan-hypersport-concept.png"
+          alt="Luxury Hypercar"
+          className="w-full h-full object-cover object-center opacity-10"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95"></div>
+      </div>
+      
       {/* GridScan Background */}
       <GridScan className="absolute inset-0 -z-10" style={{ opacity: 0.6 }} />
 
