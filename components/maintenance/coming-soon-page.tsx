@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import GridScan from "./grid-scan"
-import LaserFlow from "./laser-flow"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -46,18 +45,6 @@ export default function ComingSoonPage() {
       
       {/* GridScan Background */}
       <GridScan className="absolute inset-0 -z-10" style={{ opacity: 0.6 }} />
-
-      {/* LaserFlow Effect - Behind text content */}
-      <div className="absolute inset-0 z-[1]">
-        <LaserFlow
-          color="#DC2626"
-          fogIntensity={0.3}
-          wispIntensity={3.0}
-          flowStrength={0.2}
-          mouseTiltStrength={0.005}
-          style={{ opacity: 0.7 }}
-        />
-      </div>
 
       {/* Main Content */}
       <div className="relative z-10 px-4 sm:px-6 lg:px-8 w-full max-w-5xl mx-auto">
