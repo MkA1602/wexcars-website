@@ -24,19 +24,19 @@ const HoverExpand_002 = ({
         duration: 0.3,
         delay: 0.5,
       }}
-      className={cn("relative w-full max-w-6xl px-4 sm:px-5 md:px-6", className)}
+      className={cn("relative w-full max-w-6xl mx-auto px-4 sm:px-5 md:px-6", className)}
     >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="w-full"
+        className="w-full flex justify-center"
       >
-        <div className="flex w-full flex-col items-center justify-center gap-1">
+        <div className="flex w-full flex-col items-center justify-center gap-1 max-w-[32rem]">
           {images.map((image, index) => (
             <motion.div
               key={index}
-              className="group relative cursor-pointer overflow-hidden rounded-3xl w-full max-w-[24rem] sm:max-w-[28rem] md:max-w-[32rem]"
+              className="group relative cursor-pointer overflow-hidden rounded-3xl w-full"
               initial={{ height: "2.5rem" }}
               animate={{
                 height: activeImage === index ? "24rem" : "2.5rem",
@@ -85,36 +85,33 @@ const HoverExpand_002 = ({
 export default function ComingSoonPage() {
   const [mounted, setMounted] = useState(false)
 
+  // Updated images based on the provided descriptions
+  // Note: Replace these URLs with your actual image paths once uploaded
   const images = [
     {
-      src: `${GITHUB_RAW_BASE}/lycan-hypersport-concept.png`,
-      alt: "Luxury Hypercar - Lycan Hypersport",
-      code: "# WexCars Premium Collection",
+      src: `${GITHUB_RAW_BASE}/maintenance/mercedes-g-wagen-amg.jpg`,
+      alt: "Mercedes-Benz G-Wagen AMG - Matte Black Luxury SUV",
+      code: "# Premium Luxury SUV",
     },
     {
-      src: `${GITHUB_RAW_BASE}/category-images/coupe-mercedes-01.png`,
-      alt: "Luxury Coupe - Mercedes",
-      code: "# Exquisite Performance",
+      src: `${GITHUB_RAW_BASE}/maintenance/car-carrier-luxury-cars.jpg`,
+      alt: "Luxury Car Carrier - Transporting Premium Vehicles",
+      code: "# Global Vehicle Transport",
     },
     {
-      src: `${GITHUB_RAW_BASE}/category-images/convert-mercedes-01.png`,
-      alt: "Luxury Convertible - Mercedes",
-      code: "# Open-Air Excellence",
+      src: `${GITHUB_RAW_BASE}/maintenance/porsche-911-gt3-rs-yellow.jpg`,
+      alt: "Porsche 911 GT3 RS - Bright Yellow Track Beast",
+      code: "# Ultimate Performance",
     },
     {
-      src: `${GITHUB_RAW_BASE}/category-images/sedan-330e-01.png`,
-      alt: "Luxury Sedan - BMW 330e",
-      code: "# Refined Elegance",
+      src: `${GITHUB_RAW_BASE}/maintenance/porsche-911-black.jpg`,
+      alt: "Porsche 911 - Sleek Black Sports Car",
+      code: "# Timeless Elegance",
     },
     {
-      src: `${GITHUB_RAW_BASE}/category-images/suv-land-rover-01.png`,
-      alt: "Luxury SUV - Land Rover",
-      code: "# Commanding Presence",
-    },
-    {
-      src: `${GITHUB_RAW_BASE}/white-sports-car-hero.jpeg`,
-      alt: "White Sports Car",
-      code: "# Premium Selection",
+      src: `${GITHUB_RAW_BASE}/maintenance/porsche-911-gts-grey.jpg`,
+      alt: "Porsche 911 GTS - Dark Grey Premium Edition",
+      code: "# Refined Power",
     },
   ]
 
@@ -161,8 +158,8 @@ export default function ComingSoonPage() {
         </motion.div>
       </div>
 
-      {/* Main Content with Car Gallery */}
-      <div className="relative z-10 w-full">
+      {/* Main Content with Car Gallery - Centered */}
+      <div className="relative z-10 w-full flex items-center justify-center">
         <HoverExpand_002 images={images} />
       </div>
 
@@ -177,7 +174,10 @@ export default function ComingSoonPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
             We're preparing something exceptional
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 mb-2">
+            Our website is coming in <span className="font-bold text-primary-light">2026</span>
+          </p>
+          <p className="text-gray-500 text-sm mb-4">
             Our team is finalizing a premium experience. Please check back soon.
           </p>
           <div className="flex items-center justify-center gap-2 text-sm text-gray-500">

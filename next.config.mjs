@@ -11,20 +11,32 @@ const nextConfig = {
   },
   // Fix for ChunkLoadError
   webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: {
-            minChunks: 1,
-            priority: -20,
-            reuseExistingChunk: true,
-          },
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: -10,
-            chunks: 'all',
+    // Fix chunk loading errors
+    if (dev) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            default: {
+              minChunks: 1,
+              priority: -20,
+              reuseExistingChunk: true,
+            },
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: -10,
+              chunks: 'all',
+              enforce: true,
+            },
+            common: {
+              name: 'common',
+              minChunks: 2,
+              priority: -5,
+              chunks: 'all',
+              reuseExistingChunk: true,
+            },
           },
         },
       }
@@ -40,10 +52,16 @@ const nextConfig = {
         '.js': ['.js', '.ts', '.tsx'],
         '.jsx': ['.jsx', '.tsx'],
       }
+      // Better error handling for chunk loading
+      config.output = {
+        ...config.output,
+        chunkLoadTimeout: 30000,
+      }
     }
     // Ensure proper resolution of Radix UI packages
     config.resolve.alias = {
       ...config.resolve.alias,
+      '@radix-ui/react-tabs': require.resolve('@radix-ui/react-tabs'),
     }
     return config
   },
