@@ -338,8 +338,21 @@ export default function AboutContent() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary-light">
-        <div className="container mx-auto px-4 text-center">
+      <section className="relative py-16 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img
+            src={`${GITHUB_RAW_BASE}/lycan-hypersport-concept.png`}
+            alt="Luxury Hypercar"
+            className="w-full h-full object-cover object-center opacity-14"
+          />
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(to right, rgba(178, 34, 34, 0.9), rgba(139, 0, 0, 0.9))',
+            }}
+          ></div>
+        </div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <div ref={containerRef as React.RefObject<HTMLDivElement>}>
             <h2 className="text-3xl font-bold text-white mb-4">
               <VariableProximity
@@ -371,7 +384,7 @@ export default function AboutContent() {
               </Button>
             </Link>
             <Link href="/contact">
-              <Button className="border-2 border-white bg-transparent text-white hover:bg-white hover:text-primary-light font-semibold px-8 py-3 transition-all duration-300">
+              <Button className="bg-white hover:bg-gray-100 text-primary-light font-semibold px-8 py-3 transition-all duration-300">
                 Contact Us
               </Button>
             </Link>

@@ -1,14 +1,122 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import GridScan from "./grid-scan"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import { AnimatePresence, motion } from "framer-motion"
+import React, { useState, useEffect } from "react"
+import { cn } from "@/lib/utils"
+
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
+
+const HoverExpand_002 = ({
+  images,
+  className,
+}: {
+  images: { src: string; alt: string; code: string }[]
+  className?: string
+}) => {
+  const [activeImage, setActiveImage] = useState<number | null>(1)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, translateY: 20 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{
+        duration: 0.3,
+        delay: 0.5,
+      }}
+      className={cn("relative w-full max-w-6xl px-4 sm:px-5 md:px-6", className)}
+    >
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="w-full"
+      >
+        <div className="flex w-full flex-col items-center justify-center gap-1">
+          {images.map((image, index) => (
+            <motion.div
+              key={index}
+              className="group relative cursor-pointer overflow-hidden rounded-3xl w-full max-w-[24rem] sm:max-w-[28rem] md:max-w-[32rem]"
+              initial={{ height: "2.5rem" }}
+              animate={{
+                height: activeImage === index ? "24rem" : "2.5rem",
+              }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              onClick={() => setActiveImage(index)}
+              onHoverStart={() => setActiveImage(index)}
+            >
+              <AnimatePresence>
+                {activeImage === index && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute h-full w-full bg-gradient-to-t from-black/50 to-transparent z-10"
+                  />
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {activeImage === index && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="absolute flex h-full w-full flex-col items-end justify-end px-4 pb-5 z-20"
+                  >
+                    <p className="text-left text-xs text-white/50">
+                      {image.code}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <img
+                src={image.src}
+                className="size-full object-cover"
+                alt={image.alt}
+              />
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
 
 export default function ComingSoonPage() {
   const [mounted, setMounted] = useState(false)
+
+  const images = [
+    {
+      src: `${GITHUB_RAW_BASE}/lycan-hypersport-concept.png`,
+      alt: "Luxury Hypercar - Lycan Hypersport",
+      code: "# WexCars Premium Collection",
+    },
+    {
+      src: `${GITHUB_RAW_BASE}/category-images/coupe-mercedes-01.png`,
+      alt: "Luxury Coupe - Mercedes",
+      code: "# Exquisite Performance",
+    },
+    {
+      src: `${GITHUB_RAW_BASE}/category-images/convert-mercedes-01.png`,
+      alt: "Luxury Convertible - Mercedes",
+      code: "# Open-Air Excellence",
+    },
+    {
+      src: `${GITHUB_RAW_BASE}/category-images/sedan-330e-01.png`,
+      alt: "Luxury Sedan - BMW 330e",
+      code: "# Refined Elegance",
+    },
+    {
+      src: `${GITHUB_RAW_BASE}/category-images/suv-land-rover-01.png`,
+      alt: "Luxury SUV - Land Rover",
+      code: "# Commanding Presence",
+    },
+    {
+      src: `${GITHUB_RAW_BASE}/white-sports-car-hero.jpeg`,
+      alt: "White Sports Car",
+      code: "# Premium Selection",
+    },
+  ]
 
   useEffect(() => {
     setMounted(true)
@@ -25,94 +133,64 @@ export default function ComingSoonPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-dark via-primary-light to-primary-dark">
         <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
-      {/* Car Background Image */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="/lycan-hypersport-concept.png"
-          alt="Luxury Hypercar"
-          className="w-full h-full object-cover object-center opacity-10"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95"></div>
-      </div>
+    <div className="flex h-full w-full min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#f5f4f3] via-[#faf9f8] to-[#f5f4f3] relative">
+      {/* Red gradient overlay for brand consistency */}
+      <div 
+        className="absolute inset-0 opacity-5"
+        style={{
+          background: 'linear-gradient(to right, rgba(178, 34, 34, 0.1), rgba(139, 0, 0, 0.1))',
+        }}
+      ></div>
       
-      {/* GridScan Background */}
-      <GridScan className="absolute inset-0 -z-10" style={{ opacity: 0.6 }} />
-
-      {/* Main Content */}
-      <div className="relative z-10 px-4 sm:px-6 lg:px-8 w-full max-w-5xl mx-auto">
-        <Card className="bg-white/5 backdrop-blur-md border-white/10 text-white">
-          <CardHeader className="flex flex-col items-center gap-4 pt-8">
-            <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="bg-white/10 text-white border-white/10">
-                Maintenance Mode
-              </Badge>
-            </div>
-            <CardTitle className="text-center text-3xl md:text-4xl font-bold">
-              We're preparing something exceptional
-            </CardTitle>
-            <CardDescription className="text-center text-base md:text-lg text-gray-300">
-              Our team is finalizing a premium experience. Please check back soon.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pb-10">
-            <div className="flex flex-col items-center gap-8">
-              {/* Status */}
-              <div className="w-full max-w-xl">
-                <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
-                  <span>Deployment progress</span>
-                  <span>75%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full" style={{ width: '75%' }} />
-                </div>
-              </div>
-
-              {/* Contact */}
-              <div className="text-center text-sm text-gray-300">
-                For urgent inquiries, contact{" "}
-                <a className="text-red-400 hover:text-red-300 underline underline-offset-4" href="mailto:support@wexcars.com">
-                  support@wexcars.com
-                </a>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Maintenance Mode Badge */}
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gradient-to-r from-primary-light to-primary-dark text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg"
+        >
+          Maintenance Mode
+        </motion.div>
       </div>
 
-      {/* Bottom Wave Animation */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 overflow-hidden">
-        <motion.svg
-          className="absolute bottom-0 w-full"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
+      {/* Main Content with Car Gallery */}
+      <div className="relative z-10 w-full">
+        <HoverExpand_002 images={images} />
+      </div>
+
+      {/* Maintenance Message */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 text-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl max-w-2xl"
         >
-          <motion.path
-            d="M0,60 Q300,20 600,60 T1200,60 L1200,120 L0,120 Z"
-            fill="rgba(255,255,255,0.05)"
-            animate={{
-              d: [
-                "M0,60 Q300,20 600,60 T1200,60 L1200,120 L0,120 Z",
-                "M0,60 Q300,40 600,60 T1200,60 L1200,120 L0,120 Z",
-                "M0,60 Q300,20 600,60 T1200,60 L1200,120 L0,120 Z",
-              ],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        </motion.svg>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            We're preparing something exceptional
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Our team is finalizing a premium experience. Please check back soon.
+          </p>
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <span>For urgent inquiries, contact</span>
+            <a 
+              className="text-primary-light hover:text-primary-dark font-semibold underline underline-offset-4 transition-colors" 
+              href="mailto:support@wexcars.com"
+            >
+              support@wexcars.com
+            </a>
+          </div>
+        </motion.div>
       </div>
     </div>
   )
 }
-
