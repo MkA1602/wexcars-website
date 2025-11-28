@@ -61,7 +61,6 @@ const nextConfig = {
     // Ensure proper resolution of Radix UI packages
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@radix-ui/react-tabs': require.resolve('@radix-ui/react-tabs'),
     }
     return config
   },
