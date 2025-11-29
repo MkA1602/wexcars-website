@@ -73,6 +73,11 @@ const HoverExpand_002 = ({
                 src={image.src}
                 className="size-full object-cover"
                 alt={image.alt}
+                onError={(e) => {
+                  console.error('Failed to load image:', image.src);
+                  e.currentTarget.style.display = 'none';
+                }}
+                loading="lazy"
               />
             </motion.div>
           ))}
