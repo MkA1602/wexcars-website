@@ -19,7 +19,7 @@ const HoverExpand_002 = ({
 
   const handleImageError = (index: number, image: { src: string; githubSrc?: string }) => {
     if (imageErrors.has(index)) {
-      return // Already tried fallback
+      return // Already tried both sources
     }
     
     console.error('Failed to load image:', image.src);
@@ -28,10 +28,19 @@ const HoverExpand_002 = ({
     // Try GitHub URL as fallback
     if (image.githubSrc) {
       const img = document.querySelector(`img[data-image-index="${index}"]`) as HTMLImageElement;
-      if (img) {
+      if (img && img.src !== image.githubSrc) {
         img.src = image.githubSrc;
       }
     }
+  }
+
+  // Use GitHub URLs as primary source for better CDN reliability
+  const getImageSrc = (image: { src: string; githubSrc?: string }, index: number) => {
+    // On Netlify or if local failed, use GitHub URL
+    if (typeof window !== 'undefined' && (window.location.hostname.includes('netlify') || window.location.hostname.includes('wexcars.com') || imageErrors.has(index))) {
+      return image.githubSrc || image.src;
+    }
+    return image.src;
   }
 
   return (
@@ -89,7 +98,7 @@ const HoverExpand_002 = ({
               </AnimatePresence>
               <img
                 data-image-index={index}
-                src={image.src}
+                src={getImageSrc(image, index)}
                 className="size-full object-cover"
                 alt={image.alt}
                 onError={() => handleImageError(index, image)}
