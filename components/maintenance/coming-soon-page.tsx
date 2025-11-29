@@ -11,10 +11,28 @@ const HoverExpand_002 = ({
   images,
   className,
 }: {
-  images: { src: string; alt: string; code: string }[]
+  images: { src: string; alt: string; code: string; githubSrc?: string }[]
   className?: string
 }) => {
   const [activeImage, setActiveImage] = useState<number | null>(1)
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set())
+
+  const handleImageError = (index: number, image: { src: string; githubSrc?: string }) => {
+    if (imageErrors.has(index)) {
+      return // Already tried fallback
+    }
+    
+    console.error('Failed to load image:', image.src);
+    setImageErrors(prev => new Set(prev).add(index));
+    
+    // Try GitHub URL as fallback
+    if (image.githubSrc) {
+      const img = document.querySelector(`img[data-image-index="${index}"]`) as HTMLImageElement;
+      if (img) {
+        img.src = image.githubSrc;
+      }
+    }
+  }
 
   return (
     <motion.div
@@ -70,19 +88,11 @@ const HoverExpand_002 = ({
                 )}
               </AnimatePresence>
               <img
+                data-image-index={index}
                 src={image.src}
                 className="size-full object-cover"
                 alt={image.alt}
-                onError={(e) => {
-                  console.error('Failed to load image:', image.src);
-                  // Try alternative path
-                  const currentSrc = e.currentTarget.src;
-                  if (!currentSrc.includes('placeholder')) {
-                    e.currentTarget.src = `/public${image.src}`;
-                  } else {
-                    e.currentTarget.style.display = 'none';
-                  }
-                }}
+                onError={() => handleImageError(index, image)}
                 loading="lazy"
               />
             </motion.div>
@@ -98,29 +108,35 @@ export default function ComingSoonPage() {
 
   // Updated images based on the provided descriptions
   // Images are in: public/maintenance/
+  // Using GitHub raw URLs as primary source for reliable CDN delivery
   const images = [
     {
       src: "/maintenance/IMG-20251011-WA0020.jpg",
+      githubSrc: `${GITHUB_RAW_BASE}/maintenance/IMG-20251011-WA0020.jpg`,
       alt: "Mercedes-Benz G-Wagen AMG - Matte Black Luxury SUV",
       code: "# Premium Luxury SUV",
     },
     {
       src: "/maintenance/IMG-20251128-WA0023.jpg",
+      githubSrc: `${GITHUB_RAW_BASE}/maintenance/IMG-20251128-WA0023.jpg`,
       alt: "Luxury Car Carrier - Transporting Premium Vehicles",
       code: "# Global Vehicle Transport",
     },
     {
       src: "/maintenance/IMG-20251128-WA0025.jpg",
+      githubSrc: `${GITHUB_RAW_BASE}/maintenance/IMG-20251128-WA0025.jpg`,
       alt: "Porsche 911 GT3 RS - Bright Yellow Track Beast",
       code: "# Ultimate Performance",
     },
     {
       src: "/maintenance/IMG-20251128-WA0026.jpg",
+      githubSrc: `${GITHUB_RAW_BASE}/maintenance/IMG-20251128-WA0026.jpg`,
       alt: "Porsche 911 - Sleek Black Sports Car",
       code: "# Timeless Elegance",
     },
     {
       src: "/maintenance/b082eb73-a3f7-40d8-a6a4-7e925962e1e1.jpg",
+      githubSrc: `${GITHUB_RAW_BASE}/maintenance/b082eb73-a3f7-40d8-a6a4-7e925962e1e1.jpg`,
       alt: "Porsche 911 GTS - Dark Grey Premium Edition",
       code: "# Refined Power",
     },
