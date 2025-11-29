@@ -75,7 +75,13 @@ const HoverExpand_002 = ({
                 alt={image.alt}
                 onError={(e) => {
                   console.error('Failed to load image:', image.src);
-                  e.currentTarget.style.display = 'none';
+                  // Try alternative path
+                  const currentSrc = e.currentTarget.src;
+                  if (!currentSrc.includes('placeholder')) {
+                    e.currentTarget.src = `/public${image.src}`;
+                  } else {
+                    e.currentTarget.style.display = 'none';
+                  }
                 }}
                 loading="lazy"
               />
