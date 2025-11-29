@@ -86,30 +86,30 @@ export default function ComingSoonPage() {
   const [mounted, setMounted] = useState(false)
 
   // Updated images based on the provided descriptions
-  // Note: Replace these URLs with your actual image paths once uploaded
+  // Images are in: public/maintenance/
   const images = [
     {
-      src: `${GITHUB_RAW_BASE}/maintenance/mercedes-g-wagen-amg.jpg`,
+      src: "/maintenance/IMG-20251011-WA0020.jpg",
       alt: "Mercedes-Benz G-Wagen AMG - Matte Black Luxury SUV",
       code: "# Premium Luxury SUV",
     },
     {
-      src: `${GITHUB_RAW_BASE}/maintenance/car-carrier-luxury-cars.jpg`,
+      src: "/maintenance/IMG-20251128-WA0023.jpg",
       alt: "Luxury Car Carrier - Transporting Premium Vehicles",
       code: "# Global Vehicle Transport",
     },
     {
-      src: `${GITHUB_RAW_BASE}/maintenance/porsche-911-gt3-rs-yellow.jpg`,
+      src: "/maintenance/IMG-20251128-WA0025.jpg",
       alt: "Porsche 911 GT3 RS - Bright Yellow Track Beast",
       code: "# Ultimate Performance",
     },
     {
-      src: `${GITHUB_RAW_BASE}/maintenance/porsche-911-black.jpg`,
+      src: "/maintenance/IMG-20251128-WA0026.jpg",
       alt: "Porsche 911 - Sleek Black Sports Car",
       code: "# Timeless Elegance",
     },
     {
-      src: `${GITHUB_RAW_BASE}/maintenance/porsche-911-gts-grey.jpg`,
+      src: "/maintenance/b082eb73-a3f7-40d8-a6a4-7e925962e1e1.jpg",
       alt: "Porsche 911 GTS - Dark Grey Premium Edition",
       code: "# Refined Power",
     },
