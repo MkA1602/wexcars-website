@@ -1,31 +1,34 @@
 'use client';
 
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import PriceFlow from '@/components/ui/price-flow';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import * as React from 'react';
+import { motion, Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Sparkles, ArrowRight, Check, Star, Zap, Shield } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 
-const plans = [
+type PricingPlan = {
+  name: string;
+  price: {
+    monthly: string;
+    annual: string;
+  };
+  description: string;
+  features: string[];
+  cta: string;
+  tag: string;
+  link: string;
+  highlight?: boolean;
+};
+
+const pricingPlans: PricingPlan[] = [
   {
-    id: 'standard',
     name: 'Standard',
-    icon: Star,
     price: {
-      monthly: 0,
-      yearly: 0,
+      monthly: 'Free',
+      annual: 'Free',
     },
     description: 'Perfect for first-time luxury car buyers',
     features: [
@@ -34,16 +37,14 @@ const plans = [
       'Standard customer support',
     ],
     cta: 'Get Free',
-    popular: false,
-    buttonLink: '/dashboard',
+    link: '/dashboard',
+    tag: 'Free Plan',
   },
   {
-    id: 'premium',
     name: 'Premium',
-    icon: Zap,
     price: {
-      monthly: 200,
-      yearly: 160, // 20% off
+      monthly: '$200',
+      annual: '$160',
     },
     description: 'Our most popular package for enthusiasts',
     features: [
@@ -53,16 +54,15 @@ const plans = [
       'Priority customer support',
     ],
     cta: 'Choose Premium',
-    popular: true,
-    buttonLink: '/payment/premium',
+    link: '/payment/premium',
+    tag: 'Standard Plan',
+    highlight: true,
   },
   {
-    id: 'exclusive',
     name: 'Exclusive',
-    icon: Shield,
     price: {
-      monthly: 300,
-      yearly: 240, // 20% off
+      monthly: '$300',
+      annual: '$240',
     },
     description: 'The ultimate luxury experience',
     features: [
@@ -74,14 +74,37 @@ const plans = [
       'Priority access to new arrivals',
     ],
     cta: 'Go Exclusive',
-    popular: false,
-    buttonLink: '/payment/exclusive',
+    link: '/payment/exclusive',
+    tag: 'Premium Plan',
   },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      damping: 15,
+      stiffness: 150,
+    },
+  },
+};
+
 // FAQ Accordion Component
 function FAQAccordionGroup({ faqs }: { faqs: Array<{ question: string; answer: string }> }) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = React.useState<number | null>(null);
 
   const toggleAccordion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -174,238 +197,52 @@ const pricingFAQs = [
   },
 ];
 
-export default function PricingContent() {
-  const [frequency, setFrequency] = useState<string>('monthly');
-  const [mounted, setMounted] = useState(false);
+interface PricingProps {
+  plans?: typeof pricingPlans;
+  className?: string;
+}
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
+const PricingPage = ({ plans = pricingPlans, className }: PricingProps) => {
+  const [isAnnual, setIsAnnual] = React.useState(false);
 
   return (
     <main className="flex-grow">
-      <div className="not-prose relative flex w-full flex-col gap-16 overflow-hidden px-4 py-24 text-center sm:px-8">
+      <div className={cn('relative w-full overflow-hidden', className)}>
+        {/* Background elements */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="bg-primary-light/10 absolute -top-[10%] left-[50%] h-[40%] w-[60%] -translate-x-1/2 rounded-full blur-3xl" />
           <div className="bg-primary-light/5 absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full blur-3xl" />
           <div className="bg-primary-light/5 absolute -bottom-[10%] -left-[10%] h-[40%] w-[40%] rounded-full blur-3xl" />
+          <h1 className="text-center text-[7rem] font-bold md:text-[10rem] text-gray-100 select-none pointer-events-none">
+            Pricing
+          </h1>
         </div>
 
-        <div className="flex flex-col items-center justify-center gap-8">
-          <div className="flex flex-col items-center space-y-2">
-            <Badge
-              variant="outline"
-              className="border-primary-light/20 bg-primary-light/5 mb-4 rounded-full px-4 py-1 text-sm font-medium"
-            >
-              <Sparkles className="text-primary-light mr-1 h-3.5 w-3.5 animate-pulse" />
-              Pricing Plans
-            </Badge>
-            <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="from-foreground to-foreground/30 bg-gradient-to-b bg-clip-text text-4xl font-bold text-transparent sm:text-5xl"
-            >
-              Pick the perfect plan for your needs
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-muted-foreground max-w-md pt-2 text-lg"
-            >
-              Choose the perfect plan that suits your luxury vehicle needs. All plans include access to our exclusive collection of premium vehicles.
-            </motion.p>
-          </div>
+        {/* Billing Toggle */}
+        <div className="relative z-10 pt-12 pb-8">
+          <BillingToggle
+            isAnnual={isAnnual}
+            onCheckedChange={setIsAnnual}
+            className="mb-12"
+          />
+        </div>
 
+        {/* Pricing Container */}
+        <div className="relative container pt-8 md:pt-12 pb-20">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="relative z-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3"
           >
-            <Tabs
-              defaultValue={frequency}
-              onValueChange={setFrequency}
-              className="bg-muted/30 inline-block rounded-full p-1 shadow-sm"
-            >
-              <TabsList className="bg-transparent">
-                <TabsTrigger
-                  value="monthly"
-                  className="data-[state=active]:bg-background rounded-full transition-all duration-300 data-[state=active]:shadow-sm"
-                >
-                  Monthly
-                </TabsTrigger>
-                <TabsTrigger
-                  value="yearly"
-                  className="data-[state=active]:bg-background rounded-full transition-all duration-300 data-[state=active]:shadow-sm"
-                >
-                  Yearly
-                  <Badge
-                    variant="secondary"
-                    className="bg-primary-light/10 text-primary-light hover:bg-primary-light/15 ml-2"
-                  >
-                    20% off
-                  </Badge>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            {plans.map((plan) => (
+              <PricingCard
+                key={plan.name}
+                variants={itemVariants}
+                plan={plan}
+                isAnnual={isAnnual}
+              />
+            ))}
           </motion.div>
-
-          <div className="mt-8 grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-3">
-            {plans.map((plan, index) => {
-              const price = plan.price[frequency as keyof typeof plan.price];
-              const isFree = price === 0;
-
-              return (
-                <motion.div
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className="flex"
-                >
-                  <Card
-                    className={cn(
-                      'bg-secondary/20 relative h-full w-full text-left transition-all duration-300 hover:shadow-lg',
-                      plan.popular
-                        ? 'ring-primary-light/50 dark:shadow-primary-light/10 shadow-md ring-2'
-                        : 'hover:border-primary-light/30',
-                      plan.popular &&
-                        'from-primary-light/[0.03] bg-gradient-to-b to-transparent',
-                    )}
-                  >
-                    {plan.popular && (
-                      <div className="absolute -top-3 right-0 left-0 mx-auto w-fit">
-                        <Badge className="bg-primary-light text-white rounded-full px-4 py-1 shadow-sm">
-                          <Sparkles className="mr-1 h-3.5 w-3.5" />
-                          Popular
-                        </Badge>
-                      </div>
-                    )}
-                    <CardHeader className={cn('pb-4', plan.popular && 'pt-8')}>
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={cn(
-                            'flex h-8 w-8 items-center justify-center rounded-full',
-                            plan.popular
-                              ? 'bg-primary-light/10 text-primary-light'
-                              : 'bg-secondary text-foreground',
-                          )}
-                        >
-                          <plan.icon className="h-4 w-4" />
-                        </div>
-                        <CardTitle
-                          className={cn(
-                            'text-xl font-bold',
-                            plan.popular && 'text-primary-light',
-                          )}
-                        >
-                          {plan.name}
-                        </CardTitle>
-                      </div>
-                      <CardDescription className="mt-3 space-y-2">
-                        <p className="text-sm">{plan.description}</p>
-                        <div className="pt-2">
-                          {isFree ? (
-                            <span
-                              className={cn(
-                                'text-2xl font-bold',
-                                plan.popular ? 'text-primary-light' : 'text-foreground',
-                              )}
-                            >
-                              Free forever
-                            </span>
-                          ) : (
-                            <div className="flex items-baseline">
-                              <span
-                                className={cn(
-                                  'text-3xl font-bold',
-                                  plan.popular ? 'text-primary-light' : 'text-foreground',
-                                )}
-                              >
-                                $
-                              </span>
-                              <span
-                                className={cn(
-                                  'text-3xl font-bold',
-                                  plan.popular ? 'text-primary-light' : 'text-foreground',
-                                )}
-                              >
-                                <PriceFlow value={price} />
-                              </span>
-                              <span className="text-muted-foreground ml-1 text-sm">
-                                /month, billed {frequency}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="grid gap-3 pb-6">
-                      {plan.features.map((feature, featureIndex) => (
-                        <motion.div
-                          key={featureIndex}
-                          initial={{ opacity: 0, x: -5 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3, delay: 0.5 + featureIndex * 0.05 }}
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <div
-                            className={cn(
-                              'flex h-5 w-5 items-center justify-center rounded-full',
-                              plan.popular
-                                ? 'bg-primary-light/10 text-primary-light'
-                                : 'bg-secondary text-secondary-foreground',
-                            )}
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                          </div>
-                          <span
-                            className={
-                              plan.popular
-                                ? 'text-foreground'
-                                : 'text-muted-foreground'
-                            }
-                          >
-                            {feature}
-                          </span>
-                        </motion.div>
-                      ))}
-                    </CardContent>
-                    <CardFooter>
-                      <Link href={plan.buttonLink} className="w-full">
-                        <Button
-                          variant={plan.popular ? 'default' : 'outline'}
-                          className={cn(
-                            'w-full font-medium transition-all duration-300',
-                            plan.popular
-                              ? 'bg-primary-light hover:bg-primary-dark hover:shadow-primary-light/20 hover:shadow-md'
-                              : 'hover:border-primary-light/30 hover:bg-primary-light/5 hover:text-primary-light',
-                          )}
-                        >
-                          {plan.cta}
-                          <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                        </Button>
-                      </Link>
-                    </CardFooter>
-
-                    {/* Subtle gradient effects */}
-                    {plan.popular ? (
-                      <>
-                        <div className="from-primary-light/[0.05] pointer-events-none absolute right-0 bottom-0 left-0 h-1/2 rounded-b-lg bg-gradient-to-t to-transparent" />
-                        <div className="border-primary-light/20 pointer-events-none absolute inset-0 rounded-lg border" />
-                      </>
-                    ) : (
-                      <div className="hover:border-primary-light/10 pointer-events-none absolute inset-0 rounded-lg border border-transparent opacity-0 transition-opacity duration-300 hover:opacity-100" />
-                    )}
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
         </div>
       </div>
 
@@ -480,4 +317,162 @@ export default function PricingContent() {
       </section>
     </main>
   );
+};
+
+interface PriceDisplayProps {
+  price: {
+    monthly: string;
+    annual: string;
+  };
+  isAnnual: boolean;
+  className?: string;
 }
+
+const PriceDisplay = ({ price, isAnnual, className }: PriceDisplayProps) => {
+  return (
+    <div className={cn('relative mb-8', className)}>
+      <div
+        className={cn(
+          'mt-2 text-6xl font-bold',
+          'from-foreground bg-gradient-to-r to-transparent bg-clip-text text-transparent',
+        )}
+      >
+        {price.monthly === 'Free' ? (
+          <span>Free</span>
+        ) : (
+          <>
+            <span>{isAnnual ? price.annual : price.monthly}</span>
+            <span className="text-4xl">/{isAnnual ? 'y' : 'm'}</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+interface PricingFeaturesProps {
+  features: string[];
+  className?: string;
+}
+
+const PricingFeatures = ({ features, className }: PricingFeaturesProps) => {
+  return (
+    <ul className={cn('relative mb-8 space-y-3', className)}>
+      {features.map((feature) => (
+        <li key={feature} className="flex items-center">
+          <div className="bg-foreground/10 shadow-foreground/50 mr-3 rounded-full p-1 shadow-inner">
+            <Check className="h-4 w-4" />
+          </div>
+          <span>{feature}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+interface PricingCardProps
+  extends React.ComponentPropsWithoutRef<typeof motion.div> {
+  plan: PricingPlan;
+  isAnnual: boolean;
+}
+
+const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
+  ({ plan, isAnnual, className, ...props }, ref) => {
+    return (
+      <motion.div
+        ref={ref}
+        className={cn(
+          'relative flex flex-col justify-between overflow-hidden rounded-2xl p-6',
+          'border-border/50 border',
+          'bg-background/20 backdrop-blur-sm',
+          'shadow-[inset_0_1px_30px_0_rgba(255,255,255,0.1)]',
+          "before:absolute before:inset-0 before:-z-10 before:content-['']",
+          'before:bg-gradient-to-br before:from-white/7 before:to-transparent',
+          'before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100',
+          "after:absolute after:inset-0 after:-z-20 after:content-['']",
+          'after:bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/0.05),transparent_70%)]',
+          'after:opacity-70',
+          'hover:border-border/70 hover:shadow-lg',
+          plan.highlight && 'ring-2 ring-primary-light/50',
+          className,
+        )}
+        whileHover={{ y: -8 }}
+        {...props}
+      >
+        <div>
+          <div className="py-2">
+            <div className="text-muted-foreground text-sm font-medium">
+              {plan.tag}
+            </div>
+            <h3 className="text-2xl font-bold mt-2 mb-2">{plan.name}</h3>
+            <p className="text-muted-foreground text-sm mb-4">{plan.description}</p>
+          </div>
+
+          <PriceDisplay price={plan.price} isAnnual={isAnnual} />
+
+          <PricingFeatures features={plan.features} />
+        </div>
+
+        <div className="relative">
+          <Link href={plan.link} className="block">
+            <Button
+              className={cn(
+                'after:bg-primary/80 relative w-full after:absolute after:-z-10 after:h-full after:w-full after:blur-xs',
+                plan.highlight && 'bg-primary-light hover:bg-primary-dark text-white',
+              )}
+              variant={plan.highlight ? 'default' : 'outline'}
+            >
+              {plan.cta}
+            </Button>
+          </Link>
+        </div>
+      </motion.div>
+    );
+  },
+);
+
+PricingCard.displayName = 'PricingCard';
+
+interface BillingToggleProps {
+  isAnnual: boolean;
+  onCheckedChange: (checked: boolean) => void;
+  className?: string;
+}
+
+const BillingToggle = ({
+  isAnnual,
+  onCheckedChange,
+  className,
+}: BillingToggleProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className={cn(
+        'flex flex-col items-center justify-center text-center',
+        className,
+      )}
+    >
+      <div className="bg-background/50 border-border/50 mt-8 flex items-center gap-4 rounded-full border p-2 backdrop-blur-sm">
+        <Label htmlFor="billing-toggle">Monthly</Label>
+        <Switch
+          id="billing-toggle"
+          checked={isAnnual}
+          onCheckedChange={onCheckedChange}
+        />
+        <Label htmlFor="billing-toggle">
+          Annual <span className="text-primary-light">(20% off)</span>
+        </Label>
+      </div>
+    </motion.div>
+  );
+};
+
+export default PricingPage;
+
+export type { PricingPlan };
+
+export { pricingPlans };
+
+export { PriceDisplay, PricingFeatures, PricingCard, BillingToggle };

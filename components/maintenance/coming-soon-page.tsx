@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
 
-const HoverExpand_001 = ({
+const HoverExpand_002 = ({
   images,
   className,
 }: {
@@ -51,23 +51,22 @@ const HoverExpand_001 = ({
         duration: 0.3,
         delay: 0.5,
       }}
-      className={cn("relative w-full max-w-6xl px-5", className)}
+      className={cn("relative w-full max-w-6xl mx-auto px-4 sm:px-5 md:px-6", className)}
     >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="w-full"
+        className="w-full flex justify-center"
       >
-        <div className="flex w-full items-center justify-center gap-1">
+        <div className="flex w-full flex-col items-center justify-center gap-1 max-w-[32rem]">
           {images.map((image, index) => (
             <motion.div
               key={index}
-              className="relative cursor-pointer overflow-hidden rounded-3xl"
-              initial={{ width: "2.5rem", height: "20rem" }}
+              className="group relative cursor-pointer overflow-hidden rounded-3xl w-full"
+              initial={{ height: "2.5rem" }}
               animate={{
-                width: activeImage === index ? "24rem" : "5rem",
-                height: activeImage === index ? "24rem" : "24rem",
+                height: activeImage === index ? "24rem" : "2.5rem",
               }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
               onClick={() => setActiveImage(index)}
@@ -79,17 +78,17 @@ const HoverExpand_001 = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute h-full w-full bg-gradient-to-t from-black/40 to-transparent"
+                    className="absolute h-full w-full bg-gradient-to-t from-black/50 to-transparent z-10"
                   />
                 )}
               </AnimatePresence>
               <AnimatePresence>
                 {activeImage === index && (
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute flex h-full w-full flex-col items-end justify-end p-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="absolute flex h-full w-full flex-col items-end justify-end px-4 pb-5 z-20"
                   >
                     <p className="text-left text-xs text-white/50">
                       {image.code}
@@ -174,7 +173,7 @@ export default function ComingSoonPage() {
   }
 
   return (
-    <div className="flex h-full w-full min-h-screen items-center justify-center overflow-hidden bg-[#f5f4f3] relative">
+    <div className="flex h-full w-full min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#f5f4f3] via-[#faf9f8] to-[#f5f4f3] relative">
       {/* Red gradient overlay for brand consistency */}
       <div 
         className="absolute inset-0 opacity-5"
@@ -197,7 +196,7 @@ export default function ComingSoonPage() {
 
       {/* Main Content with Car Gallery - Centered */}
       <div className="relative z-10 w-full flex items-center justify-center">
-        <HoverExpand_001 images={images} />
+        <HoverExpand_002 images={images} />
       </div>
 
       {/* Maintenance Message */}

@@ -5,10 +5,12 @@ import { motion, useInView } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import Earth from '@/components/ui/globe';
 import { Label } from '@/components/ui/label';
-import { Check, Loader2, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { Check, Loader2, MapPin, Phone, Mail, Clock, MessageSquare, Send } from 'lucide-react';
 import dynamic from 'next/dynamic';
+
+// GitHub Raw URL base for reliable image serving
+const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public";
 
 // Dynamically import OpenStreetMap to avoid SSR issues and chunk loading problems
 const OpenStreetMap = dynamic(() => import('@/components/openstreet-map'), {
@@ -81,242 +83,311 @@ export default function ContactContent() {
 
   return (
     <main className="flex-grow">
-      <section className="bg-background relative w-full overflow-hidden py-16 md:py-24">
-        <div
-          className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full opacity-20 blur-[120px]"
-          style={{
-            background: `radial-gradient(circle at center, #b22222, transparent 70%)`,
-          }}
-        />
-        <div
-          className="absolute right-0 bottom-0 h-[300px] w-[300px] rounded-full opacity-10 blur-[100px]"
-          style={{
-            background: `radial-gradient(circle at center, #8b0000, transparent 70%)`,
-          }}
-        />
-
-        <div className="relative z-10 container mx-auto px-4 md:px-6">
-          <div className="border-border/40 bg-secondary/20 mx-auto max-w-5xl overflow-hidden rounded-[28px] border shadow-xl backdrop-blur-sm">
-            <div className="grid md:grid-cols-2">
-              <div className="relative p-6 md:p-10" ref={formRef}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={
-                    isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-                  }
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="relative flex w-full gap-2"
-                >
-                  <h2 className="from-foreground to-foreground/80 mb-2 bg-gradient-to-r bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-5xl">
-                    Contact
-                  </h2>
-                  <span className="text-primary-light w-full text-4xl font-bold tracking-tight italic md:text-5xl">
-                    Us
-                  </span>
-                </motion.div>
-
-                <motion.form
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={
-                    isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-                  }
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  onSubmit={handleSubmit}
-                  className="mt-8 space-y-6"
-                >
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <motion.div
-                      className="space-y-2"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                    >
-                      <Label htmlFor="name">Full Name <span className="text-primary">*</span></Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        value={formState.name}
-                        onChange={handleChange}
-                        placeholder="Enter your name"
-                        required
-                      />
-                    </motion.div>
-
-                    <motion.div
-                      className="space-y-2"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                    >
-                      <Label htmlFor="email">Email <span className="text-primary">*</span></Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formState.email}
-                        onChange={handleChange}
-                        placeholder="Enter your email"
-                        required
-                      />
-                    </motion.div>
+      <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4 bg-gray-50">
+        <style jsx>{`
+          .contact-btn {
+            background: linear-gradient(135deg, #b22222 0%, #8b0000 100%);
+            position: relative;
+            overflow: hidden;
+          }
+          .contact-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+              90deg,
+              transparent,
+              rgba(255, 255, 255, 0.3),
+              transparent
+            );
+            transition: left 0.5s;
+          }
+          .contact-btn:hover::before {
+            left: 100%;
+          }
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .feature-item {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+          }
+        `}</style>
+        <div className="z-10 w-full max-w-6xl">
+          <div className="bg-secondary/50 overflow-hidden rounded-[40px] shadow-2xl">
+            <div className="grid min-h-[700px] lg:grid-cols-2">
+              {/* Left Side - Contact Info */}
+              <div className="brand-side relative m-4 rounded-3xl overflow-hidden p-12 text-white">
+                <img
+                  src="/sign in/black-car-with-word-snoff-back.jpg"
+                  alt="Luxury Car Background"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = `${GITHUB_RAW_BASE}/sign in/black-car-with-word-snoff-back.jpg`;
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary-light/95 to-primary-dark/95 rounded-3xl"></div>
+                <div className="relative z-10">
+                  <div className="mb-12 text-lg font-semibold uppercase tracking-wider">
+                    WexCars
                   </div>
+                  <h1 className="mb-4 text-5xl md:text-6xl font-bold leading-tight">
+                    Get In Touch
+                  </h1>
+                  <p className="mb-12 text-xl opacity-90 leading-relaxed">
+                    We're here to help you find your perfect luxury vehicle.
+                    Reach out to our team for personalized assistance.
+                  </p>
 
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <motion.div
-                      className="space-y-2"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.55 }}
-                    >
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        value={formState.phone}
-                        onChange={handleChange}
-                        placeholder="+1 (555) 123-4567"
-                      />
-                    </motion.div>
-
-                    <motion.div
-                      className="space-y-2"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.6 }}
-                    >
-                      <Label htmlFor="subject">Subject <span className="text-primary">*</span></Label>
-                      <Input
-                        id="subject"
-                        name="subject"
-                        value={formState.subject}
-                        onChange={handleChange}
-                        placeholder="How can we help you?"
-                        required
-                      />
-                    </motion.div>
-                  </div>
-
-                  <motion.div
-                    className="space-y-2"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.65 }}
-                  >
-                    <Label htmlFor="message">Message <span className="text-primary">*</span></Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formState.message}
-                      onChange={handleChange}
-                      placeholder="Please provide details about your inquiry..."
-                      required
-                      className="h-40 resize-none"
-                    />
-                  </motion.div>
-
-                  <motion.div
-                    className="flex items-start space-y-2"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7 }}
-                  >
-                    <input
-                      id="privacy"
-                      name="privacy"
-                      type="checkbox"
-                      checked={privacyAgreed}
-                      onChange={(e) => setPrivacyAgreed(e.target.checked)}
-                      className="h-4 w-4 text-primary border-gray-300 rounded mt-1"
-                      required
-                    />
-                    <label htmlFor="privacy" className="ml-2 block text-sm text-gray-600">
-                      I agree to the{' '}
-                      <a href="/privacy" className="text-primary hover:underline">
-                        Privacy Policy
-                      </a>{' '}
-                      and consent to WexCars processing my data for the purpose of contacting me.
-                    </label>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full"
-                  >
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting || isSubmitted}
-                      className="w-full bg-gradient-to-b from-primary-light to-primary-dark text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset] hover:from-primary-dark hover:to-primary-darker"
-                    >
-                      {isSubmitting ? (
-                        <span className="flex items-center justify-center">
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Sending...
-                        </span>
-                      ) : isSubmitted ? (
-                        <span className="flex items-center justify-center">
-                          <Check className="mr-2 h-4 w-4" />
-                          Message Sent!
-                        </span>
-                      ) : (
-                        <span>Send Message</span>
-                      )}
-                    </Button>
-                  </motion.div>
-                </motion.form>
-              </div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="relative my-8 flex items-center justify-center overflow-hidden pr-8"
-              >
-                <div className="flex flex-col items-center justify-center overflow-hidden">
-                  <article className="relative mx-auto h-[350px] min-h-60 max-w-[450px] overflow-hidden rounded-3xl border bg-gradient-to-b from-primary-light to-primary-light/5 p-6 text-3xl tracking-tight text-white md:h-[450px] md:min-h-80 md:p-8 md:text-4xl md:leading-[1.05] lg:text-5xl">
-                    <div className="relative z-20">
-                      <h3 className="mb-4 font-bold">Get In Touch</h3>
-                      <div className="space-y-4 text-lg md:text-xl lg:text-2xl">
-                        <div className="flex items-start gap-3">
-                          <MapPin className="h-5 w-5 mt-1 flex-shrink-0" />
-                          <div>
-                            <p className="font-semibold">Malmö, Sweden</p>
-                            <p className="text-sm opacity-80">European Headquarters</p>
-                            <p className="text-xs opacity-60">Postal Code: 215 52</p>
-                          </div>
+                  <div className="space-y-6">
+                    {[
+                      {
+                        icon: <MapPin size={20} />,
+                        title: 'Malmö, Sweden',
+                        desc: 'European Headquarters • Postal Code: 215 52',
+                      },
+                      {
+                        icon: <Phone size={20} />,
+                        title: 'Phone Support',
+                        desc: '+46737200581 • +1 (555) 987-6543',
+                      },
+                      {
+                        icon: <Mail size={20} />,
+                        title: 'Email Us',
+                        desc: 'support@wexcars.com',
+                      },
+                      {
+                        icon: <Clock size={20} />,
+                        title: 'Business Hours',
+                        desc: 'Mon-Fri: 9:00 AM - 7:00 PM • Sat: 10:00 AM - 5:00 PM',
+                      },
+                    ].map(({ icon, title, desc }, i) => (
+                      <div
+                        key={i}
+                        className="feature-item flex items-center"
+                        style={{ animationDelay: `${0.2 * (i + 1)}s` }}
+                      >
+                        <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 text-white backdrop-blur-sm">
+                          {icon}
                         </div>
-                        <div className="flex items-start gap-3">
-                          <Phone className="h-5 w-5 mt-1 flex-shrink-0" />
-                          <div>
-                            <p className="text-sm">+46737200581</p>
-                            <p className="text-sm">+1 (555) 987-6543</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <Mail className="h-5 w-5 mt-1 flex-shrink-0" />
-                          <p className="text-sm">support@wexcars.com</p>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <Clock className="h-5 w-5 mt-1 flex-shrink-0" />
-                          <div className="text-sm">
-                            <p>Mon-Fri: 9:00 AM - 7:00 PM</p>
-                            <p>Sat: 10:00 AM - 5:00 PM</p>
-                            <p>Sun: Closed</p>
-                          </div>
+                        <div>
+                          <div className="font-semibold text-lg">{title}</div>
+                          <div className="text-sm opacity-80">{desc}</div>
                         </div>
                       </div>
-                    </div>
-                    <div className="absolute -right-20 -bottom-20 z-10 mx-auto flex h-full w-full max-w-[300px] items-center justify-center transition-all duration-700 hover:scale-105 md:-right-28 md:-bottom-28 md:max-w-[550px]">
-                      <Earth
-                        scale={1.1}
-                        baseColor={[178/255, 34/255, 34/255]}
-                        markerColor={[139/255, 0, 0]}
-                        glowColor={[178/255, 34/255, 34/255]}
-                      />
-                    </div>
-                  </article>
+                    ))}
+                  </div>
                 </div>
-              </motion.div>
+              </div>
+
+              {/* Right Side - Contact Form */}
+              <div className="flex flex-col justify-center p-8 md:p-12 bg-white" ref={formRef}>
+                <div className="mx-auto w-full max-w-md">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={
+                      isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+                    }
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    className="mb-8 text-center"
+                  >
+                    <h2 className="text-3xl font-light uppercase tracking-wider text-gray-900">
+                      Contact Us
+                    </h2>
+                    <p className="mt-2 text-sm text-gray-600">
+                      Send us a message and we'll get back to you soon
+                    </p>
+                  </motion.div>
+
+                  <motion.form
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={
+                      isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+                    }
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    onSubmit={handleSubmit}
+                    className="space-y-5"
+                  >
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                        transition={{ delay: 0.4 }}
+                      >
+                        <label
+                          htmlFor="name"
+                          className="mb-2 block text-sm font-medium uppercase text-gray-700"
+                        >
+                          Full Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="name"
+                          name="name"
+                          type="text"
+                          value={formState.name}
+                          onChange={handleChange}
+                          placeholder="Enter your name"
+                          required
+                          className="border-border bg-input block w-full rounded-lg border py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-transparent"
+                        />
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <label
+                          htmlFor="email"
+                          className="mb-2 block text-sm font-medium uppercase text-gray-700"
+                        >
+                          Email <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          value={formState.email}
+                          onChange={handleChange}
+                          placeholder="Enter your email"
+                          required
+                          className="border-border bg-input block w-full rounded-lg border py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-transparent"
+                        />
+                      </motion.div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                        transition={{ delay: 0.55 }}
+                      >
+                        <label
+                          htmlFor="phone"
+                          className="mb-2 block text-sm font-medium uppercase text-gray-700"
+                        >
+                          Phone Number
+                        </label>
+                        <input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          value={formState.phone}
+                          onChange={handleChange}
+                          placeholder="+1 (555) 123-4567"
+                          className="border-border bg-input block w-full rounded-lg border py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-transparent"
+                        />
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                        transition={{ delay: 0.6 }}
+                      >
+                        <label
+                          htmlFor="subject"
+                          className="mb-2 block text-sm font-medium uppercase text-gray-700"
+                        >
+                          Subject <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          id="subject"
+                          name="subject"
+                          type="text"
+                          value={formState.subject}
+                          onChange={handleChange}
+                          placeholder="How can we help you?"
+                          required
+                          className="border-border bg-input block w-full rounded-lg border py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-transparent"
+                        />
+                      </motion.div>
+                    </div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                      transition={{ delay: 0.65 }}
+                    >
+                      <label
+                        htmlFor="message"
+                        className="mb-2 block text-sm font-medium uppercase text-gray-700"
+                      >
+                        Message <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        value={formState.message}
+                        onChange={handleChange}
+                        placeholder="Please provide details about your inquiry..."
+                        required
+                        rows={5}
+                        className="border-border bg-input block w-full rounded-lg border py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-transparent resize-none"
+                      />
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                      transition={{ delay: 0.7 }}
+                      className="flex items-start"
+                    >
+                      <input
+                        id="privacy"
+                        name="privacy"
+                        type="checkbox"
+                        checked={privacyAgreed}
+                        onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                        className="border-border text-primary-light h-4 w-4 rounded mt-1"
+                        required
+                      />
+                      <label htmlFor="privacy" className="ml-2 block text-sm text-gray-600">
+                        I agree to the{' '}
+                        <a href="/privacy" className="text-primary-light hover:text-primary-dark">
+                          Privacy Policy
+                        </a>{' '}
+                        and consent to WexCars processing my data.
+                      </label>
+                    </motion.div>
+
+                    <motion.button
+                      type="submit"
+                      disabled={isSubmitting || isSubmitted}
+                      className="contact-btn relative flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <span className="ml-2">Sending...</span>
+                        </>
+                      ) : isSubmitted ? (
+                        <>
+                          <Check className="h-5 w-5" />
+                          <span className="ml-2">Message Sent!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-5 w-5" />
+                          <span className="ml-2">Send Message</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </motion.form>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -67,6 +67,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
+    "cobe": "^0.6.5",
     "critters": "^0.0.25",
     "date-fns": "latest",
     "dotenv": "^16.4.5",

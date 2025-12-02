@@ -71,87 +71,8 @@ const Footer = () => {
     setNotification(prev => ({ ...prev, show: false }))
   }
 
-  // VFX Effect for Subscribe Button
-  useEffect(() => {
-    let vfxInstance: VFXInstance | null = null
-    let cleanup: (() => void) | null = null
-
-    const initVFX = async () => {
-      try {
-        // Load VFX library dynamically
-        if (!window.VFX) {
-          const script = document.createElement('script')
-          script.type = 'module'
-          script.innerHTML = `
-            try {
-              const { VFX } = await import('https://esm.sh/@vfx-js/core');
-              window.VFX = VFX;
-              window.dispatchEvent(new CustomEvent('vfx-loaded'));
-            } catch (error) {
-              console.log('VFX library failed to load:', error);
-              window.dispatchEvent(new CustomEvent('vfx-failed'));
-            }
-          `
-          document.head.appendChild(script)
-          
-          // Wait for VFX to load or fail
-          await new Promise((resolve) => {
-            const handleLoad = () => {
-              window.removeEventListener('vfx-loaded', handleLoad)
-              window.removeEventListener('vfx-failed', handleLoad)
-              resolve(true)
-            }
-            window.addEventListener('vfx-loaded', handleLoad)
-            window.addEventListener('vfx-failed', handleLoad)
-          })
-        }
-
-        if (window.VFX && subscribeButtonRef.current) {
-          const vfx = new window.VFX()
-          vfxInstance = vfx
-          
-          const button = subscribeButtonRef.current
-          
-          const handleMouseEnter = () => {
-            if (vfxInstance) {
-              vfxInstance.add(button, { shader: "glitch", overflow: 100 })
-            }
-          }
-
-          const handleMouseLeave = () => {
-            if (vfxInstance) {
-              vfxInstance.remove(button)
-            }
-          }
-
-          button.addEventListener("mouseenter", handleMouseEnter)
-          button.addEventListener("mouseleave", handleMouseLeave)
-          
-          cleanup = () => {
-            button.removeEventListener("mouseenter", handleMouseEnter)
-            button.removeEventListener("mouseleave", handleMouseLeave)
-            if (vfxInstance) {
-              vfxInstance.remove()
-            }
-          }
-        }
-      } catch (error) {
-        console.log("VFX library could not be loaded:", error)
-        // Gracefully fall back to CSS-only animations
-      }
-    }
-
-    // Add a small delay to ensure DOM is ready
-    const timer = setTimeout(initVFX, 100)
-
-    // Cleanup function
-    return () => {
-      clearTimeout(timer)
-      if (cleanup) {
-        cleanup()
-      }
-    }
-  }, [])
+  // VFX Effect removed as per request
+  // useEffect(() => { ... })
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -463,10 +384,10 @@ const Footer = () => {
                     <button
                       ref={subscribeButtonRef}
                       type="submit"
-                      className="vfx-button px-6 py-3 bg-gradient-to-r from-primary-dark to-primary hover:from-primary-darker hover:to-primary-dark rounded-lg font-medium transition-all duration-200 flex items-center justify-center space-x-2 group relative overflow-hidden"
+                      className="px-6 py-3 bg-[#b22222] rounded-lg font-medium flex items-center justify-center space-x-2 group relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_20px_rgba(178,34,34,0.6)] hover:scale-[1.02]"
                     >
-                      <span>Subscribe</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                      <span className="relative z-10 text-white">Subscribe</span>
+                      <ArrowRight className="w-4 h-4 relative z-10 text-white group-hover:translate-x-1 transition-transform duration-200" />
                     </button>
                   </form>
                 )}
