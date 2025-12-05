@@ -59,38 +59,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Get initial session
     const getInitialSession = async () => {
-      const {
-        data: { session },
-        error,
-      } = await supabaseClient.auth.getSession()
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabaseClient.auth.getSession()
 
-      if (error) {
-        console.error("Error getting session:", error)
-      }
-
-      // Check if user has remember me enabled and session is expired
-      const isRemembered = localStorage.getItem('wexcars-remember-me') === 'true'
-      if (!session && isRemembered) {
-        // Try to refresh the session
-        try {
-          const { data: refreshData, error: refreshError } = await supabaseClient.auth.refreshSession()
-          if (!refreshError && refreshData.session) {
-            setSession(refreshData.session)
-            setUser(refreshData.session.user)
+        if (error) {
+          console.error("Error getting session:", error)
+          // If it's a network error, just set loading to false and continue
+          if (error.message?.includes('fetch') || error.message?.includes('network')) {
             setIsLoading(false)
             return
           }
-        } catch (refreshErr) {
-          console.error("Error refreshing session:", refreshErr)
-          // Clear remember me if refresh fails
-          localStorage.removeItem('wexcars-remember-me')
-          localStorage.removeItem('wexcars-user-email')
         }
-      }
 
-      setSession(session)
-      setUser(session?.user ?? null)
-      setIsLoading(false)
+        // Check if user has remember me enabled and session is expired
+        const isRemembered = localStorage.getItem('wexcars-remember-me') === 'true'
+        if (!session && isRemembered) {
+          // Try to refresh the session
+          try {
+            const { data: refreshData, error: refreshError } = await supabaseClient.auth.refreshSession()
+            if (!refreshError && refreshData.session) {
+              setSession(refreshData.session)
+              setUser(refreshData.session.user)
+              setIsLoading(false)
+              return
+            }
+          } catch (refreshErr: any) {
+            console.error("Error refreshing session:", refreshErr)
+            // Clear remember me if refresh fails
+            localStorage.removeItem('wexcars-remember-me')
+            localStorage.removeItem('wexcars-user-email')
+            // If it's a network error, don't throw - just continue
+            if (refreshErr?.message?.includes('fetch') || refreshErr?.message?.includes('network')) {
+              setIsLoading(false)
+              return
+            }
+          }
+        }
+
+        setSession(session)
+        setUser(session?.user ?? null)
+        setIsLoading(false)
+      } catch (err: any) {
+        console.error("Error in getInitialSession:", err)
+        // Handle network/fetch errors gracefully
+        if (err?.message?.includes('fetch') || err?.message?.includes('network') || err?.message?.includes('Failed to fetch')) {
+          setIsLoading(false)
+          // Don't throw - just continue without session
+          return
+        }
+        setIsLoading(false)
+      }
     }
 
     getInitialSession()
@@ -98,12 +119,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Set up auth state listener
     const { data: authListener } = supabaseClient.auth.onAuthStateChange(
       async (event: string, session: Session | null) => {
-        setSession(session)
-        setUser(session?.user ?? null)
-        setIsLoading(false)
+        try {
+          setSession(session)
+          setUser(session?.user ?? null)
+          setIsLoading(false)
 
-        // Handle auth events
-        if (event === "SIGNED_IN") {
+          // Handle auth events
+          if (event === "SIGNED_IN") {
           // Check for pending favorite to add after sign-in
           const pendingFavorite = localStorage.getItem("pendingFavorite")
           if (pendingFavorite) {
@@ -121,16 +143,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               localStorage.removeItem("pendingFavorite")
             }
           }
-          router.refresh()
+          // Wrap router.refresh in try-catch to prevent fetch errors
+          try {
+            router.refresh()
+          } catch (refreshError) {
+            console.warn("Router refresh failed (non-critical):", refreshError)
+          }
         }
         if (event === "SIGNED_OUT") {
           // Clear user context from Sentry when user logs out
           clearUserContext()
           // Only redirect to login page if user explicitly signs out
-          router.push("/auth/login")
-          router.refresh()
+          try {
+            router.push("/auth/login")
+            router.refresh()
+          } catch (routerError) {
+            console.warn("Router navigation failed (non-critical):", routerError)
+            // Fallback: use window.location if router fails
+            if (typeof window !== 'undefined') {
+              window.location.href = "/auth/login"
+            }
+          }
         }
+      } catch (listenerError: any) {
+        console.error("Error in auth state change listener:", listenerError)
+        // Don't throw - just log the error
+        setIsLoading(false)
       }
+    }
     )
 
     return () => {

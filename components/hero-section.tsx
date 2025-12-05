@@ -64,7 +64,7 @@ export default function HeroSection() {
   }
 
   return (
-    <section className="relative py-12 md:py-32 bg-gray-100 overflow-hidden">
+    <section className="relative py-12 md:py-32 bg-gray-100 overflow-hidden min-h-[500px] md:min-h-[700px]">
       {/* Loading overlay */}
       {isLoading && (
         <div className="absolute inset-0 bg-gray-100 z-20 flex items-center justify-center">
@@ -79,8 +79,8 @@ export default function HeroSection() {
       >
         {!imageError ? (
           <Image
-            src={"https://i.imgur.com/67e2udd.png"}
-            alt="Porsche 911 Turbo S Cabriolet - Global Luxury Car Export"
+            src="/hero-landpage/white-new-image-landingpage.jpg"
+            alt="Chevrolet Corvette Z06 - Global Luxury Car Export"
             fill
             priority
             className="object-cover object-center"
@@ -88,7 +88,15 @@ export default function HeroSection() {
               setImageLoaded(true);
               setIsLoading(false);
             }}
-            onError={handleImageError}
+            onError={(e) => {
+              // Try GitHub raw URL as fallback
+              const target = e.target as HTMLImageElement;
+              if (target.src !== `${GITHUB_RAW_BASE}/hero-landpage/white-new-image-landingpage.jpg`) {
+                target.src = `${GITHUB_RAW_BASE}/hero-landpage/white-new-image-landingpage.jpg`;
+              } else {
+                handleImageError();
+              }
+            }}
             style={{ objectFit: 'cover' }}
           />
         ) : (
@@ -113,7 +121,7 @@ export default function HeroSection() {
               className="text-black"
             />
           </h1>
-          <p className="text-black/80 mb-8 max-w-md">
+          <p className="text-[#b22222] mb-8 max-w-md">
             <VariableProximity
               label="Discover our exclusive collection of premium vehicles for an unparalleled driving experience."
               fromFontVariationSettings="'wght' 400, 'slnt' 0"
@@ -121,7 +129,7 @@ export default function HeroSection() {
               containerRef={containerRef}
               radius={60}
               falloff="linear"
-              className="text-black/80"
+              className="text-[#b22222]"
             />
           </p>
           <button

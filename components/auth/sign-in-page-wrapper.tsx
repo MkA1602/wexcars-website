@@ -25,26 +25,51 @@ export function SignInPageWrapper({ children }: SignInPageWrapperProps) {
 
     // If user is authenticated, redirect them to appropriate dashboard
     if (user && !isLoading) {
+      // Set a timeout to ensure redirect happens even if role check fails
+      const redirectTimeout = setTimeout(() => {
+        router.replace('/dashboard')
+      }, 3000) // Fallback after 3 seconds
+
       // Check if user is admin and redirect accordingly
       const checkUserRoleAndRedirect = async () => {
         try {
-          const { data: userProfile } = await supabaseClient
+          // Set a timeout for the database query
+          const queryPromise = supabaseClient
             .from('users')
             .select('role')
             .eq('id', user.id)
             .single()
 
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Query timeout')), 2000)
+          )
+
+          const { data: userProfile, error } = await Promise.race([
+            queryPromise,
+            timeoutPromise
+          ]) as { data: any, error: any }
+
+          clearTimeout(redirectTimeout)
+
+          if (error && error.code !== 'PGRST116') {
+            // PGRST116 = no rows found, which is okay for new users
+            console.error('Error checking user role:', error)
+            router.replace('/dashboard')
+            return
+          }
+
           if (userProfile?.role === 'admin' || userProfile?.role === 'super_admin') {
             // Admin users go to admin dashboard
-            router.push('/admin/dashboard')
+            router.replace('/admin/dashboard')
           } else {
             // Regular users go to regular dashboard
-            router.push('/dashboard')
+            router.replace('/dashboard')
           }
         } catch (err) {
+          clearTimeout(redirectTimeout)
           console.error('Error checking user role:', err)
           // Default to regular dashboard if there's an error
-          router.push('/dashboard')
+          router.replace('/dashboard')
         }
       }
 

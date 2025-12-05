@@ -123,7 +123,7 @@ export default function ComingSoonPage() {
       src: "/maintenance/IMG-20251011-WA0020.jpg",
       githubSrc: `${GITHUB_RAW_BASE}/maintenance/IMG-20251011-WA0020.jpg`,
       alt: "Mercedes-Benz G-Wagen AMG - Matte Black Luxury SUV",
-      code: "# Premium Luxury SUV",
+      code: "# Mercedes-Benz G-Wagen AMG",
     },
     {
       src: "/maintenance/IMG-20251128-WA0023.jpg",
@@ -135,19 +135,19 @@ export default function ComingSoonPage() {
       src: "/maintenance/IMG-20251128-WA0025.jpg",
       githubSrc: `${GITHUB_RAW_BASE}/maintenance/IMG-20251128-WA0025.jpg`,
       alt: "Porsche 911 GT3 RS - Bright Yellow Track Beast",
-      code: "# Ultimate Performance",
+      code: "# Porsche 911 GT3 RS",
     },
     {
       src: "/maintenance/IMG-20251128-WA0026.jpg",
       githubSrc: `${GITHUB_RAW_BASE}/maintenance/IMG-20251128-WA0026.jpg`,
       alt: "Porsche 911 - Sleek Black Sports Car",
-      code: "# Timeless Elegance",
+      code: "# Porsche 911",
     },
     {
       src: "/maintenance/b082eb73-a3f7-40d8-a6a4-7e925962e1e1.jpg",
       githubSrc: `${GITHUB_RAW_BASE}/maintenance/b082eb73-a3f7-40d8-a6a4-7e925962e1e1.jpg`,
       alt: "Porsche 911 GTS - Dark Grey Premium Edition",
-      code: "# Refined Power",
+      code: "# Porsche 911 GTS",
     },
   ]
 
