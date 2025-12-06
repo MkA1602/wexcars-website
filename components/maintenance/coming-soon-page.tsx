@@ -82,20 +82,6 @@ const HoverExpand_002 = ({
                   />
                 )}
               </AnimatePresence>
-              <AnimatePresence>
-                {activeImage === index && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    className="absolute flex h-full w-full flex-col items-end justify-end px-4 pb-5 z-20"
-                  >
-                    <p className="text-left text-sm font-semibold text-white drop-shadow-lg">
-                      {image.code}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
               <img
                 data-image-index={index}
                 src={getImageSrc(image, index)}
