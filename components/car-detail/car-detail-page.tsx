@@ -22,6 +22,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   const [isInquiryModalOpen, setIsInquiryModalOpen] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [activeSection, setActiveSection] = useState<string>("specification")
   
   // Debug logging to see what's in the car object
   console.log('Car object:', car)
@@ -129,6 +130,45 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
       console.error("Error loading favorites:", error)
     }
   }, [car.id])
+
+  // Handle navigation click with proper scroll offset
+  const handleNavClick = (sectionId: string, e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    setActiveSection(sectionId)
+    
+    const section = document.getElementById(sectionId)
+    if (section) {
+      const headerOffset = 100 // Offset for sticky header
+      const elementPosition = section.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      })
+    }
+  }
+
+  // Scroll detection for active navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ["specification", "features", "description", "contact"]
+      const scrollPosition = window.scrollY + 200 // Offset for better detection
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = document.getElementById(sections[i])
+        if (section && section.offsetTop <= scrollPosition) {
+          setActiveSection(sections[i])
+          break
+        }
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    handleScroll() // Check on mount
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   // Toggle favorite status
   const toggleFavorite = () => {
@@ -312,19 +352,51 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                 <h3 className="font-semibold text-lg lg:text-xl mb-4 lg:mb-6 text-gray-900">Navigation</h3>
                 {/* Mobile horizontal scroll, Desktop vertical */}
                 <nav className="flex lg:flex-col gap-2 lg:gap-1 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
-                  <a href="#specification" className="flex items-center justify-between p-3 lg:p-4 rounded-lg bg-primary-light/10 text-primary-dark font-medium border-l-4 border-primary-light whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                  <a 
+                    href="#specification" 
+                    onClick={(e) => handleNavClick("specification", e)}
+                    className={`flex items-center justify-between p-3 lg:p-4 rounded-lg transition-colors border-l-4 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                      activeSection === "specification"
+                        ? "bg-primary-light/10 text-primary-dark font-medium border-primary-light"
+                        : "hover:bg-primary-light/5 text-gray-700 border-transparent hover:border-primary-light/30"
+                    }`}
+                  >
                     <span className="text-sm lg:text-base">Specification</span>
                     <span className="text-xs hidden lg:inline">▼</span>
                   </a>
-                  <a href="#features" className="flex items-center justify-between p-3 lg:p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                  <a 
+                    href="#features" 
+                    onClick={(e) => handleNavClick("features", e)}
+                    className={`flex items-center justify-between p-3 lg:p-4 rounded-lg transition-colors border-l-4 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                      activeSection === "features"
+                        ? "bg-primary-light/10 text-primary-dark font-medium border-primary-light"
+                        : "hover:bg-primary-light/5 text-gray-700 border-transparent hover:border-primary-light/30"
+                    }`}
+                  >
                     <span className="text-sm lg:text-base">Features</span>
                     <span className="text-xs hidden lg:inline">▼</span>
                   </a>
-                  <a href="#description" className="flex items-center justify-between p-3 lg:p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                  <a 
+                    href="#description" 
+                    onClick={(e) => handleNavClick("description", e)}
+                    className={`flex items-center justify-between p-3 lg:p-4 rounded-lg transition-colors border-l-4 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                      activeSection === "description"
+                        ? "bg-primary-light/10 text-primary-dark font-medium border-primary-light"
+                        : "hover:bg-primary-light/5 text-gray-700 border-transparent hover:border-primary-light/30"
+                    }`}
+                  >
                     <span className="text-sm lg:text-base">Description</span>
                     <span className="text-xs hidden lg:inline">▼</span>
                   </a>
-                  <a href="#contact" className="flex items-center justify-between p-3 lg:p-4 rounded-lg hover:bg-primary-light/5 text-gray-700 transition-colors border-l-4 border-transparent hover:border-primary-light/30 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal">
+                  <a 
+                    href="#contact" 
+                    onClick={(e) => handleNavClick("contact", e)}
+                    className={`flex items-center justify-between p-3 lg:p-4 rounded-lg transition-colors border-l-4 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                      activeSection === "contact"
+                        ? "bg-primary-light/10 text-primary-dark font-medium border-primary-light"
+                        : "hover:bg-primary-light/5 text-gray-700 border-transparent hover:border-primary-light/30"
+                    }`}
+                  >
                     <span className="text-sm lg:text-base">Contact us</span>
                     <span className="text-xs hidden lg:inline">▼</span>
                   </a>
@@ -416,139 +488,200 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                 </div>
               </div>
 
-              {/* Features Section - Clean Design */}
+              {/* Features Section - Modern Professional Design */}
               <div id="features" className="mb-16">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8">Features</h2>
+                <div className="mb-12">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-sm font-semibold uppercase tracking-wider text-primary-light">FEATURES</span>
+                    <div className="h-px flex-1 bg-gradient-to-r from-primary-light/30 to-transparent"></div>
+                  </div>
+                  <h2 className="text-4xl font-bold text-gray-900">Premium Features</h2>
+                  <p className="text-gray-600 mt-2 max-w-2xl">Discover the advanced features and technologies that make this vehicle exceptional</p>
+                </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Interior Features */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Sofa className="w-10 h-10 text-red-600" />
-                      <h3 className="font-semibold text-lg text-gray-900">INTERIOR</h3>
+                  <div className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-light/10 to-primary-dark/10 flex items-center justify-center group-hover:from-primary-light/20 group-hover:to-primary-dark/20 transition-all duration-300">
+                        <Sofa className="w-6 h-6 text-primary-light" />
+                      </div>
+                      <h3 className="font-bold text-xl text-gray-900">Interior</h3>
                     </div>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Automatic air-conditioning
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Automatic air-conditioning</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Leather seats
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Leather seats</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Panoramic roof window
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Panoramic roof window</span>
                       </li>
                     </ul>
                   </div>
 
                   {/* Exterior Features */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <CarIcon2 className="w-10 h-10 text-red-600" />
-                      <h3 className="font-semibold text-lg text-gray-900">EXTERIOR</h3>
+                  <div className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-light/10 to-primary-dark/10 flex items-center justify-center group-hover:from-primary-light/20 group-hover:to-primary-dark/20 transition-all duration-300">
+                        <CarIcon2 className="w-6 h-6 text-primary-light" />
+                      </div>
+                      <h3 className="font-bold text-xl text-gray-900">Exterior</h3>
                     </div>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Automatic daytime-running lights
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Automatic daytime-running lights</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Aluminum alloy wheels
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Aluminum alloy wheels</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        LED headlights
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">LED headlights</span>
                       </li>
                     </ul>
                   </div>
 
                   {/* Safety Features */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <ShieldCheck className="w-10 h-10 text-red-600" />
-                      <h3 className="font-semibold text-lg text-gray-900">SAFETY</h3>
+                  <div className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-light/10 to-primary-dark/10 flex items-center justify-center group-hover:from-primary-light/20 group-hover:to-primary-dark/20 transition-all duration-300">
+                        <ShieldCheck className="w-6 h-6 text-primary-light" />
+                      </div>
+                      <h3 className="font-bold text-xl text-gray-900">Safety</h3>
                     </div>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Airbags
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Airbags</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        ABS
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">ABS</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Blind spot monitoring system
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Blind spot monitoring system</span>
                       </li>
                     </ul>
                   </div>
 
                   {/* Infotainment Features */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Monitor className="w-10 h-10 text-red-600" />
-                      <h3 className="font-semibold text-lg text-gray-900">INFOTAINMENT</h3>
+                  <div className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-light/10 to-primary-dark/10 flex items-center justify-center group-hover:from-primary-light/20 group-hover:to-primary-dark/20 transition-all duration-300">
+                        <Monitor className="w-6 h-6 text-primary-light" />
+                      </div>
+                      <h3 className="font-bold text-xl text-gray-900">Infotainment</h3>
                     </div>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Android Auto
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Android Auto</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Apple CarPlay
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Apple CarPlay</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Wireless Charging
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Wireless Charging</span>
                       </li>
                     </ul>
                   </div>
 
                   {/* Extra Features */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Settings className="w-10 h-10 text-red-600" />
-                      <h3 className="font-semibold text-lg text-gray-900">EXTRA</h3>
+                  <div className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-light/10 to-primary-dark/10 flex items-center justify-center group-hover:from-primary-light/20 group-hover:to-primary-dark/20 transition-all duration-300">
+                        <Settings className="w-6 h-6 text-primary-light" />
+                      </div>
+                      <h3 className="font-bold text-xl text-gray-900">Extra</h3>
                     </div>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Adaptive headlights
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Adaptive headlights</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Automatic parking system
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Automatic parking system</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Tow bar
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Tow bar</span>
                       </li>
                     </ul>
                   </div>
 
                   {/* Other Features */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Star className="w-10 h-10 text-red-600" />
-                      <h3 className="font-semibold text-lg text-gray-900">OTHER</h3>
+                  <div className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-light/10 to-primary-dark/10 flex items-center justify-center group-hover:from-primary-light/20 group-hover:to-primary-dark/20 transition-all duration-300">
+                        <Star className="w-6 h-6 text-primary-light" />
+                      </div>
+                      <h3 className="font-bold text-xl text-gray-900">Other</h3>
                     </div>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        360° parking camera
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">360° parking camera</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        USB connection
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">USB connection</span>
                       </li>
-                      <li className="flex items-center gap-3 text-gray-700">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        Premium sound system
+                      <li className="flex items-start gap-3 text-gray-700 group/item">
+                        <div className="mt-1.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-primary-light group-hover/item:scale-125 transition-transform duration-200"></div>
+                        </div>
+                        <span className="text-sm leading-relaxed">Premium sound system</span>
                       </li>
                     </ul>
                   </div>

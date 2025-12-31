@@ -98,10 +98,6 @@ const faqCategories = [
       {
         question: "Are all vehicles inspected before listing?",
         answer: "Yes, every vehicle in our collection undergoes a thorough multi-point inspection by certified technicians before being listed on our platform."
-      },
-      {
-        question: "Can I schedule a viewing of a vehicle?",
-        answer: "Absolutely! Contact our team to schedule a private viewing at our showroom or arrange a virtual tour with our specialists."
       }
     ]
   },

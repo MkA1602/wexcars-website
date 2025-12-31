@@ -126,10 +126,18 @@ function LoginPageContent() {
                   target.src = `${GITHUB_RAW_BASE}/sign in/black-car-with-word-snoff-back.jpg`;
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-primary-light/95 to-primary-dark/95 rounded-3xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-light/60 to-primary-dark/60 rounded-3xl"></div>
               <div className="relative z-10">
-                <div className="mb-12 text-lg font-semibold uppercase tracking-wider">
-                  WexCars
+                <div className="mb-12">
+                  <img
+                    src="/new-white-logo-wexcars.png"
+                    alt="WexCars Logo"
+                    className="h-12 w-auto"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `${GITHUB_RAW_BASE}/new-white-logo-wexcars.png`;
+                    }}
+                  />
                 </div>
                 <h1 className="mb-4 text-5xl md:text-6xl font-bold leading-tight">
                   Drive Luxury, Live Excellence

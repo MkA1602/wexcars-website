@@ -11,13 +11,13 @@ const nextConfig = {
   },
   // Fix for ChunkLoadError
   webpack: (config, { dev, isServer }) => {
-    // Fix for module resolution issues
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-    }
+      // Fix for module resolution issues
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      }
     // Ensure proper module resolution for Radix UI packages
     config.resolve.extensionAlias = {
       '.js': ['.js', '.ts', '.tsx'],

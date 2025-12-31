@@ -224,7 +224,7 @@ const PricingPage = ({ plans = pricingPlans, className }: PricingProps) => {
             onCheckedChange={setIsAnnual}
             className="mb-12"
           />
-        </div>
+          </div>
 
         {/* Pricing Container */}
         <div className="relative container pt-8 md:pt-12 pb-20">

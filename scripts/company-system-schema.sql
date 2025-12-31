@@ -76,7 +76,9 @@ CREATE TABLE IF NOT EXISTS public.company_analytics (
     total_inquiries INTEGER DEFAULT 0,
     revenue DECIMAL(10,2) DEFAULT 0,
     fees_paid DECIMAL(10,2) DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    -- Unique constraint required for ON CONFLICT clause in update_company_analytics() function
+    UNIQUE (company_id, date)
 );
 
 -- Add company_id to cars table if it doesn't exist
@@ -204,7 +206,10 @@ CREATE POLICY "Users can delete their own company documents" ON storage.objects
 
 -- Create function to automatically create company analytics entry
 CREATE OR REPLACE FUNCTION create_daily_analytics()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     INSERT INTO public.company_analytics (
         company_id,
@@ -229,15 +234,24 @@ BEGIN
         COALESCE(SUM(amount) FILTER (WHERE status = 'paid'), 0)
     FROM public.cars c
     LEFT JOIN public.company_fees cf ON c.id = cf.car_id
-    WHERE c.company_id = NEW.company_id;
+    WHERE c.company_id = NEW.company_id
+    ON CONFLICT (company_id, date) DO NOTHING;
     
     RETURN NEW;
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Log error but don't fail the insert
+        RAISE LOG 'Error in create_daily_analytics trigger: %', SQLERRM;
+        RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Create trigger to update analytics when cars are added/updated
 CREATE OR REPLACE FUNCTION update_company_analytics()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
     -- Update today's analytics for the company
     INSERT INTO public.company_analytics (
@@ -272,6 +286,11 @@ BEGIN
         fees_paid = EXCLUDED.fees_paid;
     
     RETURN COALESCE(NEW, OLD);
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Log error but don't fail the update
+        RAISE LOG 'Error in update_company_analytics trigger: %', SQLERRM;
+        RETURN COALESCE(NEW, OLD);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -351,7 +370,10 @@ CREATE TRIGGER trigger_create_listing_fee
 
 -- Create function to create success fee when car is sold
 CREATE OR REPLACE FUNCTION create_success_fee()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 DECLARE
     company_uuid UUID;
     success_fee DECIMAL;
@@ -361,36 +383,51 @@ BEGIN
         -- Get company_id from car
         company_uuid := NEW.company_id;
         
-        -- Calculate success fee
-        success_fee := calculate_success_fee(NEW.price, NEW.currency);
-        
-        -- Insert fee record
-        INSERT INTO public.company_fees (
-            company_id,
-            car_id,
-            amount,
-            currency,
-            fee_type,
-            status,
-            due_date,
-            breakdown
-        ) VALUES (
-            company_uuid,
-            NEW.id,
-            success_fee,
-            NEW.currency,
-            'success',
-            'pending',
-            NOW() + INTERVAL '7 days',
-            jsonb_build_object(
-                'success_fee', success_fee,
-                'car_price', NEW.price,
-                'sold_at', NEW.sold_at
-            )
-        );
+        -- Only create fee if car belongs to a company (not individual seller)
+        IF company_uuid IS NOT NULL THEN
+            -- Check if a success fee already exists for this car to prevent duplicates
+            IF NOT EXISTS (
+                SELECT 1 FROM public.company_fees 
+                WHERE car_id = NEW.id 
+                AND fee_type = 'success'
+            ) THEN
+                -- Calculate success fee
+                success_fee := calculate_success_fee(NEW.price, NEW.currency);
+                
+                -- Insert fee record (SECURITY DEFINER allows bypassing RLS)
+                INSERT INTO public.company_fees (
+                    company_id,
+                    car_id,
+                    amount,
+                    currency,
+                    fee_type,
+                    status,
+                    due_date,
+                    breakdown
+                ) VALUES (
+                    company_uuid,
+                    NEW.id,
+                    success_fee,
+                    NEW.currency,
+                    'success',
+                    'pending',
+                    NOW() + INTERVAL '7 days',
+                    jsonb_build_object(
+                        'success_fee', success_fee,
+                        'car_price', NEW.price,
+                        'sold_at', NEW.sold_at
+                    )
+                );
+            END IF;
+        END IF;
     END IF;
     
     RETURN NEW;
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Log error but don't fail the update
+        RAISE LOG 'Error in create_success_fee trigger: %', SQLERRM;
+        RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -406,6 +443,12 @@ GRANT ALL ON public.companies TO authenticated;
 GRANT ALL ON public.company_fees TO authenticated;
 GRANT ALL ON public.company_subscriptions TO authenticated;
 GRANT ALL ON public.company_analytics TO authenticated;
+
+-- Grant execute permissions on trigger functions
+GRANT EXECUTE ON FUNCTION update_company_analytics() TO authenticated;
+GRANT EXECUTE ON FUNCTION create_daily_analytics() TO authenticated;
+GRANT EXECUTE ON FUNCTION create_success_fee() TO authenticated;
+GRANT EXECUTE ON FUNCTION create_listing_fee() TO authenticated;
 
 -- Create views for easier querying
 CREATE OR REPLACE VIEW company_dashboard_stats AS
