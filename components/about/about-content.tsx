@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Car, Users, Shield, Star, Target, Heart, Award } from "lucide-react"
 import VariableProximity from "@/components/ui/variable-proximity"
 import { useRef } from "react"
-import TiltedCard from "@/components/ui/tilted-card"
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public"
