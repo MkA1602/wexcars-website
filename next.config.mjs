@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -30,6 +27,9 @@ const nextConfig = {
     }
     return config
   },
+  // Add empty turbopack config to silence the error
+  // Since we're using webpack config, we'll use --webpack flag or keep this empty
+  turbopack: {},
   // Experimental features to help with chunk loading
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', '@radix-ui/react-tabs'],

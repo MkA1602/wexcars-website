@@ -27,6 +27,7 @@ BEGIN
         user_name,
         CASE 
             WHEN NEW.email = 'mohammedlk27@gmail.com' THEN 'admin'
+            WHEN NEW.email = 'ayat.ayk90@gmail.com' THEN 'admin'
             ELSE 'user'
         END,
         NOW(),
@@ -37,6 +38,7 @@ BEGIN
         full_name = COALESCE(EXCLUDED.full_name, users.full_name),
         role = CASE 
             WHEN EXCLUDED.email = 'mohammedlk27@gmail.com' THEN 'admin'
+            WHEN EXCLUDED.email = 'ayat.ayk90@gmail.com' THEN 'admin'
             ELSE users.role
         END,
         updated_at = NOW();
@@ -93,6 +95,7 @@ SELECT
     ),
     CASE 
         WHEN au.email = 'mohammedlk27@gmail.com' THEN 'admin'
+        WHEN au.email = 'ayat.ayk90@gmail.com' THEN 'admin'
         ELSE 'user'
     END,
     au.created_at,

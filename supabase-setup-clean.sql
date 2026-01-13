@@ -245,6 +245,7 @@ BEGIN
         COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
         CASE 
             WHEN NEW.email = 'mohammedlk27@gmail.com' THEN 'admin'
+            WHEN NEW.email = 'ayat.ayk90@gmail.com' THEN 'admin'
             ELSE 'user'
         END
     )
@@ -253,6 +254,7 @@ BEGIN
         full_name = COALESCE(EXCLUDED.full_name, users.full_name),
         role = CASE 
             WHEN EXCLUDED.email = 'mohammedlk27@gmail.com' THEN 'admin'
+            WHEN EXCLUDED.email = 'ayat.ayk90@gmail.com' THEN 'admin'
             ELSE users.role
         END,
         updated_at = NOW();

@@ -222,7 +222,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (data.user) {
         // If this is the admin user, they don't need email verification
-        if (email === 'mohammedlk27@gmail.com') {
+        if (email === 'mohammedlk27@gmail.com' || email === 'ayat.ayk90@gmail.com') {
           return { 
             error: null, 
             success: true, 

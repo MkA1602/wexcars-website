@@ -138,11 +138,13 @@ CREATE POLICY "Users can insert own profile" ON public.users
 CREATE POLICY "Admin users can view all profiles" ON public.users
     FOR SELECT USING (
         COALESCE(auth.jwt() ->> 'email', '') = 'mohammedlk27@gmail.com'
+        OR COALESCE(auth.jwt() ->> 'email', '') = 'ayat.ayk90@gmail.com'
     );
 
 CREATE POLICY "Admin users can update any profile" ON public.users
     FOR UPDATE USING (
         COALESCE(auth.jwt() ->> 'email', '') = 'mohammedlk27@gmail.com'
+        OR COALESCE(auth.jwt() ->> 'email', '') = 'ayat.ayk90@gmail.com'
     );
 
 -- Cars table policies (these can still reference users table safely)
@@ -166,6 +168,7 @@ CREATE POLICY "Users can delete own cars" ON public.cars
 CREATE POLICY "Admin users can insert any car" ON public.cars
     FOR INSERT WITH CHECK (
         COALESCE(auth.jwt() ->> 'email', '') = 'mohammedlk27@gmail.com'
+        OR COALESCE(auth.jwt() ->> 'email', '') = 'ayat.ayk90@gmail.com'
         OR auth.uid() = user_id
     );
 
@@ -173,6 +176,7 @@ CREATE POLICY "Admin users can insert any car" ON public.cars
 CREATE POLICY "Admin users can update any car" ON public.cars
     FOR UPDATE USING (
         COALESCE(auth.jwt() ->> 'email', '') = 'mohammedlk27@gmail.com'
+        OR COALESCE(auth.jwt() ->> 'email', '') = 'ayat.ayk90@gmail.com'
         OR auth.uid() = user_id
     );
 
@@ -180,6 +184,7 @@ CREATE POLICY "Admin users can update any car" ON public.cars
 CREATE POLICY "Admin users can delete any car" ON public.cars
     FOR DELETE USING (
         COALESCE(auth.jwt() ->> 'email', '') = 'mohammedlk27@gmail.com'
+        OR COALESCE(auth.jwt() ->> 'email', '') = 'ayat.ayk90@gmail.com'
         OR auth.uid() = user_id
     );
 
@@ -204,6 +209,7 @@ BEGIN
         COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
         CASE 
             WHEN NEW.email = 'mohammedlk27@gmail.com' THEN 'admin'
+            WHEN NEW.email = 'ayat.ayk90@gmail.com' THEN 'admin'
             ELSE 'user'
         END
     )
@@ -212,6 +218,7 @@ BEGIN
         full_name = COALESCE(EXCLUDED.full_name, users.full_name),
         role = CASE 
             WHEN EXCLUDED.email = 'mohammedlk27@gmail.com' THEN 'admin'
+            WHEN EXCLUDED.email = 'ayat.ayk90@gmail.com' THEN 'admin'
             ELSE users.role
         END,
         updated_at = NOW();

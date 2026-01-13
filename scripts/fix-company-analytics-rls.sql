@@ -6,7 +6,7 @@
 CREATE OR REPLACE FUNCTION update_company_analytics()
 RETURNS TRIGGER 
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, pg_temp
 AS $$
 BEGIN
     -- Update today's analytics for the company
@@ -54,7 +54,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION create_daily_analytics()
 RETURNS TRIGGER 
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, pg_temp
 AS $$
 BEGIN
     INSERT INTO public.company_analytics (

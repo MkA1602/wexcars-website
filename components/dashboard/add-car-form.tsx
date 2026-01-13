@@ -118,7 +118,7 @@ export default function AddCarForm() {
           .eq('id', user.id)
           .single()
         
-        if (data && (data.role === 'admin' || data.role === 'super_admin' || data.email === 'mohammedlk27@gmail.com')) {
+        if (data && (data.role === 'admin' || data.role === 'super_admin' || data.email === 'mohammedlk27@gmail.com' || data.email === 'ayat.ayk90@gmail.com')) {
           setIsAdmin(true)
           // Auto-set fee as paid for admins
           setIsFeePaid(true)

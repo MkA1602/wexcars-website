@@ -39,7 +39,7 @@ export default function EditCarPage({ params }: EditCarPageProps) {
         }
 
         // Check if user owns this car or is admin
-        if (carData.user_id !== user?.id && user?.email !== 'mohammedlk27@gmail.com') {
+        if (carData.user_id !== user?.id && user?.email !== 'mohammedlk27@gmail.com' && user?.email !== 'ayat.ayk90@gmail.com') {
           throw new Error('You do not have permission to edit this car')
         }
 

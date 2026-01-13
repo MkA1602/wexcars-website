@@ -90,7 +90,7 @@ async function fixUserRegistration() {
                          `${authUser.user_metadata.first_name} ${authUser.user_metadata.last_name}` : 
                          authUser.email)
 
-        const role = authUser.email === 'mohammedlk27@gmail.com' ? 'admin' : 'user'
+        const role = (authUser.email === 'mohammedlk27@gmail.com' || authUser.email === 'ayat.ayk90@gmail.com') ? 'admin' : 'user'
 
         const { error: insertError } = await supabase
           .from('users')
