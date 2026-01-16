@@ -172,8 +172,7 @@ const CarCard = memo(({ car, vatDisplay, favorites, onToggleFavorite }: {
           vatRate={car.vat_rate}
           vatAmount={car.vat_amount}
           currency={car.currency}
-          enableToggle={true}
-          carId={car.id}
+          showVatBreakdown={true}
           size="sm"
           isNettoPrice={car.is_netto_price}
         />

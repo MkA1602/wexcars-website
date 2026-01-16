@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public';
@@ -25,6 +26,83 @@ const navItems: NavItem[] = [
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
 ];
+
+// TextRoll component for animated text effect
+const STAGGER = 0.035;
+
+const TextRoll: React.FC<{
+  children: string;
+  className?: string;
+  center?: boolean;
+}> = ({ children, className, center = false }) => {
+  return (
+    <motion.span
+      initial="initial"
+      whileHover="hovered"
+      className={cn("relative block overflow-hidden", className)}
+      style={{
+        lineHeight: 0.75,
+      }}
+    >
+      <div>
+        {children.split("").map((l, i) => {
+          const delay = center
+            ? STAGGER * Math.abs(i - (children.length - 1) / 2)
+            : STAGGER * i;
+
+          return (
+            <motion.span
+              variants={{
+                initial: {
+                  y: 0,
+                },
+                hovered: {
+                  y: "-100%",
+                },
+              }}
+              transition={{
+                ease: "easeInOut",
+                delay,
+              }}
+              className="inline-block"
+              key={i}
+            >
+              {l}
+            </motion.span>
+          );
+        })}
+      </div>
+      <div className="absolute inset-0">
+        {children.split("").map((l, i) => {
+          const delay = center
+            ? STAGGER * Math.abs(i - (children.length - 1) / 2)
+            : STAGGER * i;
+
+          return (
+            <motion.span
+              variants={{
+                initial: {
+                  y: "100%",
+                },
+                hovered: {
+                  y: 0,
+                },
+              }}
+              transition={{
+                ease: "easeInOut",
+                delay,
+              }}
+              className="inline-block"
+              key={i}
+            >
+              {l}
+            </motion.span>
+          );
+        })}
+      </div>
+    </motion.span>
+  );
+};
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -133,25 +211,40 @@ export default function Header() {
           </motion.div>
 
           <nav className="hidden items-center space-x-8 lg:flex">
-            {navItems.map((item) => (
-              <div
-                key={item.name}
-                className="relative"
-                onMouseEnter={() =>
-                  item.hasDropdown && setActiveDropdown(item.name)
-                }
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                <Link
-                  prefetch={false}
-                  href={item.href}
-                  className="text-foreground flex items-center space-x-1 font-medium transition-colors duration-200 hover:text-primary-light"
+            {navItems.map((item) => {
+              // Apply TextRoll effect only to: Our Collections, Pricing, About, Contact
+              const shouldUseTextRoll = ['Our Collections', 'Pricing', 'About', 'Contact'].includes(item.name);
+              
+              return (
+                <div
+                  key={item.name}
+                  className="relative"
+                  onMouseEnter={() =>
+                    item.hasDropdown && setActiveDropdown(item.name)
+                  }
+                  onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  <span>{item.name}</span>
-                  {item.hasDropdown && (
-                    <ChevronDown className="h-4 w-4 transition-transform duration-200" />
-                  )}
-                </Link>
+                  <Link
+                    prefetch={false}
+                    href={item.href}
+                    className="text-foreground flex items-center space-x-1 font-medium transition-colors duration-200 hover:text-primary-light"
+                  >
+                    {shouldUseTextRoll ? (
+                      <div className="relative flex items-start">
+                        <TextRoll
+                          center
+                          className="text-base font-medium leading-normal"
+                        >
+                          {item.name}
+                        </TextRoll>
+                      </div>
+                    ) : (
+                      <span>{item.name}</span>
+                    )}
+                    {item.hasDropdown && (
+                      <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+                    )}
+                  </Link>
 
                 {item.hasDropdown && (
                   <AnimatePresence>
@@ -186,7 +279,8 @@ export default function Header() {
                   </AnimatePresence>
                 )}
               </div>
-            ))}
+            );
+            })}
           </nav>
 
           <div className="hidden items-center space-x-4 lg:flex">

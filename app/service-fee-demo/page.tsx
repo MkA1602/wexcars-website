@@ -49,7 +49,7 @@ export default function ServiceFeeDemoPage() {
               </div>
               <div className="space-y-2">
                 <h4 className="font-semibold">📈 Higher % VAT-Included</h4>
-                <p>1.25% if VAT ≤25%, 1.50% if VAT >25%</p>
+                <p>1.25% if VAT ≤25%, 1.50% if VAT &gt;25%</p>
               </div>
               <div className="space-y-2">
                 <h4 className="font-semibold">💰 Flat Minimum</h4>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { X, Phone, Flag } from "lucide-react"
+import { X, Phone, Flag, Mail, User, MessageCircle, CheckCircle2, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -204,48 +204,81 @@ export default function CarInquiryForm({ isOpen, onClose, carName, carBrand }: C
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Non-binding reservation</h2>
-            <p className="text-gray-600 mt-1">
-              Interested in this {carBrand} {carName}? Great! Drop us a line and we'll get back to you.
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in-0 duration-300">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-auto overflow-hidden animate-in zoom-in-95 duration-300">
+        {/* Modern Header with Gradient */}
+        <div className="relative bg-gradient-to-br from-red-600 via-red-500 to-red-600 p-6 text-white overflow-hidden">
+          {/* Decorative Background Elements */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-xl translate-y-1/2 -translate-x-1/2"></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <MessageCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">Inquiry Form</h2>
+                  <p className="text-white/90 text-sm mt-1">
+                    {carBrand} {carName}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-lg bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-white/90 text-sm">
+              Fill out the form below and we'll get back to you as soon as possible
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Name */}
+        {/* Form Content */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {/* Name Field - Modern Design */}
           <div className="space-y-2">
-            <Label htmlFor="name">Name and surname *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              placeholder="Name and surname *"
-              className={errors.name ? "border-red-500" : ""}
-            />
-            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+            <Label htmlFor="name" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <User className="w-4 h-4 text-gray-500" />
+              Name and surname <span className="text-red-500">*</span>
+            </Label>
+            <div className="relative">
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                placeholder="Enter your full name"
+                className={`pl-11 h-12 border-2 rounded-xl transition-all ${
+                  errors.name 
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                    : "border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                }`}
+              />
+              <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            </div>
+            {errors.name && (
+              <p className="text-red-500 text-sm flex items-center gap-1">
+                <span>•</span> {errors.name}
+              </p>
+            )}
           </div>
 
-          {/* Country and Phone */}
-          <div className="grid grid-cols-3 gap-3">
+          {/* Country and Phone - Enhanced Design */}
+          <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label>Country</Label>
+              <Label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <Flag className="w-4 h-4 text-gray-500" />
+                Country
+              </Label>
               <div className="relative">
                 <select
                   value={formData.country}
                   onChange={(e) => handleChange('country', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light appearance-none"
+                  className="w-full h-12 pl-11 pr-10 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 appearance-none bg-white transition-all"
                 >
                   {countries.map((country) => (
                     <option key={country.code} value={country.code}>
@@ -253,84 +286,143 @@ export default function CarInquiryForm({ isOpen, onClose, carName, carBrand }: C
                     </option>
                   ))}
                 </select>
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <Flag className="w-4 h-4 text-gray-400" />
-                </div>
+                <Flag className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <svg className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
             </div>
             
             <div className="col-span-2 space-y-2">
-              <Label htmlFor="phone">Phone number *</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="Phone number *"
-                className={errors.phone ? "border-red-500" : ""}
-              />
-              {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+              <Label htmlFor="phone" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <Phone className="w-4 h-4 text-gray-500" />
+                Phone number <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => handleChange('phone', e.target.value)}
+                  placeholder="Enter your phone number"
+                  className={`pl-11 h-12 border-2 rounded-xl transition-all ${
+                    errors.phone 
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                      : "border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                  }`}
+                />
+                <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              </div>
+              {errors.phone && (
+                <p className="text-red-500 text-sm flex items-center gap-1">
+                  <span>•</span> {errors.phone}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Email */}
+          {/* Email Field - Enhanced Design */}
           <div className="space-y-2">
-            <Label htmlFor="email">Email address *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="Email address *"
-              className={errors.email ? "border-red-500" : ""}
-            />
-            {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+            <Label htmlFor="email" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <Mail className="w-4 h-4 text-gray-500" />
+              Email address <span className="text-red-500">*</span>
+            </Label>
+            <div className="relative">
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                placeholder="your.email@example.com"
+                className={`pl-11 h-12 border-2 rounded-xl transition-all ${
+                  errors.email 
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" 
+                    : "border-gray-200 focus:border-red-500 focus:ring-red-500/20"
+                }`}
+              />
+              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            </div>
+            {errors.email && (
+              <p className="text-red-500 text-sm flex items-center gap-1">
+                <span>•</span> {errors.email}
+              </p>
+            )}
           </div>
 
-          {/* Checkboxes */}
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2">
+          {/* Checkboxes - Modern Design */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group">
               <Checkbox
                 id="discountOffers"
                 checked={formData.discountOffers}
                 onCheckedChange={(checked) => handleChange('discountOffers', checked as boolean)}
+                className="mt-0.5"
               />
-              <Label htmlFor="discountOffers" className="text-sm text-gray-700">
-                I wish to receive information about attractive discount offers.
+              <Label htmlFor="discountOffers" className="text-sm text-gray-700 cursor-pointer flex-1 group-hover:text-gray-900">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-yellow-500" />
+                  <span>I wish to receive information about attractive discount offers</span>
+                </div>
               </Label>
             </div>
             
-            <div className="flex items-start space-x-2">
+            <div className={`flex items-start gap-3 p-4 rounded-xl transition-colors ${
+              errors.personalInfoAgreement 
+                ? "bg-red-50 border-2 border-red-200" 
+                : "bg-gray-50 hover:bg-gray-100"
+            } cursor-pointer group`}>
               <Checkbox
                 id="personalInfoAgreement"
                 checked={formData.personalInfoAgreement}
                 onCheckedChange={(checked) => handleChange('personalInfoAgreement', checked as boolean)}
                 className="mt-0.5"
               />
-              <Label htmlFor="personalInfoAgreement" className="text-sm text-gray-700">
-                I agree with providing personal information. *
+              <Label htmlFor="personalInfoAgreement" className="text-sm text-gray-700 cursor-pointer flex-1 group-hover:text-gray-900">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className={`w-4 h-4 ${errors.personalInfoAgreement ? 'text-red-500' : 'text-green-500'}`} />
+                  <span>I agree with providing personal information <span className="text-red-500">*</span></span>
+                </div>
                 {errors.personalInfoAgreement && (
-                  <span className="block text-red-500 text-xs mt-1">{errors.personalInfoAgreement}</span>
+                  <span className="block text-red-500 text-xs mt-1.5 ml-6">{errors.personalInfoAgreement}</span>
                 )}
               </Label>
             </div>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Button - Modern Design */}
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-lg font-semibold rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-6 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            {isSubmitting ? "Submitting..." : "Reserve this car"}
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Submitting...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <MessageCircle className="w-5 h-5" />
+                Reserve this car
+              </span>
+            )}
           </Button>
         </form>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-gray-200 text-center">
-          <p className="text-sm text-gray-500 mb-2">Need help? Call us.</p>
-          <div className="flex items-center justify-center gap-2 text-primary-light font-semibold">
-            <Phone className="w-4 h-4" />
-            <span className="text-lg">+971 50 123 4567</span>
+        {/* Modern Footer */}
+        <div className="px-6 py-5 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
+              <Phone className="w-5 h-5 text-red-600" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 font-medium">Need immediate assistance?</p>
+              <a href="tel:+971501234567" className="text-red-600 font-bold text-lg hover:text-red-700 transition-colors">
+                +971 50 123 4567
+              </a>
+            </div>
           </div>
         </div>
       </div>

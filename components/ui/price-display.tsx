@@ -3,9 +3,6 @@
 import type React from "react"
 import { useState, memo, useEffect, useRef } from "react"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ChevronDown, ChevronUp, Info } from "lucide-react"
-import PriceDetailsModal from "./price-details-modal"
 
 // Global state store for toggle states - ensures complete isolation
 const toggleStates = new Map<string, boolean>()
@@ -57,26 +54,27 @@ function PriceDisplay({
   carId = "",
   isNettoPrice = false
 }: PriceDisplayProps) {
-  // Force re-render when component mounts/unmounts
-  const [, forceUpdate] = useState({})
-  const componentId = useRef(`${carId}_${Date.now()}_${Math.random()}`).current
+  // Use proper React state instead of forceUpdate
+  const [isExpanded, setIsExpandedState] = useState(false)
+  const isInitialized = useRef(false)
   
-  // Initialize state for this specific car if not exists
+  // Initialize state from localStorage on mount
   useEffect(() => {
-    if (carId && !toggleStates.has(carId)) {
+    if (carId && !isInitialized.current) {
       const storedState = getStoredState(carId)
-      toggleStates.set(carId, storedState)
-      console.log(`[${componentId}] Initialized state for car ${carId}: ${storedState}`)
+      setIsExpandedState(storedState)
+      if (carId && !toggleStates.has(carId)) {
+        toggleStates.set(carId, storedState)
+      }
+      isInitialized.current = true
     }
-  }, [carId, componentId])
-  
-  const isExpanded = carId ? toggleStates.get(carId) || false : false
+  }, [carId])
   
   const setIsExpanded = (newValue: boolean) => {
     if (carId) {
       toggleStates.set(carId, newValue)
       setStoredState(carId, newValue)
-      forceUpdate({}) // Force re-render
+      setIsExpandedState(newValue)
     }
   }
   // Calculate values if not provided
@@ -140,87 +138,119 @@ function PriceDisplay({
     )
   }
 
-  // If toggle is enabled, show compact view with popup details
+  // If toggle is enabled, show compact view with inline expandable details
   if (enableToggle && priceExclVat) {
     return (
-      <>
-        <div className={`space-y-1 ${className}`}>
-          {/* Main price with VAT - always visible */}
-          <div className="flex items-baseline gap-2">
-            <span className={`text-primary-light ${sizeClasses[size].main}`}>
+      <div className={`${className}`}>
+        <div className="flex flex-col items-center">
+          {/* Main price - large and prominent */}
+          <div className="flex items-baseline justify-center gap-2 mb-1">
+            <span className={`text-red-600 ${sizeClasses[size].main}`}>
               {formatPrice(price)}
             </span>
-            <Badge variant="secondary" className="text-xs">
-              incl. VAT
-            </Badge>
           </div>
           
-          {/* Price excluding VAT - always visible */}
-          <div className={`text-gray-600 ${sizeClasses[size].breakdown}`}>
-            <span>Price (excl. VAT): </span>
-            <span className="font-semibold">{formatPrice(calculatedPriceExclVat)}</span>
+          {/* Simple inline breakdown */}
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mb-2">
+            <span>{formatPrice(calculatedPriceExclVat)}</span>
+            <span>+</span>
+            <span>{vatRate}% VAT</span>
           </div>
           
-          {/* More Details Button - Now opens popup */}
-          <Button
-            variant="ghost"
-            size="sm"
+          {/* Simple minimal button */}
+          <button
+            type="button"
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              const newState = !isExpanded
-              console.log(`[${componentId}] Opening popup for car ${carId}`)
-              setIsExpanded(newState)
+              setIsExpanded(!isExpanded)
             }}
-            className="h-auto p-1 text-xs text-gray-600 hover:text-primary-light flex items-center gap-1 group"
+            className="text-xs text-gray-500 hover:text-gray-700 transition-colors font-medium flex items-center gap-1 group"
           >
-            <Info className="w-3 h-3 group-hover:scale-110 transition-transform" />
-            <span>View Details</span>
-          </Button>
+            <span>{isExpanded ? 'Hide Details' : 'View Details'}</span>
+            <svg 
+              className={`w-3 h-3 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
         </div>
 
-        {/* Price Details Modal */}
-        <PriceDetailsModal
-          isOpen={isExpanded}
-          onClose={() => setIsExpanded(false)}
-          price={price}
-          priceExclVat={priceExclVat}
-          vatRate={vatRate}
-          vatAmount={vatAmount}
-          currency={currency}
-          isNettoPrice={isNettoPrice}
-        />
-      </>
+        {/* Inline expandable details - appears below with better design */}
+        {isExpanded && (
+          <div className="mt-4 animate-in fade-in-0 slide-in-from-top-2 duration-300">
+            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-200 shadow-sm p-4 space-y-3">
+              {/* Price breakdown items */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between py-1.5">
+                  <span className="text-sm text-gray-600">
+                    {isNettoPrice ? 'Netto Price' : 'Price (excl. VAT)'}
+                  </span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {formatPrice(calculatedPriceExclVat)}
+                  </span>
+                </div>
+                
+                {!isNettoPrice && (
+                  <>
+                    <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                    <div className="flex items-center justify-between py-1.5">
+                      <span className="text-sm text-gray-600">VAT ({vatRate}%)</span>
+                      <span className="text-sm font-semibold text-blue-600">
+                        {formatPrice(calculatedVatAmount)}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              {/* Total - highlighted */}
+              <div className="pt-2.5 border-t-2 border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-900">
+                    {isNettoPrice ? 'Total' : 'Total (incl. VAT)'}
+                  </span>
+                  <span className="text-lg font-bold text-red-600">
+                    {isNettoPrice ? formatPrice(calculatedPriceExclVat) : formatPrice(price)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     )
   }
 
-  // Legacy VAT breakdown display (for existing components that use showVatBreakdown)
+  // Car card display - shows only price excl VAT and price incl VAT in clean design
+  // Layout: Labels on left, prices on right (two-column layout)
+  // Price excl VAT: large, bold, blue (prominent)
+  // Price incl VAT: smaller, regular, grey (less prominent)
   if (showVatBreakdown && priceExclVat) {
     return (
-      <div className={`space-y-2 ${className}`}>
-        {/* Main price with VAT */}
-        <div className="flex items-baseline gap-2">
-          <span className={`text-primary-light ${sizeClasses[size].main}`}>
-            {formatPrice(price)}
-          </span>
-          <Badge variant="secondary" className="text-xs">
-            incl. VAT
-          </Badge>
-        </div>
-        
-        {/* VAT breakdown */}
-        <div className={`text-gray-600 space-y-1 ${sizeClasses[size].breakdown}`}>
-          <div className="flex justify-between">
-            <span>Price (excl. VAT):</span>
-            <span className="font-semibold">{formatPrice(calculatedPriceExclVat)}</span>
+      <div className={`${className} w-full`}>
+        <div className="flex flex-col gap-2">
+          {/* Price excl VAT - prominent (large, bold, red) */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              Price excl. VAT:
+            </span>
+            <span className={`text-red-600 font-bold ${sizeClasses[size].main}`}>
+              {formatPrice(calculatedPriceExclVat)}
+            </span>
           </div>
-          <div className="flex justify-between">
-            <span>VAT ({vatRate}%):</span>
-            <span className="font-semibold">{formatPrice(calculatedVatAmount)}</span>
-          </div>
-          <div className="flex justify-between border-t pt-1 font-bold">
-            <span>Total:</span>
-            <span className="text-primary-light">{formatPrice(price)}</span>
+          
+          {/* Price incl VAT - less prominent (smaller, regular, grey) */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              Price incl. VAT:
+            </span>
+            <span className={`text-gray-600 ${sizeClasses[size].breakdown}`}>
+              {formatPrice(price)}
+            </span>
           </div>
         </div>
       </div>

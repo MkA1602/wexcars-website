@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Home, Car as CarIcon, Edit, Trash2, User, Shield, MessageCircle, Heart, Sofa, Car as CarIcon2, ShieldCheck, Monitor, Star, Settings, MapPin } from "lucide-react"
+import { Home, Car as CarIcon, Edit, Trash2, User, Shield, MessageCircle, Heart, Sofa, Car as CarIcon2, ShieldCheck, Monitor, Star, Settings, MapPin, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
 import CarGallery from "./car-gallery"
@@ -170,6 +170,21 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  // Parse features from JSON string if available
+  const parseCarFeatures = (): string[] => {
+    if (car.features) {
+      try {
+        return JSON.parse(car.features)
+      } catch (e) {
+        console.error('Error parsing features:', e)
+        return []
+      }
+    }
+    return []
+  }
+
+  const parsedFeatures = parseCarFeatures()
+
   // Toggle favorite status
   const toggleFavorite = () => {
     if (!isMounted) return
@@ -268,221 +283,360 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
             <CarGallery car={car} />
           </div>
 
-          {/* Car Information and Pricing Section - Clean Design */}
+          {/* Car Information and Pricing Section - Modern Professional Design */}
           <div className="mb-12">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-              {/* Left Side - Car Name and Specifications */}
-              <div className="flex-1">
-                {/* Car Name and Year */}
-                <div className="mb-6">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-3">
-                    {car.brand} {car.name}
-                  </h1>
-                  <div className="flex items-center gap-4">
-                    <p className="text-lg text-gray-600">
-                      {car.year}
-                    </p>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-8">
+                {/* Left Side - Car Name and Specifications */}
+                <div className="flex-1">
+                  {/* Car Name - Refined Size */}
+                  <div className="mb-5">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
+                      {car.brand} {car.name}
+                    </h1>
                     
-                    {/* Specification Tags - Smaller and beside mileage */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {car.fuel_type && (
-                        <span className="bg-gray-300 text-gray-700 px-2 py-1 rounded-md font-medium text-xs">
-                          {car.fuel_type}
-                        </span>
-                      )}
-                      {car.specifications?.power && (
-                        <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
-                          {car.specifications.power}
-                        </span>
-                      )}
-                      {car.specifications?.drivetrain && (
-                        <span className="bg-primary-light text-white px-2 py-1 rounded-md font-medium text-xs">
-                          {car.specifications.drivetrain}
-                        </span>
-                      )}
-                      {car.transmission && (
-                        <span className="bg-gray-300 text-gray-700 px-2 py-1 rounded-md font-medium text-xs">
-                          {car.transmission}
-                        </span>
-                      )}
-                      {car.location && (
-                        <span className="bg-primary-light/10 text-primary-light border border-primary-light/20 px-3 py-1 rounded-lg font-medium text-xs flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          {car.location}
-                        </span>
-                      )}
+                    {/* Year and Specification Tags */}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-base text-gray-600 font-medium">
+                        {car.year}
+                      </span>
+                      
+                      {/* Specification Tags - Modern Pill Design */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {car.fuel_type && (
+                          <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-medium text-xs">
+                            {car.fuel_type}
+                          </span>
+                        )}
+                        {car.specifications?.drivetrain && (
+                          <span className="bg-red-600 text-white px-3 py-1 rounded-full font-medium text-xs">
+                            {car.specifications.drivetrain}
+                          </span>
+                        )}
+                        {car.transmission && (
+                          <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-medium text-xs">
+                            {car.transmission}
+                          </span>
+                        )}
+                        {car.location && (
+                          <span className="bg-pink-100 text-red-600 border border-red-200 px-3 py-1 rounded-full font-medium text-xs flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {car.location}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Remove the old Specification Tags section */}
-              </div>
-              
               {/* Right Side - Pricing and Buy Button */}
-              <div className="flex flex-col items-end gap-4">
-                {/* Pricing Information */}
-                <div className="text-right">
+              <div className="flex flex-col items-center gap-4 w-full lg:w-auto">
+                {/* Pricing Information - Using PriceDisplay Component */}
+                <div className="w-full text-center">
                   <PriceDisplay
                     price={car.price}
                     priceExclVat={car.price_excl_vat}
                     vatRate={car.vat_rate}
                     vatAmount={car.vat_amount}
-                    currency={car.currency}
+                    currency={car.currency || 'EUR'}
                     enableToggle={true}
                     carId={car.id}
                     size="lg"
                     isNettoPrice={car.is_netto_price}
-                    className="text-right"
+                    className="text-center"
                   />
                 </div>
-                
-                {/* Buy Button */}
-                <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 text-lg font-semibold rounded-lg" onClick={() => setIsInquiryModalOpen(true)}>
+                  
+                {/* Buy Button - Modern and Refined */}
+                <Button 
+                  className="w-full lg:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-5 text-base font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200" 
+                  onClick={() => setIsInquiryModalOpen(true)}
+                >
                   Buy the car
                 </Button>
+              </div>
               </div>
             </div>
           </div>
 
           {/* Navigation Sidebar and Content Area */}
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
-            {/* Left Sidebar Navigation - Mobile Optimized */}
-            <div className="lg:w-64 flex-shrink-0">
+            {/* Left Sidebar Navigation - Ultra Modern Design */}
+            <div className="lg:w-72 flex-shrink-0">
               <div className="lg:sticky lg:top-24">
-                <h3 className="font-semibold text-lg lg:text-xl mb-4 lg:mb-6 text-gray-900">Navigation</h3>
-                {/* Mobile horizontal scroll, Desktop vertical */}
-                <nav className="flex lg:flex-col gap-2 lg:gap-1 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
+                {/* Modern Header with Accent */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-1 h-5 bg-gradient-to-b from-red-600 to-red-500 rounded-full"></div>
+                    <h3 className="font-bold text-lg text-gray-900 tracking-tight">Navigation</h3>
+                  </div>
+                  <div className="h-px bg-gradient-to-r from-gray-200 via-gray-100 to-transparent"></div>
+                </div>
+                
+                {/* Premium Navigation Menu */}
+                <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
                   <a 
                     href="#specification" 
                     onClick={(e) => handleNavClick("specification", e)}
-                    className={`flex items-center justify-between p-3 lg:p-4 rounded-lg transition-colors border-l-4 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                    className={`group relative flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal overflow-hidden ${
                       activeSection === "specification"
-                        ? "bg-primary-light/10 text-primary-dark font-medium border-primary-light"
-                        : "hover:bg-primary-light/5 text-gray-700 border-transparent hover:border-primary-light/30"
+                        ? "bg-gradient-to-r from-red-50 to-red-50/50 text-red-600 font-semibold shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50/80"
                     }`}
                   >
-                    <span className="text-sm lg:text-base">Specification</span>
-                    <span className="text-xs hidden lg:inline">▼</span>
+                    {/* Active Indicator Bar */}
+                    {activeSection === "specification" && (
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-600 to-red-500 rounded-r-full"></div>
+                    )}
+                    
+                    <div className="flex items-center gap-3 relative z-10">
+                      {/* Icon Circle */}
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                        activeSection === "specification"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-gray-100 text-gray-500 group-hover:bg-gray-200 group-hover:text-gray-700"
+                      }`}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium">Specification</span>
+                    </div>
+                    
+                    {/* Arrow Icon */}
+                    <svg className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 relative z-10 ${
+                      activeSection === "specification" ? "text-red-600" : "text-gray-400 group-hover:text-gray-600"
+                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </a>
+                  
                   <a 
                     href="#features" 
                     onClick={(e) => handleNavClick("features", e)}
-                    className={`flex items-center justify-between p-3 lg:p-4 rounded-lg transition-colors border-l-4 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                    className={`group relative flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal overflow-hidden ${
                       activeSection === "features"
-                        ? "bg-primary-light/10 text-primary-dark font-medium border-primary-light"
-                        : "hover:bg-primary-light/5 text-gray-700 border-transparent hover:border-primary-light/30"
+                        ? "bg-gradient-to-r from-red-50 to-red-50/50 text-red-600 font-semibold shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50/80"
                     }`}
                   >
-                    <span className="text-sm lg:text-base">Features</span>
-                    <span className="text-xs hidden lg:inline">▼</span>
+                    {activeSection === "features" && (
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-600 to-red-500 rounded-r-full"></div>
+                    )}
+                    
+                    <div className="flex items-center gap-3 relative z-10">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                        activeSection === "features"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-gray-100 text-gray-500 group-hover:bg-gray-200 group-hover:text-gray-700"
+                      }`}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium">Features</span>
+                    </div>
+                    
+                    <svg className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 relative z-10 ${
+                      activeSection === "features" ? "text-red-600" : "text-gray-400 group-hover:text-gray-600"
+                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </a>
+                  
                   <a 
                     href="#description" 
                     onClick={(e) => handleNavClick("description", e)}
-                    className={`flex items-center justify-between p-3 lg:p-4 rounded-lg transition-colors border-l-4 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                    className={`group relative flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal overflow-hidden ${
                       activeSection === "description"
-                        ? "bg-primary-light/10 text-primary-dark font-medium border-primary-light"
-                        : "hover:bg-primary-light/5 text-gray-700 border-transparent hover:border-primary-light/30"
+                        ? "bg-gradient-to-r from-red-50 to-red-50/50 text-red-600 font-semibold shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50/80"
                     }`}
                   >
-                    <span className="text-sm lg:text-base">Description</span>
-                    <span className="text-xs hidden lg:inline">▼</span>
+                    {activeSection === "description" && (
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-600 to-red-500 rounded-r-full"></div>
+                    )}
+                    
+                    <div className="flex items-center gap-3 relative z-10">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                        activeSection === "description"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-gray-100 text-gray-500 group-hover:bg-gray-200 group-hover:text-gray-700"
+                      }`}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium">Description</span>
+                    </div>
+                    
+                    <svg className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 relative z-10 ${
+                      activeSection === "description" ? "text-red-600" : "text-gray-400 group-hover:text-gray-600"
+                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </a>
+                  
                   <a 
                     href="#contact" 
                     onClick={(e) => handleNavClick("contact", e)}
-                    className={`flex items-center justify-between p-3 lg:p-4 rounded-lg transition-colors border-l-4 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal ${
+                    className={`group relative flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 whitespace-nowrap flex-shrink-0 lg:flex-shrink lg:whitespace-normal overflow-hidden ${
                       activeSection === "contact"
-                        ? "bg-primary-light/10 text-primary-dark font-medium border-primary-light"
-                        : "hover:bg-primary-light/5 text-gray-700 border-transparent hover:border-primary-light/30"
+                        ? "bg-gradient-to-r from-red-50 to-red-50/50 text-red-600 font-semibold shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50/80"
                     }`}
                   >
-                    <span className="text-sm lg:text-base">Contact us</span>
-                    <span className="text-xs hidden lg:inline">▼</span>
+                    {activeSection === "contact" && (
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-600 to-red-500 rounded-r-full"></div>
+                    )}
+                    
+                    <div className="flex items-center gap-3 relative z-10">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                        activeSection === "contact"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-gray-100 text-gray-500 group-hover:bg-gray-200 group-hover:text-gray-700"
+                      }`}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium">Contact us</span>
+                    </div>
+                    
+                    <svg className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 relative z-10 ${
+                      activeSection === "contact" ? "text-red-600" : "text-gray-400 group-hover:text-gray-600"
+                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </a>
-
                 </nav>
               </div>
             </div>
 
             {/* Right Content Area */}
             <div className="flex-1">
-              {/* Specification Section - Clean Design */}
+              {/* Specification Section - Modern Design */}
               <div id="specification" className="mb-16">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8">Specification</h2>
-                
+                <div className="mb-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-sm font-semibold uppercase tracking-wider text-primary-light">SPECIFICATIONS</span>
+                    <div className="h-px flex-1 bg-gradient-to-r from-primary-light/30 to-transparent"></div>
+                  </div>
+                  <h2 className="text-4xl font-bold text-gray-900 mb-3">Technical Details</h2>
+                  <p className="text-gray-600 max-w-2xl">Comprehensive technical specifications and vehicle information</p>
+                </div>
 
-
-                {/* Specification Details Table */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">First registration</span>
-                      <span className="text-gray-900 font-semibold">{car.created_at ? new Date(car.created_at).toLocaleDateString() : 'Not specified'}</span>
+                {/* Specification Cards - Modern Grid Layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column */}
+                  <div className="space-y-4">
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">First Registration</span>
+                        <span className="text-lg font-bold text-gray-900">{car.created_at ? new Date(car.created_at).toLocaleDateString() : 'Not specified'}</span>
+                      </div>
                     </div>
+                    
                     {[car.engine_size, car.specifications?.power, car.specifications?.drivetrain].filter(Boolean).length > 0 && (
-                      <div className="flex justify-between py-4 border-b border-primary-light/20">
-                        <span className="font-medium text-gray-400">Engine</span>
-                        <span className="text-gray-900 font-semibold">
-                          {[car.engine_size, car.specifications?.power, car.specifications?.drivetrain]
-                            .filter(Boolean)
-                            .join(', ')}
-                        </span>
+                      <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Engine</span>
+                          <span className="text-lg font-bold text-gray-900">
+                            {[car.engine_size, car.specifications?.power, car.specifications?.drivetrain]
+                              .filter(Boolean)
+                              .join(', ')}
+                          </span>
+                        </div>
                       </div>
                     )}
+                    
                     {!car.is_new_car && (
-                      <div className="flex justify-between py-4 border-b border-primary-light/20">
-                        <span className="font-medium text-gray-400">Odometer</span>
-                        <span className="text-gray-900 font-semibold">{getMileageDisplay(car)}</span>
+                      <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Odometer</span>
+                          <span className="text-lg font-bold text-gray-900">{getMileageDisplay(car)}</span>
+                        </div>
                       </div>
                     )}
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Transmission</span>
-                      <span className="text-gray-900 font-semibold">{car.transmission || 'Not specified'}</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Transmission</span>
+                        <span className="text-lg font-bold text-gray-900">{car.transmission || 'Not specified'}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Body type</span>
-                      <span className="text-gray-900 font-semibold">{car.category || 'Not specified'}</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Body Type</span>
+                        <span className="text-lg font-bold text-gray-900">{car.category || 'Not specified'}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Fuel</span>
-                      <span className="text-gray-900 font-semibold">{car.fuel_type || 'Not specified'}</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Fuel Type</span>
+                        <span className="text-lg font-bold text-gray-900">{car.fuel_type || 'Not specified'}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Chassis Number</span>
-                      <span className="text-gray-900 font-semibold">{car.chassis_number || 'Not specified'}</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Chassis Number</span>
+                        <span className="text-lg font-bold text-gray-900 break-all">{car.chassis_number || 'Not specified'}</span>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-6">
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Color</span>
-                      <span className="text-gray-900 font-semibold">{car.color || 'Not specified'}</span>
+                  {/* Right Column */}
+                  <div className="space-y-4">
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Color</span>
+                        <span className="text-lg font-bold text-gray-900">{car.color || 'Not specified'}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Seats</span>
-                      <span className="text-gray-900 font-semibold">{car.seats || 'Not specified'}</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Seats</span>
+                        <span className="text-lg font-bold text-gray-900">{car.seats || 'Not specified'}</span>
+                      </div>
                     </div>
 
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Emission class</span>
-                      <span className="text-gray-900 font-semibold">Euro6d</span>
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Emission Class</span>
+                        <span className="text-lg font-bold text-gray-900">Euro6d</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Ref. no</span>
-                      <span className="text-gray-900 font-semibold">{car.id}</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Reference No</span>
+                        <span className="text-lg font-bold text-gray-900 break-all">{car.id.slice(0, 8)}...</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Certificate of Conformity</span>
-                      <span className="text-gray-900 font-semibold">Yes</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Certificate of Conformity</span>
+                        <span className="text-lg font-bold text-green-600">✓ Yes</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">Service book</span>
-                      <span className="text-gray-900 font-semibold">Yes</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">Service Book</span>
+                        <span className="text-lg font-bold text-green-600">✓ Yes</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-4 border-b border-primary-light/20">
-                      <span className="font-medium text-gray-400">History</span>
-                      <span className="text-gray-900 font-semibold">After the first owner, Service book</span>
+                    
+                    <div className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">History</span>
+                        <span className="text-lg font-bold text-gray-900 text-right max-w-[60%]">After the first owner, Service book</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -499,7 +653,23 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                   <p className="text-gray-600 mt-2 max-w-2xl">Discover the advanced features and technologies that make this vehicle exceptional</p>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {parsedFeatures.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {parsedFeatures.map((feature, index) => (
+                      <div
+                        key={index}
+                        className="group relative bg-white rounded-xl border border-gray-200 p-5 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                      >
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-primary-light flex-shrink-0"></div>
+                          <span className="text-gray-700 font-medium text-sm leading-relaxed">{feature}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Interior Features */}
                   <div className="group relative bg-white rounded-xl border border-gray-200 p-6 hover:border-primary-light/50 hover:shadow-lg transition-all duration-300 overflow-hidden">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-light to-primary-dark opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -685,62 +855,123 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
                       </li>
                     </ul>
                   </div>
-                </div>
+                  </div>
+                )}
               </div>
 
-              {/* Description Section */}
+              {/* Description Section - Modern Design */}
               {car.description && (
                 <div id="description" className="mb-16">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-8">Description</h2>
-                  <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-                    <div className="prose prose-lg max-w-none">
-                      <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                        {car.description}
-                      </p>
+                  <div className="mb-10">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-sm font-semibold uppercase tracking-wider text-primary-light">DESCRIPTION</span>
+                      <div className="h-px flex-1 bg-gradient-to-r from-primary-light/30 to-transparent"></div>
+                    </div>
+                    <h2 className="text-4xl font-bold text-gray-900 mb-3">Vehicle Overview</h2>
+                    <p className="text-gray-600 max-w-2xl">Learn more about this exceptional vehicle and its unique characteristics</p>
+                  </div>
+                  
+                  <div className="relative bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 md:p-12 shadow-lg border border-gray-200 overflow-hidden">
+                    {/* Decorative background elements */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary-light/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-dark/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+                    
+                    <div className="relative prose prose-lg max-w-none">
+                      <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-base md:text-lg">
+                        {car.description.split('\n').map((paragraph, index) => (
+                          paragraph.trim() && (
+                            <p key={index} className="mb-4 last:mb-0">
+                              {paragraph}
+                            </p>
+                          )
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Contact Section - Enhanced Design */}
+              {/* Contact Section - Modern Enhanced Design */}
               <div id="contact" className="mb-16">
-                <div className="bg-gradient-to-br from-primary-light/5 to-primary-dark/5 rounded-2xl p-8 border border-primary-light/20">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">Contact us</h2>
-                  <p className="text-gray-600 mb-8">Interested in this vehicle? Get in touch with us for more information, schedule a viewing, or make an inquiry.</p>
-                  
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <Button 
-                      onClick={() => setIsInquiryModalOpen(true)}
-                      className="bg-primary-light hover:bg-primary-dark text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center group"
-                    >
-                      <MessageCircle className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                      Send Message
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={toggleFavorite}
-                      className={`px-8 py-4 rounded-lg border-2 transition-all duration-200 flex items-center justify-center group ${
-                        isFavorite 
-                          ? 'border-red-500 bg-red-50 text-red-600 hover:bg-red-100' 
-                          : 'border-primary-light/30 hover:border-primary-light hover:bg-primary-light/5 text-primary-dark hover:text-primary-dark'
-                      }`}
-                    >
-                      <Heart className={`w-5 h-5 mr-2 group-hover:scale-110 transition-transform ${
-                        isFavorite ? 'fill-red-500' : ''
-                      }`} />
-                      {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-                    </Button>
+                <div className="mb-10">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-sm font-semibold uppercase tracking-wider text-primary-light">CONTACT</span>
+                    <div className="h-px flex-1 bg-gradient-to-r from-primary-light/30 to-transparent"></div>
+                  </div>
+                  <h2 className="text-4xl font-bold text-gray-900 mb-3">Get In Touch</h2>
+                  <p className="text-gray-600 max-w-2xl">Interested in this vehicle? Contact us for more information, schedule a viewing, or make an inquiry.</p>
+                </div>
+                
+                <div className="relative bg-gradient-to-br from-primary-light/10 via-white to-primary-dark/10 rounded-3xl p-8 md:p-12 border border-primary-light/30 shadow-2xl overflow-hidden">
+                  {/* Decorative background pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_1px_1px,rgb(0,0,0)_1px,transparent_0)] bg-[length:40px_40px]"></div>
                   </div>
                   
-                  <div className="mt-6 pt-6 border-t border-primary-light/20">
-                    <p className="text-sm text-gray-500 mb-2">Need immediate assistance?</p>
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      <a href="tel:+46737200581" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
-                        📞 +46 737 200 581
-                      </a>
-                      <a href="mailto:support@wexcars.com" className="text-primary-light hover:text-primary-dark font-medium transition-colors">
-                        ✉️ support@wexcars.com
-                      </a>
+                  <div className="relative z-10">
+                    {/* Main CTA Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                      <Button 
+                        onClick={() => setIsInquiryModalOpen(true)}
+                        className="group relative bg-gradient-to-r from-primary-light to-primary-dark hover:from-primary-dark hover:to-primary-light text-white px-8 py-6 rounded-xl font-semibold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center overflow-hidden"
+                      >
+                        <span className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
+                        <MessageCircle className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform relative z-10" />
+                        <span className="relative z-10">Send Inquiry</span>
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        onClick={toggleFavorite}
+                        className={`group relative px-8 py-6 rounded-xl border-2 transition-all duration-300 flex items-center justify-center text-lg font-semibold overflow-hidden ${
+                          isFavorite 
+                            ? 'border-red-500 bg-gradient-to-r from-red-50 to-red-100 text-red-600 hover:from-red-100 hover:to-red-200 shadow-lg' 
+                            : 'border-primary-light/40 hover:border-primary-light bg-white/50 hover:bg-primary-light/10 text-primary-dark hover:text-primary-dark shadow-md hover:shadow-lg'
+                        }`}
+                      >
+                        <Heart className={`w-6 h-6 mr-3 group-hover:scale-110 transition-transform ${
+                          isFavorite ? 'fill-red-500 text-red-600' : ''
+                        }`} />
+                        <span>{isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}</span>
+                      </Button>
+                    </div>
+                    
+                    {/* Contact Information Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-8 border-t border-primary-light/30">
+                      <div className="group bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:bg-white transition-all duration-300 border border-gray-200/50 hover:border-primary-light/50 hover:shadow-lg">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-light/20 to-primary-dark/20 flex items-center justify-center group-hover:from-primary-light/30 group-hover:to-primary-dark/30 transition-all duration-300">
+                            <Phone className="w-6 h-6 text-primary-light" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500 mb-1">Phone Support</p>
+                            <a href="tel:+46737200581" className="text-lg font-bold text-gray-900 hover:text-primary-light transition-colors">
+                              +46 737 200 581
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="group bg-white/80 backdrop-blur-sm rounded-xl p-6 hover:bg-white transition-all duration-300 border border-gray-200/50 hover:border-primary-light/50 hover:shadow-lg">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-light/20 to-primary-dark/20 flex items-center justify-center group-hover:from-primary-light/30 group-hover:to-primary-dark/30 transition-all duration-300">
+                            <MessageCircle className="w-6 h-6 text-primary-light" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500 mb-1">Email Support</p>
+                            <a href="mailto:support@wexcars.com" className="text-lg font-bold text-gray-900 hover:text-primary-light transition-colors break-all">
+                              support@wexcars.com
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Additional Info */}
+                    <div className="mt-8 pt-8 border-t border-primary-light/20">
+                      <p className="text-sm text-gray-600 text-center">
+                        <span className="font-semibold">Available 24/7</span> - Our team is ready to assist you with any questions about this vehicle
+                      </p>
                     </div>
                   </div>
                 </div>
