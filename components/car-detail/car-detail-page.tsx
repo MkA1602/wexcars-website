@@ -23,6 +23,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   const [isFavorite, setIsFavorite] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [activeSection, setActiveSection] = useState<string>("specification")
+  const [showStickyHeader, setShowStickyHeader] = useState(false)
   
   // Debug logging to see what's in the car object
   console.log('Car object:', car)
@@ -149,11 +150,14 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
     }
   }
 
-  // Scroll detection for active navigation
+  // Scroll detection for active navigation and sticky header
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["specification", "features", "description", "contact"]
       const scrollPosition = window.scrollY + 200 // Offset for better detection
+
+      // Show sticky header after scrolling past initial content (e.g., 400px)
+      setShowStickyHeader(window.scrollY > 400)
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = document.getElementById(sections[i])
@@ -274,6 +278,93 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
           </div>
         </div>
       </nav>
+
+      {/* Sticky Header - Appears on scroll */}
+      <div
+        className={`fixed top-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg transition-all duration-300 ${
+          showStickyHeader ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left Side - Car Info */}
+            <div className="flex-1 flex items-center gap-6 min-w-0">
+              {/* Car Title */}
+              <div className="flex flex-col min-w-0">
+                <h2 className="text-lg font-bold text-gray-900 truncate">
+                  {car.brand} {car.name}, {car.year}
+                </h2>
+                <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+                  <span>{car.year}</span>
+                  {!car.is_new_car && car.mileage && (
+                    <>
+                      <span>•</span>
+                      <span>{car.mileage.toLocaleString()} km</span>
+                    </>
+                  )}
+                  {car.specifications?.power && (
+                    <>
+                      <span>•</span>
+                      <span>{car.specifications.power}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Feature Tags */}
+              <div className="hidden md:flex items-center gap-2 flex-wrap">
+                {car.fuel_type && (
+                  <span className="bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-md font-medium text-xs whitespace-nowrap">
+                    {car.fuel_type}
+                  </span>
+                )}
+                {car.specifications?.power && (
+                  <span className="bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-md font-medium text-xs whitespace-nowrap">
+                    {car.specifications.power}
+                  </span>
+                )}
+                {car.specifications?.drivetrain && (
+                  <span className="bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-md font-medium text-xs whitespace-nowrap">
+                    {car.specifications.drivetrain}
+                  </span>
+                )}
+                {car.transmission && (
+                  <span className="bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-md font-medium text-xs whitespace-nowrap">
+                    {car.transmission}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Right Side - Pricing and Buy Button */}
+            <div className="flex items-center gap-6 flex-shrink-0">
+              {/* Pricing Information */}
+              <div className="hidden lg:flex flex-col items-end gap-1">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500">Price excl. VAT:</span>
+                  <span className="text-lg font-bold text-red-600">
+                    {formatCurrency(car.price_excl_vat || (car.price / (1 + (car.vat_rate || 5) / 100)), car.currency || 'EUR')}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500">Price incl. VAT:</span>
+                  <span className="text-sm text-gray-600">
+                    {formatCurrency(car.price, car.currency || 'EUR')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Buy Button */}
+              <Button 
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 whitespace-nowrap" 
+                onClick={() => setIsInquiryModalOpen(true)}
+              >
+                Buy the car
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
       <main className="py-8">
