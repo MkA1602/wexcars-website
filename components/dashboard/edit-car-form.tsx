@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, ArrowLeft, Upload, X, Camera, ExternalLink, Plus, Check, Video } from "lucide-react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import { sanitizeInput } from "@/lib/security"
 
 interface EditCarFormProps {
   car: any
@@ -238,18 +239,23 @@ export default function EditCarForm({ car }: EditCarFormProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    // Sanitize input to prevent XSS (except for numeric fields)
+    const sanitizedValue = (name === 'priceExclVat' || name === 'vatRate' || name === 'year' || name === 'mileage' || name === 'horsepower' || name === 'seats')
+      ? value // Don't sanitize numeric fields
+      : sanitizeInput(value)
+    
+    setFormData((prev) => ({ ...prev, [name]: sanitizedValue }))
 
     // Auto-calculate price with VAT when price excluding VAT or VAT rate changes
     if (name === 'priceExclVat' || name === 'vatRate') {
-      const priceExclVat = name === 'priceExclVat' ? value : formData.priceExclVat
-      const vatRate = name === 'vatRate' ? value : formData.vatRate
+      const priceExclVat = name === 'priceExclVat' ? sanitizedValue : formData.priceExclVat
+      const vatRate = name === 'vatRate' ? sanitizedValue : formData.vatRate
       
       const { priceWithVat, vatAmount } = calculatePrices(priceExclVat, vatRate)
       if (priceWithVat) {
         setFormData((prev) => ({
           ...prev,
-          [name]: value,
+          [name]: sanitizedValue,
           price: priceWithVat
         }))
       }
@@ -420,14 +426,29 @@ export default function EditCarForm({ car }: EditCarFormProps) {
   }
 
   const handleAddVideoUrl = () => {
-    const url = videoInput.trim()
+    const url = sanitizeInput(videoInput.trim())
     if (!url) {
       setVideoError("Please enter a video URL")
       return
     }
 
+    // Validate URL format and sanitize
     if (!isValidUrl(url)) {
       setVideoError("Please enter a valid URL (YouTube, Vimeo, or direct video link)")
+      return
+    }
+    
+    // Additional security: only allow safe video URLs
+    const safeDomains = ['youtube.com', 'youtu.be', 'vimeo.com', 'dailymotion.com']
+    try {
+      const urlObj = new URL(url)
+      const isSafeDomain = safeDomains.some(domain => urlObj.hostname.includes(domain))
+      if (!isSafeDomain && !url.startsWith('https://')) {
+        setVideoError("Please use a secure (HTTPS) video URL from a trusted source")
+        return
+      }
+    } catch {
+      setVideoError("Invalid URL format")
       return
     }
 
@@ -588,6 +609,12 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         updated_at: new Date().toISOString(),
       }
 
+      // Verify authorization before update
+      if (car.user_id !== user?.id) {
+        setServerError("You don't have permission to edit this car")
+        return
+      }
+
       const { error } = await supabaseClient
         .from("cars")
         .update(updateData)
@@ -595,14 +622,17 @@ export default function EditCarForm({ car }: EditCarFormProps) {
         .eq("user_id", user?.id) // Ensure the car belongs to the user
 
       if (error) {
-        throw error
+        // Don't expose detailed error information
+        setServerError("Failed to update car. Please try again.")
+        return
       }
 
       // Redirect to dashboard
       router.push("/dashboard")
       router.refresh()
     } catch (error: any) {
-      setServerError(error.message || "Failed to update car")
+      // Don't expose error details
+      setServerError("Failed to update car. Please try again.")
     } finally {
       setIsSubmitting(false)
     }

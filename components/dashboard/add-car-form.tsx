@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import ServiceFeeCalculator from "./service-fee-calculator"
 import type { FeeCalculationResult } from "@/lib/fee-calculator"
 import PriceInput from "@/components/ui/price-input"
+import { sanitizeInput } from "@/lib/security"
 
 // Common car features for selection
 const CAR_FEATURES = [
@@ -124,7 +125,7 @@ export default function AddCarForm() {
           setIsFeePaid(true)
         }
       } catch (error) {
-        console.error('Error checking admin status:', error)
+        // Error checking admin status - fail securely
       }
     }
     
@@ -141,7 +142,7 @@ export default function AddCarForm() {
           .order('usage_count', { ascending: false })
         
         if (error) {
-          console.warn('Could not load features from database:', error.message)
+          // Could not load features from database - use defaults
           // Use default features if table doesn't exist or query fails
           setAvailableFeatures(CAR_FEATURES)
           return
@@ -157,7 +158,7 @@ export default function AddCarForm() {
           setAvailableFeatures(CAR_FEATURES)
         }
       } catch (error: any) {
-        console.warn('Error loading features:', error?.message || 'Unknown error')
+        // Error loading features - use defaults
         // Keep default features if database fetch fails
         setAvailableFeatures(CAR_FEATURES)
       }
@@ -268,9 +269,13 @@ export default function AddCarForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
+    // Sanitize input to prevent XSS (except for numeric fields)
+    const sanitizedValue = (name === 'priceExclVat' || name === 'vatRate' || name === 'year' || name === 'mileage' || name === 'horsepower' || name === 'seats')
+      ? value // Don't sanitize numeric fields
+      : sanitizeInput(value)
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: sanitizedValue,
     }))
 
     // Auto-detect image type and switch upload method if needed
@@ -418,8 +423,7 @@ export default function AddCarForm() {
           )
         
         if (error) {
-          console.warn('Could not save feature to database:', error.message)
-          // Continue anyway - feature is still added to the form
+          // Could not save feature to database - continue anyway
         }
         
         // Add to available features list
@@ -427,8 +431,7 @@ export default function AddCarForm() {
           setAvailableFeatures([...availableFeatures, feature])
         }
       } catch (error: any) {
-        console.warn('Error saving feature:', error?.message || 'Unknown error')
-        // Continue anyway - feature is still added to the form
+        // Error saving feature - continue anyway
       }
       
       setCustomFeature("")
@@ -452,10 +455,36 @@ export default function AddCarForm() {
 
   const handleFilesSelect = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
+    
+    // Allowed image MIME types
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+    const maxSizeMB = 10
+    const maxSizeBytes = maxSizeMB * 1024 * 1024
+    
     const validFiles = fileArray.filter(file => {
-      const isValidType = file.type.startsWith('image/')
-      const isValidSize = file.size <= 10 * 1024 * 1024 // 10MB limit
-      return isValidType && isValidSize
+      // Validate file type
+      const isValidMimeType = file.type.startsWith('image/') && 
+                              allowedTypes.includes(file.type.toLowerCase())
+      
+      // Validate file size (10MB limit)
+      const isValidSize = file.size <= maxSizeBytes
+      
+      // Additional security: check file extension matches MIME type
+      const fileName = file.name.toLowerCase()
+      const hasValidExtension = fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || 
+                                 fileName.endsWith('.png') || fileName.endsWith('.webp') || 
+                                 fileName.endsWith('.gif')
+      
+      // Security: Reject files with dangerous names (path traversal, etc.)
+      const hasDangerousName = fileName.includes('..') || 
+                                fileName.includes('/') || 
+                                fileName.includes('\\') ||
+                                fileName.startsWith('.') ||
+                                fileName.includes('<') ||
+                                fileName.includes('>') ||
+                                fileName.includes('|')
+      
+      return isValidMimeType && isValidSize && hasValidExtension && !hasDangerousName
     })
 
     if (validFiles.length !== fileArray.length) {
@@ -659,12 +688,10 @@ export default function AddCarForm() {
     e.preventDefault()
     
     if (!validateForm()) {
-      console.log('Form validation failed:', errors)
       return
     }
 
     if (!user?.id) {
-      console.error('No user ID found')
       setServerError("Please sign in to add a car")
       return
     }
@@ -673,18 +700,11 @@ export default function AddCarForm() {
     setServerError("")
 
     try {
-      console.log('Starting car submission process...')
-      console.log('User ID:', user.id)
-      console.log('Form data:', formData)
-
       // Upload images first if any files are selected
       let imageUrls: string[] = []
       if (selectedFiles.length > 0) {
-        console.log('Uploading images...', selectedFiles.length, 'files')
         imageUrls = await uploadImagesToCloudinary(selectedFiles)
-        console.log('Images uploaded successfully:', imageUrls)
       } else if (formData.image) {
-        console.log('Using single image URL:', formData.image)
         imageUrls = [formData.image]
       }
 
@@ -716,13 +736,6 @@ export default function AddCarForm() {
         finalVatAmount = vatAmount
       }
 
-      console.log('Final prices:', { 
-        priceType: priceInputData.priceType,
-        priceExclVat: finalPriceExclVat, 
-        priceWithVat: finalPriceWithVat, 
-        vatAmount: finalVatAmount,
-        vatRate: finalVatRate
-      })
 
       const videoSources = videoEntries.map((entry) => entry.url)
 
@@ -780,16 +793,19 @@ export default function AddCarForm() {
         published_at: new Date().toISOString(),
       }
 
-      console.log('Inserting car data:', carData)
+      // Ensure user_id matches authenticated user (authorization check)
+      if (carData.user_id !== user.id) {
+        setServerError("Authorization error: Cannot add car for another user")
+        return
+      }
 
       const { error } = await supabaseClient.from("cars").insert(carData)
 
       if (error) {
-        console.error('Supabase insert error:', error)
-        throw error
+        // Don't expose detailed error information
+        setServerError("Failed to add car. Please try again.")
+        return
       }
-
-      console.log('Car added successfully!')
 
       // Success message
       setServerError("Car added successfully! Redirecting to dashboard...")
@@ -800,14 +816,8 @@ export default function AddCarForm() {
         router.refresh()
       }, 1500)
     } catch (error: any) {
-      console.error('Car submission error:', error)
-      console.error('Error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint
-      })
-      setServerError(error.message || "Failed to add car")
+      // Don't expose error details to users
+      setServerError("Failed to add car. Please try again.")
     } finally {
       setIsSubmitting(false)
     }

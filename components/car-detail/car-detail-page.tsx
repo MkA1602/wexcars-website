@@ -25,12 +25,7 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
   const [activeSection, setActiveSection] = useState<string>("specification")
   const [showStickyHeader, setShowStickyHeader] = useState(false)
   
-  // Debug logging to see what's in the car object
-  console.log('Car object:', car)
-  console.log('Car mileage:', car.mileage)
-  console.log('Car mileage type:', typeof car.mileage)
-  console.log('Car fuel_type:', car.fuel_type)
-  console.log('Car horsepower:', car.horsepower)
+  // Car data loaded
 
   // Show sold message if car is sold
   if (car.is_sold) {
@@ -72,21 +67,6 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
       </div>
     )
   }
-  console.log('Car location:', car.location)
-  console.log('Car location type:', typeof car.location)
-  
-  // Check all possible field names for mileage
-  console.log('All car object keys:', Object.keys(car))
-  console.log('All car object values:', Object.values(car))
-  
-  // Check if mileage might be in specifications
-  console.log('Car specifications:', car.specifications)
-  
-  // Check if mileage might be in a different field
-  const possibleMileageFields = ['mileage', 'odometer', 'distance', 'km', 'kilometers', 'miles']
-  possibleMileageFields.forEach(field => {
-    console.log(`Checking field "${field}":`, (car as any)[field])
-  })
 
   const getMileageDisplay = (car: Car) => {
     // For new cars, don't show mileage at all
@@ -95,9 +75,6 @@ export default function CarDetailPage({ car }: CarDetailPageProps) {
     }
     
     const mileage = car.mileage
-    console.log('getMileageDisplay called with:', mileage)
-    console.log('Mileage type:', typeof mileage)
-    console.log('Mileage value:', mileage)
     
     // Handle the mileage field (now properly typed as number | null)
     if (mileage !== null && mileage !== undefined) {

@@ -194,7 +194,8 @@ export default function AdminDashboard() {
       setCars(carsData || [])
       setUsers(usersData || [])
     } catch (error) {
-      console.error('Error fetching admin data:', error)
+      // Don't expose error details
+      // Error will be handled by RLS policies
     } finally {
       setIsLoadingData(false)
     }
@@ -216,8 +217,8 @@ export default function AdminDashboard() {
       setCars(cars.filter(car => car.id !== carId))
       alert('Car deleted successfully')
     } catch (error) {
-      console.error('Error deleting car:', error)
-      alert('Error deleting car')
+      // Don't expose error details
+      alert('Error deleting car. Please check your permissions.')
     }
   }
 
@@ -241,8 +242,8 @@ export default function AdminDashboard() {
       ))
       alert('User role updated successfully')
     } catch (error) {
-      console.error('Error updating user role:', error)
-      alert('Error updating user role')
+      // Don't expose error details
+      alert('Error updating user role. Please check your permissions.')
     }
   }
 
@@ -276,8 +277,8 @@ export default function AdminDashboard() {
       setEditingUser(null)
       alert('User profile updated successfully')
     } catch (error) {
-      console.error('Error updating user:', error)
-      alert('Error updating user profile')
+      // Don't expose error details
+      alert('Error updating user profile. Please check your permissions.')
     }
   }
 
@@ -374,7 +375,7 @@ export default function AdminDashboard() {
         })
 
       if (error) {
-        console.error('Error logging activity:', error)
+        // Silently fail activity logging - don't expose errors
       }
     } catch (error) {
       console.error('Error logging activity:', error)
@@ -503,8 +504,8 @@ export default function AdminDashboard() {
 
       alert('Car published successfully.')
     } catch (error) {
-      console.error('Error publishing car:', error)
-      alert('Error publishing car')
+      // Don't expose error details
+      alert('Error publishing car. Please try again.')
     }
   }
 

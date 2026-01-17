@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Check, Loader2, MapPin, Phone, Mail, Clock, MessageSquare, Send } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { sanitizeInput, validateEmail } from '@/lib/security';
 
 // GitHub Raw URL base for reliable image serving
 const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/MkA1602/wexcars-website/main/public";
@@ -43,7 +44,9 @@ export default function ContactContent() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormState((prev) => ({ ...prev, [name]: value }));
+    // Sanitize input to prevent XSS
+    const sanitizedValue = sanitizeInput(value);
+    setFormState((prev) => ({ ...prev, [name]: sanitizedValue }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,8 +60,23 @@ export default function ContactContent() {
     setIsSubmitting(true);
 
     try {
-      // In a real implementation, we would send the form data to a server
-      console.log('Form submitted:', formState);
+      // Sanitize all form data before submission (already sanitized in handleChange, but double-check)
+      const sanitizedData = {
+        name: sanitizeInput(formState.name),
+        email: sanitizeInput(formState.email),
+        phone: sanitizeInput(formState.phone),
+        subject: sanitizeInput(formState.subject),
+        message: sanitizeInput(formState.message)
+      };
+      
+      // Validate email
+      if (!validateEmail(sanitizedData.email)) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      
+      // In a real implementation, we would send the sanitized data to a server
+      // Don't log sensitive data
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
       setFormState({
@@ -75,7 +93,8 @@ export default function ContactContent() {
         setIsSubmitted(false);
       }, 5000);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      // Don't expose error details
+      alert('There was an error submitting your message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

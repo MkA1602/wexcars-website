@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { sanitizeInput, validateEmail } from "@/lib/security"
 
 interface CarInquiryFormProps {
   isOpen: boolean
@@ -130,7 +131,12 @@ export default function CarInquiryForm({ isOpen, onClose, carName, carBrand }: C
   ]
 
   const handleChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    // Sanitize string inputs
+    const sanitizedValue = typeof value === 'string' 
+      ? sanitizeInput(value) 
+      : value
+    
+    setFormData(prev => ({ ...prev, [field]: sanitizedValue }))
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => {
@@ -154,7 +160,7 @@ export default function CarInquiryForm({ isOpen, onClose, carName, carBrand }: C
 
     if (!formData.email.trim()) {
       newErrors.email = "Email is required"
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!validateEmail(formData.email)) {
       newErrors.email = "Please enter a valid email"
     }
 
@@ -174,8 +180,16 @@ export default function CarInquiryForm({ isOpen, onClose, carName, carBrand }: C
     setIsSubmitting(true)
     
     try {
+      // Sanitize all form data before submission
+      const sanitizedData = {
+        ...formData,
+        name: sanitizeInput(formData.name),
+        email: sanitizeInput(formData.email),
+        phone: sanitizeInput(formData.phone)
+      }
+      
       // Here you would typically send the data to your backend
-      console.log('Form submitted:', formData)
+      // Don't log sensitive data
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
@@ -194,7 +208,7 @@ export default function CarInquiryForm({ isOpen, onClose, carName, carBrand }: C
         personalInfoAgreement: false
       })
     } catch (error) {
-      console.error('Submission error:', error)
+      // Don't expose error details to users
       alert('There was an error submitting your inquiry. Please try again.')
     } finally {
       setIsSubmitting(false)

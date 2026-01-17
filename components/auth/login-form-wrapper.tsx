@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, AlertCircle } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
+import { validateRedirectUrl, sanitizeInput } from "@/lib/security"
 
 export default function LoginFormWrapper() {
   const [email, setEmail] = useState("")
@@ -22,12 +23,14 @@ export default function LoginFormWrapper() {
   const router = useRouter()
   const supabase = createClientComponentClient()
 
-  // Get the redirect path from URL on client side only
+  // Get the redirect path from URL on client side only - with validation
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const redirect = params.get("redirectTo")
     if (redirect) {
-      setRedirectPath(redirect)
+      // Validate redirect URL to prevent open redirects
+      const validatedPath = validateRedirectUrl(redirect, [])
+      setRedirectPath(validatedPath)
     }
   }, [])
 
@@ -75,9 +78,13 @@ export default function LoginFormWrapper() {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              // Sanitize email input
+              setEmail(sanitizeInput(e.target.value))
+            }}
             placeholder="john@example.com"
             required
+            maxLength={255}
           />
         </div>
 

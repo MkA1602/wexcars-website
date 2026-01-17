@@ -82,24 +82,24 @@ export default function ComingSoonPage() {
   const extendedImages = [...imageUrls, ...imageUrls, ...imageUrls].slice(0, 12);
 
   return (
-    <main className="w-full bg-[#eee] text-black relative">
-      {/* Red gradient overlay for brand consistency */}
+    <main className="w-full bg-gray-50 text-black relative">
+      {/* Subtle background overlay */}
       <div 
-        className="fixed inset-0 opacity-5 pointer-events-none z-30"
-        style={{
-          background: 'linear-gradient(to right, rgba(178, 34, 34, 0.1), rgba(139, 0, 0, 0.1))',
-        }}
+        className="fixed inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 pointer-events-none z-30"
       ></div>
       
-      {/* Maintenance Mode Badge */}
-      <div className="fixed top-8 left-1/2 -translate-x-1/2 z-40">
+      {/* Maintenance Mode Badge - Modern & Minimal */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-40">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-gradient-to-r from-primary-light to-primary-dark text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg"
+          className="flex items-center gap-2 bg-white/95 backdrop-blur-sm px-4 py-2.5 rounded-lg shadow-sm border border-gray-200/50"
         >
-          Maintenance Mode
+          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+          <span className="text-sm font-medium text-gray-700 tracking-wide uppercase">
+            Maintenance
+          </span>
         </motion.div>
       </div>
 

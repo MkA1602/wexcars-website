@@ -47,7 +47,9 @@ export default function UserProfile({ user, profile }: UserProfileProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    // Sanitize input
+    const sanitizedValue = sanitizeInput(value)
+    setFormData((prev) => ({ ...prev, [name]: sanitizedValue }))
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -95,7 +97,8 @@ export default function UserProfile({ user, profile }: UserProfileProps) {
       // Refresh the page to update the profile data
       router.refresh()
     } catch (error: any) {
-      setServerError(error.message || "Failed to update profile")
+      // Don't expose detailed error information
+      setServerError("Failed to update profile. Please try again.")
     } finally {
       setIsSubmitting(false)
     }

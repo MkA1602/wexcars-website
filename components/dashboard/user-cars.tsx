@@ -39,11 +39,23 @@ export default function UserCars({ cars }: UserCarsProps) {
     setError(null)
 
     try {
-      const { error } = await supabaseClient.from("cars").delete().eq("id", carId)
+      // RLS will enforce authorization, but add explicit check for better UX
+      const car = cars.find(c => c.id === carId)
+      if (!car) {
+        setError("Car not found")
+        return
+      }
+
+      const { error } = await supabaseClient
+        .from("cars")
+        .delete()
+        .eq("id", carId)
+        // RLS will ensure user can only delete their own cars
 
       if (error) {
-        console.error("Delete error:", error)
-        throw error
+        // Don't expose detailed error information
+        setError("Failed to delete car. Please check your permissions.")
+        return
       }
 
       // Show success message
@@ -52,8 +64,8 @@ export default function UserCars({ cars }: UserCarsProps) {
       // Refresh the page to update the car list
       router.refresh()
     } catch (err: any) {
-      console.error("Failed to delete car:", err)
-      setError(err.message || "Failed to delete car. Please check your permissions.")
+      // Don't expose error details
+      setError("Failed to delete car. Please try again.")
     } finally {
       setIsDeleting(null)
     }
