@@ -82,14 +82,18 @@ export default function ComingSoonPage() {
   const extendedImages = [...imageUrls, ...imageUrls, ...imageUrls].slice(0, 12);
 
   return (
-    <main className="w-full bg-gray-50 text-black relative">
-      {/* Subtle background overlay */}
-      <div 
-        className="fixed inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 pointer-events-none z-30"
-      ></div>
+    <main className="w-full bg-[#eee] text-black relative">
+      {/* Parallax Gallery - Lazy loaded - Must be first to be behind other elements */}
+      <Suspense fallback={
+        <div className="flex h-screen items-center justify-center bg-gray-50">
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin"></div>
+        </div>
+      }>
+        <ParallaxGallery images={extendedImages} />
+      </Suspense>
       
       {/* Maintenance Mode Badge - Modern & Minimal */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-40">
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -103,17 +107,8 @@ export default function ComingSoonPage() {
         </motion.div>
       </div>
 
-      {/* Parallax Gallery - Lazy loaded */}
-      <Suspense fallback={
-        <div className="flex h-screen items-center justify-center">
-          <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-800 rounded-full animate-spin"></div>
-        </div>
-      }>
-        <ParallaxGallery images={extendedImages} />
-      </Suspense>
-
       {/* Maintenance Message - Fixed at bottom */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 text-center px-4">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 text-center px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
